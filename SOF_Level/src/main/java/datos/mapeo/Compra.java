@@ -38,7 +38,7 @@ public class Compra implements Serializable {
     @JoinColumn(name = "contrato_id", nullable = false)
     private Contrato contrato;
     
-    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Material> materiales = new HashSet<>();
     
     public Compra() {

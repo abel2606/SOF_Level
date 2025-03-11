@@ -22,7 +22,7 @@ public class Fotografo extends Usuario implements Serializable{
     @Column(name = "telefono")
     private String telefono;
     
-    @OneToMany(mappedBy = "cita", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "fotografo", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Cita> citas = new HashSet<>();
 
     public Fotografo() {

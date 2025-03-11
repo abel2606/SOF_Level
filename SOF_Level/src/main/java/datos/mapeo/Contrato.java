@@ -34,10 +34,10 @@ public class Contrato implements Serializable{
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
     
-    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "contrato", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Compra> compras = new HashSet<>();
     
-    @OneToMany(mappedBy = "cita", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "contrato", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Cita> citas = new HashSet<>();
 
     public Contrato() {

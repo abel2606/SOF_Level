@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence           http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <persistence-unit name="org.itson_SOF_Level_jar_1.0-VERSIONPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>datos.mapeo.Cliente</class>
+    <class>datos.mapeo.Contrato</class>
+    <class>datos.mapeo.Administrador</class>
+    <class>datos.mapeo.Cita</class>
+    <class>datos.mapeo.Fotografo</class>
+    <class>datos.mapeo.Material</class>
+    <class>datos.mapeo.Paquete</class>
+    <class>datos.mapeo.PaqueteTipoFoto</class>
+    <class>datos.mapeo.TipoFoto</class>
+    <class>datos.mapeo.Usuario</class>
+    <class>datos.mapeo.Compra</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/sof?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.password" value="1234a"/>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+    </properties>
+  </persistence-unit>
+</persistence>

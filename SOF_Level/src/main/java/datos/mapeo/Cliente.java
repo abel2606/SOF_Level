@@ -27,7 +27,7 @@ public class Cliente implements Serializable {
     @Column(name = "correo")
     private String correo;
     
-    @OneToMany(mappedBy = "contrato", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contrato> contratos = new HashSet<>();
 
     public Cliente() {
@@ -72,6 +72,4 @@ public class Cliente implements Serializable {
     public void setContratos(Set<Contrato> contratos) {
         this.contratos = contratos;
     }
-    
-    
 }
