@@ -1,6 +1,6 @@
 package org.itson.sof.sof_dtos;
 
-import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Set;
 
 /**
@@ -12,8 +12,8 @@ import java.util.Set;
  */
 public class CitaDTO {
 
-    private Calendar fechaHoraInicio;
-    private Calendar fechaHoraFin;
+    private GregorianCalendar fechaHoraInicio;
+    private GregorianCalendar fechaHoraFin;
     private String lugar;
     private String extras;
     private ContratoDTO contrato;
@@ -38,7 +38,7 @@ public class CitaDTO {
      * @param fotografo Fotógrafo asignado a la cita.
      * @param materiales Materiales utilizados en la cita.
      */
-    public CitaDTO(Calendar fechaHoraInicio, Calendar fechaHoraFin, String lugar, String extras, ContratoDTO contrato, FotografoDTO fotografo, Set<MaterialDTO> materiales) {
+    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, ContratoDTO contrato, FotografoDTO fotografo, Set<MaterialDTO> materiales) {
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
         this.lugar = lugar;
@@ -53,7 +53,7 @@ public class CitaDTO {
      *
      * @return Fecha y hora de inicio de la cita.
      */
-    public Calendar getFechaHoraInicio() {
+    public GregorianCalendar getFechaHoraInicio() {
         return fechaHoraInicio;
     }
 
@@ -62,7 +62,7 @@ public class CitaDTO {
      *
      * @param fechaHoraInicio Nueva fecha y hora de inicio de la cita.
      */
-    public void setFechaHoraInicio(Calendar fechaHoraInicio) {
+    public void setFechaHoraInicio(GregorianCalendar fechaHoraInicio) {
         this.fechaHoraInicio = fechaHoraInicio;
     }
 
@@ -71,7 +71,7 @@ public class CitaDTO {
      *
      * @return Fecha y hora de finalización de la cita.
      */
-    public Calendar getFechaHoraFin() {
+    public GregorianCalendar getFechaHoraFin() {
         return fechaHoraFin;
     }
 
@@ -80,7 +80,7 @@ public class CitaDTO {
      *
      * @param fechaHoraFin Nueva fecha y hora de finalización de la cita.
      */
-    public void setFechaHoraFin(Calendar fechaHoraFin) {
+    public void setFechaHoraFin(GregorianCalendar fechaHoraFin) {
         this.fechaHoraFin = fechaHoraFin;
     }
 

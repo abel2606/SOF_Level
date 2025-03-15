@@ -1,6 +1,6 @@
 package org.itson.sof.sof_dtos;
 
-import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ public class CompraDTO {
 
     private Long folio;
     private Float cantidad;
-    private Calendar fechaHora;
+    private GregorianCalendar fechaHora;
     private Double costo;
     private String proveedor;
     private ContratoDTO contrato;
@@ -38,7 +38,7 @@ public class CompraDTO {
      * @param proveedor Nombre del proveedor.
      * @param contrato Contrato asociado a la compra.
      */
-    public CompraDTO(Long folio, Float cantidad, Calendar fechaHora, Double costo, String proveedor, ContratoDTO contrato) {
+    public CompraDTO(Long folio, Float cantidad, GregorianCalendar fechaHora, Double costo, String proveedor, ContratoDTO contrato) {
         this.folio = folio;
         this.cantidad = cantidad;
         this.fechaHora = fechaHora;
@@ -88,7 +88,7 @@ public class CompraDTO {
      *
      * @return Fecha y hora de la compra.
      */
-    public Calendar getFechaHora() {
+    public GregorianCalendar getFechaHora() {
         return fechaHora;
     }
 
@@ -97,7 +97,7 @@ public class CompraDTO {
      *
      * @param fechaHora Nueva fecha y hora de la compra.
      */
-    public void setFechaHora(Calendar fechaHora) {
+    public void setFechaHora(GregorianCalendar fechaHora) {
         this.fechaHora = fechaHora;
     }
 

@@ -2,7 +2,7 @@
 package org.itson.sof.persistencia.entidades;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -23,10 +23,10 @@ public class Cita implements Serializable {
     private Long id;
     
     @Column(name = "fecha_hora_inicio")
-    private LocalDateTime fechaHoraInicio;
+    private GregorianCalendar fechaHoraInicio;
     
     @Column(name = "fecha_hora_fin")
-    private LocalDateTime fechaHoraFin;
+    private GregorianCalendar fechaHoraFin;
     
     @Column(name = "lugar")
     private String lugar;
@@ -61,19 +61,19 @@ public class Cita implements Serializable {
         this.id = id;
     }
 
-    public LocalDateTime getFechaHoraInicio() {
+    public GregorianCalendar getFechaHoraInicio() {
         return fechaHoraInicio;
     }
 
-    public void setFechaHoraInicio(LocalDateTime fechaHoraInicio) {
+    public void setFechaHoraInicio(GregorianCalendar fechaHoraInicio) {
         this.fechaHoraInicio = fechaHoraInicio;
     }
 
-    public LocalDateTime getFechaHoraFin() {
+    public GregorianCalendar getFechaHoraFin() {
         return fechaHoraFin;
     }
 
-    public void setFechaHoraFin(LocalDateTime fechaHoraFin) {
+    public void setFechaHoraFin(GregorianCalendar fechaHoraFin) {
         this.fechaHoraFin = fechaHoraFin;
     }
 

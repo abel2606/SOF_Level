@@ -2,7 +2,7 @@
 package org.itson.sof.persistencia.entidades;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -26,7 +26,7 @@ public class Compra implements Serializable {
     private Float cantidad;
     
     @Column(name = "fecha_hora")
-    private LocalDateTime fechaHora;
+    private GregorianCalendar fechaHora;
     
     @Column(name = "costo")
     private Double costo;
@@ -60,11 +60,11 @@ public class Compra implements Serializable {
         this.cantidad = cantidad;
     }
 
-    public LocalDateTime getFechaHora() {
+    public GregorianCalendar getFechaHora() {
         return fechaHora;
     }
 
-    public void setFechaHora(LocalDateTime fechaHora) {
+    public void setFechaHora(GregorianCalendar fechaHora) {
         this.fechaHora = fechaHora;
     }
 
