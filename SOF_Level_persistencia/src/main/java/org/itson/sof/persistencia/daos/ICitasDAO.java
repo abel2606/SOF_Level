@@ -8,6 +8,6 @@ package org.itson.sof.persistencia.daos;
  *
  * @author Abe
  */
-public interface IContratos {
+public interface ICitasDAO {
     
 }

@@ -8,6 +8,6 @@ package org.itson.sof.persistencia.daos;
  *
  * @author Abe
  */
-public class Contratos {
+public class ContratosDAO {
     
 }
