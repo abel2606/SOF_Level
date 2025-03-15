@@ -26,11 +26,14 @@ public class Contrato implements Serializable{
     @Column(name = "estado")
     private String estado;
     
+    @Column(name = "folio")
+    private String folio;
+    
     @ManyToOne
     @JoinColumn(name = "paquete_id")
     private Paquete paquete;
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
     
@@ -98,6 +101,21 @@ public class Contrato implements Serializable{
     public void setPaquete(Paquete paquete) {
         this.paquete = paquete;
     }
+
+    public String getFolio() {
+        return folio;
+    }
+
+    public void setFolio(String folio) {
+        this.folio = folio;
+    }
+
+    @Override
+    public String toString() {
+        return "Contrato{" + "id=" + id + ", tematica=" + tematica + ", estado=" + estado + ", folio=" + folio + ", paquete=" + paquete + ", cliente=" + cliente + ", compras=" + compras + ", citas=" + citas + '}';
+    }
+    
+    
     
     
 }

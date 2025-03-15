@@ -34,6 +34,9 @@ public class Cita implements Serializable {
     @Column(name = "extras")
     private String extras;
     
+    @Column(name = "codigo")
+    private String codigo;
+    
     @ManyToOne
     @JoinColumn(name = "contrato_id", nullable = false)
     private Contrato contrato;
@@ -93,6 +96,15 @@ public class Cita implements Serializable {
         this.extras = extras;
     }
 
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+    
+
     public Contrato getContrato() {
         return contrato;
     }
@@ -116,5 +128,12 @@ public class Cita implements Serializable {
     public void setFotografo(Fotografo fotografo) {
         this.fotografo = fotografo;
     }
+
+    @Override
+    public String toString() {
+        return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", contrato=" + contrato + ", fotografo=" + fotografo + ", materiales=" + materiales + '}';
+    }
+    
+    
 
 }

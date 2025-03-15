@@ -16,6 +16,7 @@ public class CitaDTO {
     private GregorianCalendar fechaHoraFin;
     private String lugar;
     private String extras;
+    private String codigo;
     private ContratoDTO contrato;
     private FotografoDTO fotografo;
     private Set<MaterialDTO> materiales;
@@ -38,11 +39,12 @@ public class CitaDTO {
      * @param fotografo Fotógrafo asignado a la cita.
      * @param materiales Materiales utilizados en la cita.
      */
-    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, ContratoDTO contrato, FotografoDTO fotografo, Set<MaterialDTO> materiales) {
+    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, String codigo, ContratoDTO contrato, FotografoDTO fotografo, Set<MaterialDTO> materiales) {    
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
         this.lugar = lugar;
         this.extras = extras;
+        this.codigo = codigo;
         this.contrato = contrato;
         this.fotografo = fotografo;
         this.materiales = materiales;
@@ -175,6 +177,23 @@ public class CitaDTO {
     }
 
     /**
+     * Obtiene el codigo de una cita
+     * @return regresa el codigo de una cita
+     */
+    public String getCodigo() {
+        return codigo;
+    }
+
+    /**
+     * Establece el codigo de una cita
+     * @param codigo 
+     */
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+    
+
+    /**
      * Devuelve una representación en cadena del objeto CitaDTO.
      *
      * @return Cadena con los valores de los atributos de la cita.
@@ -187,6 +206,7 @@ public class CitaDTO {
         sb.append(", fechaHoraFin=").append(fechaHoraFin);
         sb.append(", lugar=").append(lugar);
         sb.append(", extras=").append(extras);
+        sb.append(", codigo=").append(codigo);
         sb.append(", contrato=").append(contrato);
         sb.append(", fotografo=").append(fotografo);
         sb.append(", materiales=").append(materiales);
