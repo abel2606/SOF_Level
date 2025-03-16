@@ -1,6 +1,8 @@
 package org.itson.sof.sof_dtos;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,7 +19,7 @@ public class ContratoDTO {
     private PaqueteDTO paquete;
     private ClienteDTO cliente;
     private Set<CompraDTO> compras = new HashSet<>();
-    private Set<CitaDTO> citas = new HashSet<>();
+    private List<CitaDTO> citas = new ArrayList<>();
 
     /**
      * Constructor vacío de ContratoDTO. Se usa para crear un objeto sin
@@ -137,7 +139,7 @@ public class ContratoDTO {
      *
      * @return Conjunto de citas del contrato.
      */
-    public Set<CitaDTO> getCitas() {
+    public List<CitaDTO> getCitas() {
         return citas;
     }
 
@@ -146,7 +148,7 @@ public class ContratoDTO {
      *
      * @param citas Nuevo conjunto de citas a asignar.
      */
-    public void setCitas(Set<CitaDTO> citas) {
+    public void setCitas(List<CitaDTO> citas) {
         this.citas = citas;
     }
 

@@ -8,7 +8,8 @@ import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.persistencia.conexion.Conexion;
 import org.itson.sof.persistencia.conexion.IConexion;
-import org.itson.sof.persistencia.daos.ICitas;
+import org.itson.sof.persistencia.daos.CitasDAO;
+import org.itson.sof.persistencia.daos.ICitasDAO;
 import org.itson.sof.persistencia.entidades.Cita;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
@@ -19,12 +20,12 @@ import org.itson.sof.sof_dtos.ContratoDTO;
  */
 public class CitaBO implements ICitaBO{
 
-    private ICitas citasDAO;
+    private ICitasDAO citasDAO;
     private static final Logger LOG = Logger.getLogger(CitaBO.class.getName());
 
-    public CitaBO(ICitas citasDAO) {
+    public CitaBO(ICitasDAO citasDAO) {
         IConexion conexion = new Conexion();
-        //this.citasDAO = new Cita(conexion);
+        this.citasDAO = new CitasDAO(conexion);
     }
     
     

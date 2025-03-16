@@ -2,8 +2,10 @@
 package org.itson.sof.persistencia.entidades;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,7 +53,7 @@ public class Cita implements Serializable {
             joinColumns = @JoinColumn(name = "cita_id"),
             inverseJoinColumns = @JoinColumn(name = "material_id")
     )
-    private Set<Material> materiales = new HashSet<>();
+    private List<Material> materiales = new ArrayList<>();
 
     public Cita() {
     }
@@ -113,11 +115,11 @@ public class Cita implements Serializable {
         this.contrato = contrato;
     }
 
-    public Set<Material> getMateriales() {
+    public List<Material> getMateriales() {
         return materiales;
     }
 
-    public void setMateriales(Set<Material> materiales) {
+    public void setMateriales(List<Material> materiales) {
         this.materiales = materiales;
     }
 

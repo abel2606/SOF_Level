@@ -1,7 +1,9 @@
 package org.itson.sof.persistencia.entidades;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -41,7 +43,7 @@ public class Contrato implements Serializable{
     private Set<Compra> compras = new HashSet<>();
     
     @OneToMany(mappedBy = "contrato", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Cita> citas = new HashSet<>();
+    private List<Cita> citas = new ArrayList<>();
 
     public Contrato() {
     }
@@ -86,11 +88,11 @@ public class Contrato implements Serializable{
         this.compras = compras;
     }
 
-    public Set<Cita> getCitas() {
+    public List<Cita> getCitas() {
         return citas;
     }
 
-    public void setCitas(Set<Cita> citas) {
+    public void setCitas(List<Cita> citas) {
         this.citas = citas;
     }
 

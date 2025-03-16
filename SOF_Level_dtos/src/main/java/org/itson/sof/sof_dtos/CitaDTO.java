@@ -1,6 +1,7 @@
 package org.itson.sof.sof_dtos;
 
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,7 +20,7 @@ public class CitaDTO {
     private String codigo;
     private ContratoDTO contrato;
     private FotografoDTO fotografo;
-    private Set<MaterialDTO> materiales;
+    private List<MaterialDTO> materiales;
 
     /**
      * Constructor vacío de CitaDTO. Se usa para inicializar un objeto sin
@@ -39,7 +40,7 @@ public class CitaDTO {
      * @param fotografo Fotógrafo asignado a la cita.
      * @param materiales Materiales utilizados en la cita.
      */
-    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, String codigo, ContratoDTO contrato, FotografoDTO fotografo, Set<MaterialDTO> materiales) {    
+    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, String codigo, ContratoDTO contrato, FotografoDTO fotografo, List<MaterialDTO> materiales) {    
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
         this.lugar = lugar;
@@ -163,7 +164,7 @@ public class CitaDTO {
      *
      * @return Conjunto de materiales de la cita.
      */
-    public Set<MaterialDTO> getMateriales() {
+    public List<MaterialDTO> getMateriales() {
         return materiales;
     }
 
@@ -172,7 +173,7 @@ public class CitaDTO {
      *
      * @param materiales Nuevo conjunto de materiales de la cita.
      */
-    public void setMateriales(Set<MaterialDTO> materiales) {
+    public void setMateriales(List<MaterialDTO> materiales) {
         this.materiales = materiales;
     }
 
