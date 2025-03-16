@@ -5,6 +5,7 @@
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
 import java.util.logging.Logger;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.ConverterUtil;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.persistencia.conexion.Conexion;
 import org.itson.sof.persistencia.conexion.IConexion;
@@ -12,50 +13,99 @@ import org.itson.sof.persistencia.daos.CitasDAO;
 import org.itson.sof.persistencia.daos.ICitasDAO;
 import org.itson.sof.persistencia.entidades.Cita;
 import org.itson.sof.sof_dtos.CitaDTO;
-import org.itson.sof.sof_dtos.ContratoDTO;
 
 /**
  *
  * @author haesp
  */
-public class CitaBO implements ICitaBO{
+public class CitaBO implements ICitaBO {
 
     private ICitasDAO citasDAO;
-    private static final Logger LOG = Logger.getLogger(CitaBO.class.getName());
 
-    public CitaBO(ICitasDAO citasDAO) {
+    public CitaBO() {
         IConexion conexion = new Conexion();
         this.citasDAO = new CitasDAO(conexion);
     }
-    
-    
-    
 
+    /**
+     * Método crear y asignar una cita a un contrato
+     *
+     * @param citaDTO cita que se desea crear
+     * @return cita en caso que se cree
+     * @throws ObjetosNegocioException en caso de un error al crear la cita
+     */
     @Override
-    public CitaDTO crearCita(ContratoDTO contrato, CitaDTO cita) throws ObjetosNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public CitaDTO crearCita(CitaDTO citaDTO) throws ObjetosNegocioException {
+
+        Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
+
+        try {
+            cita = citasDAO.agregarCita(cita);
+            return citaDTO;
+        } catch (Exception ex) {
+            throw new ObjetosNegocioException(ex.getMessage());
+        }
+
     }
 
+    /**
+     * Método para actulizar una cita ya creada
+     *
+     * @param citaDTO cita que se desea actualizar
+     * @return cita en caso de actualizarla
+     * @throws ObjetosNegocioException en caso de un error al actuaizar la cita
+     */
     @Override
-    public CitaDTO actualizarCita(CitaDTO cita) throws ObjetosNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public CitaDTO actualizarCita(CitaDTO citaDTO) throws ObjetosNegocioException {
+        Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
+
+        try {
+            cita = citasDAO.actualizarCita(cita);
+            citaDTO = ConverterUtil.citaEntidadADTO(cita);
+            return citaDTO;
+        } catch (Exception ex) {
+            throw new ObjetosNegocioException(ex.getMessage());
+        }
     }
 
+    /**
+     * Método para eliminar la una cita.
+     *
+     * @param citaDTO cita que se desea eliminar
+     * @return la cita en caso de eliminarse
+     * @throws ObjetosNegocioException
+     */
     @Override
-    public boolean eliminarCita(CitaDTO cita) throws ObjetosNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public CitaDTO eliminarCita(CitaDTO citaDTO) throws ObjetosNegocioException {
+
+        Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
+
+        try {
+            cita = citasDAO.eliminarcita(cita);
+            citaDTO = ConverterUtil.citaEntidadADTO(cita);
+            return citaDTO;
+        } catch (Exception ex) {
+            throw new ObjetosNegocioException(ex.getMessage());
+        }
+
     }
-    
-//    /**
-//     * Método para convertir una CitaDTO a una entidad
-//     * @param citaDTO cita que se desea convertir a entidad
-//     * @return objeto tipo Cita
-//     */
-//    private Cita convertirCitaEntidad (CitaDTO citaDTO){
-//        
-//        Cita cita = new Cita();
-//        cita.setContrato(citaDTO.getContrato());
-//       
-//    }
-    
+
+    /**
+     * Metodo para consultar una cita
+     *
+     * @param citaDTO cita que se desea consultar
+     * @return cita consultada
+     */
+    @Override
+    public CitaDTO obtenerCita(CitaDTO citaDTO) throws ObjetosNegocioException{
+        Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
+        
+        try {
+            citaDTO = ConverterUtil.citaEntidadADTO(citasDAO.obtenerCita(cita));
+            return citaDTO;
+        }catch (Exception ex){
+            throw new ObjetosNegocioException (ex.getMessage());
+        }
+    }
+
 }

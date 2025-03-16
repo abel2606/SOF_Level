@@ -56,7 +56,7 @@ public class CitasDAO implements ICitasDAO {
             transaction.begin();
 
             Contrato contratoExistente = em.find(Contrato.class, cita.getContrato().getId());
-            Fotografo fotografoExistente = em.find(Fotografo.class, cita.getFotografo().getId());
+//            Fotografo fotografoExistente = em.find(Fotografo.class, cita.getFotografo().getId());
 
             if (contratoExistente != null) {
                 cita.setContrato(contratoExistente);
@@ -64,11 +64,11 @@ public class CitasDAO implements ICitasDAO {
                 throw new RuntimeException("Contrato no encontrado");
             }
 
-            if (fotografoExistente != null) {
-                cita.setFotografo(fotografoExistente);
-            } else {
-                throw new RuntimeException("Fotógrafo no encontrado");
-            }
+//            if (fotografoExistente != null) {
+//                cita.setFotografo(fotografoExistente);
+//            } else {
+//                throw new RuntimeException("Fotógrafo no encontrado");
+//            }
 
             em.persist(cita);
 

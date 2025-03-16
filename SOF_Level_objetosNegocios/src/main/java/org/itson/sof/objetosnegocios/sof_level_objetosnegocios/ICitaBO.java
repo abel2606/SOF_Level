@@ -12,27 +12,33 @@ public interface ICitaBO {
     
     /**
      * Método crear y asignar una cita a un contrato
-     * @param contrato contrato al que se le asignará la cita
-     * @param cita cita que se desea crear
+     * @param citaDTO cita que se desea crear
      * @return cita en caso que se cree
      * @throws ObjetosNegocioException en caso de un error al crear la cita 
      */
-    public CitaDTO crearCita (ContratoDTO contrato, CitaDTO cita) throws ObjetosNegocioException;
+    public CitaDTO crearCita (CitaDTO citaDTO) throws ObjetosNegocioException;
     
     /**
      * Método para actulizar una cita ya creada
-     * @param cita cita que se desea actualizar
+     * @param citaDTO cita que se desea actualizar
      * @return cita en caso de actualizarla
      * @throws ObjetosNegocioException en caso de un error al actuaizar la cita
      */
-    public CitaDTO actualizarCita (CitaDTO cita) throws ObjetosNegocioException;
+    public CitaDTO actualizarCita (CitaDTO citaDTO) throws ObjetosNegocioException;
     
     /**
      * Método para eliminar la una cita.
-     * @param cita cita que se desea eliminar
-     * @return true en caso de eliminar la cita, false en caso contrario
+     * @param citaDTO cita que se desea eliminar
+     * @return la cita en caso de eliminarse
      * @throws ObjetosNegocioException 
      */
-    public boolean eliminarCita (CitaDTO cita) throws ObjetosNegocioException;
+    public CitaDTO eliminarCita (CitaDTO citaDTO) throws ObjetosNegocioException;
+    
+    /**
+     * Metodo para consultar una cita
+     * @param citaDTO cita que se desea consultar
+     * @return cita consultada
+     */
+    public CitaDTO obtenerCita (CitaDTO citaDTO) throws ObjetosNegocioException;
     
 }
