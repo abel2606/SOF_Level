@@ -32,7 +32,7 @@ public class ConverterUtil {
         cita.setFechaHoraInicio(citaDTO.getFechaHoraInicio());
         cita.setFotografo(fotografoDTOAEntidad(citaDTO.getFotografo()));
         cita.setLugar(citaDTO.getLugar());
-        cita.setMateriales(materialesDTOAEntidad(citaDTO.getMateriales()));
+        //cita.setMateriales(materialesDTOAEntidad(citaDTO.getMateriales()));
         return cita;
     }
 
@@ -51,7 +51,7 @@ public class ConverterUtil {
         citaDTO.setFechaHoraInicio(cita.getFechaHoraInicio());
         citaDTO.setFotografo(fotografoEntidadADTO(cita.getFotografo()));
         citaDTO.setLugar(cita.getLugar());
-        citaDTO.setMateriales(materialesEntidadADTO(cita.getMateriales()));
+        //citaDTO.setMateriales(materialesEntidadADTO(cita.getMateriales()));
 
         return citaDTO;
 
@@ -66,12 +66,13 @@ public class ConverterUtil {
     public static Contrato contratoDTOAEntidad(ContratoDTO contratoDTO) {
 
         Contrato contrato = new Contrato();
-        contrato.setCitas(citasDTOAEntidad(contratoDTO.getCitas()));
+        //contrato.setCitas(citasDTOAEntidad(contratoDTO.getCitas()));
         //contrato.setCliente(contratoDTO.getCliente());
         //contrato.setCompras(contratoDTO.getCompras());
-        contrato.setEstado(contratoDTO.getEstado());
-        //contrato.setPaquete(contratoDTO.getPaquete());
-        contrato.setTematica(contratoDTO.getTematica());
+//        contrato.setEstado(contratoDTO.getEstado());
+//        //contrato.setPaquete(contratoDTO.getPaquete());
+//        contrato.setTematica(contratoDTO.getTematica());
+        contrato.setFolio(contratoDTO.getFolio());
 
         return contrato;
     }
@@ -85,12 +86,13 @@ public class ConverterUtil {
     public static ContratoDTO contratoEntidadADTO(Contrato contrato) {
 
         ContratoDTO contratoDTO = new ContratoDTO();
-        contratoDTO.setCitas(citasEntidadADTO(contrato.getCitas()));
+        //contratoDTO.setCitas(citasEntidadADTO(contrato.getCitas()));
         //contratoDTO.setCliente(contrato.getCliente());
         //contratoDTO.setCompras(contrato.getCompras());
-        contratoDTO.setEstado(contrato.getEstado());
-        //contratoDTO.setPaquete(contrato.getPaquete());
-        contratoDTO.setTematica(contrato.getTematica());
+//        contratoDTO.setEstado(contrato.getEstado());
+//        //contratoDTO.setPaquete(contrato.getPaquete());
+//        contratoDTO.setTematica(contrato.getTematica());
+        contratoDTO.setFolio(contrato.getFolio());
 
         return contratoDTO;
     }
@@ -132,7 +134,8 @@ public class ConverterUtil {
     public static Fotografo fotografoDTOAEntidad(FotografoDTO fotografoDTO) {
         Fotografo fotografo = new Fotografo();
 
-        fotografo.setNombrePersona(fotografoDTO.getNombrePersona());
+//        fotografo.setNombrePersona(fotografoDTO.getNombrePersona());
+        fotografo.setNombreUsuario(fotografoDTO.getNombreUsuario());
         //FALTA DISCUTIR COSAS CON EL EQUIPO ACERCA PARA PODER TERMINAR EL METODO
         return fotografo;
     }

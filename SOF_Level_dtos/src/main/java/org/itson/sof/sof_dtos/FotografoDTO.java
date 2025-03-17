@@ -10,7 +10,7 @@ import java.util.Set;
  *
  * @author SOF LEVEL
  */
-public class FotografoDTO {
+public class FotografoDTO extends UsuarioDTO{
 
     private String correo;
     private String nombrePersona;
@@ -31,10 +31,12 @@ public class FotografoDTO {
      * @param nombrePersona Nombre completo del fotógrafo.
      * @param telefono Número de teléfono del fotógrafo.
      */
-    public FotografoDTO(String correo, String nombrePersona, String telefono) {
+    public FotografoDTO(String correo, String nombrePersona, String telefono, String nombreUsuario, String contrasena) {
+        super(contrasena, nombreUsuario);
         this.correo = correo;
         this.nombrePersona = nombrePersona;
         this.telefono = telefono;
+       
     }
 
     /**
@@ -108,6 +110,8 @@ public class FotografoDTO {
     public void setCitas(Set<CitaDTO> citas) {
         this.citas = citas;
     }
+    
+    
 
     /**
      * Devuelve una representación en cadena del objeto FotografoDTO.

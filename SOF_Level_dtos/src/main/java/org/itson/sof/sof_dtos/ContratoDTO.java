@@ -20,6 +20,7 @@ public class ContratoDTO {
     private ClienteDTO cliente;
     private Set<CompraDTO> compras = new HashSet<>();
     private List<CitaDTO> citas = new ArrayList<>();
+    private String folio;
 
     /**
      * Constructor vacío de ContratoDTO. Se usa para crear un objeto sin
@@ -37,11 +38,12 @@ public class ContratoDTO {
      * @param paquete Paquete de servicios asociado al contrato.
      * @param cliente Cliente que firma el contrato.
      */
-    public ContratoDTO(String tematica, String estado, PaqueteDTO paquete, ClienteDTO cliente) {
+    public ContratoDTO(String tematica, String estado, PaqueteDTO paquete, ClienteDTO cliente, String folio) {
         this.tematica = tematica;
         this.estado = estado;
         this.paquete = paquete;
         this.cliente = cliente;
+        this.folio = folio;
     }
 
     /**
@@ -152,6 +154,16 @@ public class ContratoDTO {
         this.citas = citas;
     }
 
+    public String getFolio() {
+        return folio;
+    }
+
+    public void setFolio(String folio) {
+        this.folio = folio;
+    }
+    
+    
+
     /**
      * Devuelve una representación en cadena del objeto ContratoDTO.
      *
@@ -170,5 +182,7 @@ public class ContratoDTO {
         sb.append('}');
         return sb.toString();
     }
+    
+    
 
 }
