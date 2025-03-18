@@ -113,9 +113,19 @@ public class Contrato implements Serializable{
     }
 
     @Override
-    public String toString() {
-        return "Contrato{" + "id=" + id + ", tematica=" + tematica + ", estado=" + estado + ", folio=" + folio + ", paquete=" + paquete + ", cliente=" + cliente + ", compras=" + compras + ", citas=" + citas + '}';
-    }
+public String toString() {
+    return "Contrato{" +
+            "id=" + id +
+            ", tematica=" + tematica +
+            ", estado=" + estado +
+            ", folio=" + folio +
+            ", paquete=" + paquete +
+            ", cliente=" + cliente +
+            ", compras=" + compras +
+            ", citas=" + citas +
+            '}';
+}
+
     
     
     

@@ -15,23 +15,22 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class Paquete implements Serializable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "precio")
     private Float precio;
-    
+
     @Column(name = "nombre")
     private String nombre;
 
     @OneToMany(mappedBy = "paquete", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PaqueteTipoFoto> tiposDeFoto = new HashSet<>();
-    
-    @ManyToOne
-    @JoinColumn(name = "contrato_id", nullable = false)
-    private Contrato contrato;
+
+    @OneToMany(mappedBy = "paquete")
+    private Set<Contrato> contratos = new HashSet<>();
 
     public Paquete() {
     }
@@ -66,14 +65,6 @@ public class Paquete implements Serializable {
 
     public void setTiposDeFoto(Set<PaqueteTipoFoto> tiposDeFoto) {
         this.tiposDeFoto = tiposDeFoto;
-    }
-
-    public Contrato getContrato() {
-        return contrato;
-    }
-
-    public void setContrato(Contrato contrato) {
-        this.contrato = contrato;
     }
 
 }

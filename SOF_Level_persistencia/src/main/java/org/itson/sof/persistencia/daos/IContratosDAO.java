@@ -4,10 +4,15 @@
  */
 package org.itson.sof.persistencia.daos;
 
+import java.util.List;
+import org.itson.sof.persistencia.entidades.Contrato;
+import org.itson.sof.persistencia.exception.PersistenciaSOFException;
+
 /**
  *
  * @author Abe
  */
 public interface IContratosDAO {
     
+    public List<Contrato> obtenerTotalContratos() throws PersistenciaSOFException;
 }
