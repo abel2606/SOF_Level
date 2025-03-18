@@ -4,14 +4,17 @@
  */
 package org.itson.sof.persistencia.daos;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import org.itson.sof.persistencia.conexion.IConexion;
+import static org.itson.sof.persistencia.daos.ContratosDAO.logger;
 import org.itson.sof.persistencia.entidades.Cita;
 import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.entidades.Fotografo;
+import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
 /**
  *
@@ -24,6 +27,59 @@ public class CitasDAO implements ICitasDAO {
 
     public CitasDAO(IConexion conexion) {
         this.conexion = conexion;
+    }
+
+    @Override
+    public Cita obtenerCitaCodigo(String codigo) throws PersistenciaSOFException {
+        EntityManager em = conexion.crearConexion();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+
+            String jpql = "SELECT c FROM Cita c WHERE c.codigo = :codigoCita";
+            Cita citaDeCodigo = em.createQuery(jpql, Cita.class)
+                    .setParameter("codigoCita", codigo).getSingleResult();
+                    
+          
+            transaction.commit();
+            logger.info("Cita obtenida: ID(" + citaDeCodigo.getId() + ")");
+            return citaDeCodigo;
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            logger.log(Level.SEVERE, "Error al obtener las citas del contrato", e);
+            throw new PersistenciaSOFException("Error al obtener las citas de los contratos");
+        } finally {
+            em.close();
+        } 
+        
+    }
+    
+    @Override
+    public List<Cita> obtenerCitasContratos(long contratoId) throws PersistenciaSOFException {
+        EntityManager em = conexion.crearConexion();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+
+            String jpql = "SELECT c FROM Cita c WHERE c.contrato.id = :contratoId";
+            List<Cita> citasDeContrato = em.createQuery(jpql, Cita.class)
+                    .setParameter("contratoId", contratoId)
+                    .getResultList();
+            
+            transaction.commit();
+            
+            return citasDeContrato;
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            logger.log(Level.SEVERE, "Error al obtener las citas del contrato", e);
+            throw new PersistenciaSOFException("Error al obtener las citas de los contratos");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -56,26 +112,11 @@ public class CitasDAO implements ICitasDAO {
         try {
             transaction.begin();
 
-//            Contrato contratoExistente = em.find(Contrato.class, cita.getContrato().getFolio());
-//            Fotografo fotografoExistente = em.find(Fotografo.class, cita.getFotografo().getNombreUsuario());
-//
-//            if (contratoExistente != null) {
-//                cita.setContrato(contratoExistente);
-//            } else {
-//                throw new RuntimeException("Contrato no encontrado");
-//            }
-//
-//            if (fotografoExistente != null) {
-//                cita.setFotografo(fotografoExistente);
-//            } else {
-//                throw new RuntimeException("Fotógrafo no encontrado");
-//            }
-
-            cita.getContrato().setId(Long.parseLong("1"));
-            cita.getFotografo().setId(Long.parseLong("1"));
             em.persist(cita);
 
             transaction.commit();
+             logger.info("Cita agregada correctamente: ID(" + cita.getId() + ")");
+
             return cita;
 
         } catch (Exception e) {
@@ -108,28 +149,12 @@ public class CitasDAO implements ICitasDAO {
             citaExistente.setLugar(cita.getLugar());
             citaExistente.setExtras(cita.getExtras());
             citaExistente.setCodigo(cita.getCodigo());
-
-            if (cita.getContrato() != null) {
-                Contrato contratoExistente = em.find(Contrato.class, cita.getContrato().getId());
-                if (contratoExistente != null) {
-                    citaExistente.setContrato(contratoExistente);
-                } else {
-                    throw new RuntimeException("Contrato no encontrado");
-                }
-            }
-
-            if (cita.getFotografo() != null) {
-                Fotografo fotografoExistente = em.find(Fotografo.class, cita.getFotografo().getId());
-                if (fotografoExistente != null) {
-                    citaExistente.setFotografo(fotografoExistente);
-                } else {
-                    throw new RuntimeException("Fotógrafo no encontrado");
-                }
-            }
+            citaExistente.setFotografo(cita.getFotografo());
 
             Cita resultado = em.merge(citaExistente);
 
             transaction.commit();
+            logger.info("Cita actualizada correctamente: ID("+cita.getId()+")");
             return resultado;
 
         } catch (Exception e) {
@@ -160,6 +185,7 @@ public class CitasDAO implements ICitasDAO {
             em.remove(citaExistente);
 
             transaction.commit();
+            logger.info("Cita eliminada correctamente: ID("+cita.getId()+")");
             return citaExistente;
 
         } catch (Exception e) {
@@ -172,4 +198,7 @@ public class CitasDAO implements ICitasDAO {
             em.close();
         }
     }
+
+    
+
 }
