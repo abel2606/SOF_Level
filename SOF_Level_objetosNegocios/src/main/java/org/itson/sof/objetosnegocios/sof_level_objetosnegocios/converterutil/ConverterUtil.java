@@ -24,37 +24,74 @@ public class ConverterUtil {
      * @return cita convertida
      */
     public static Cita citaDTOAEntidad(CitaDTO citaDTO) {
-
         Cita cita = new Cita();
-        cita.setContrato(contratoDTOAEntidad(citaDTO.getContrato()));
-        cita.setExtras(citaDTO.getExtras());
-        cita.setFechaHoraFin(citaDTO.getFechaHoraFin());
-        cita.setFechaHoraInicio(citaDTO.getFechaHoraInicio());
-        cita.setFotografo(fotografoDTOAEntidad(citaDTO.getFotografo()));
-        cita.setLugar(citaDTO.getLugar());
-        //cita.setMateriales(materialesDTOAEntidad(citaDTO.getMateriales()));
+
+        if (citaDTO.getContrato() != null) {
+            cita.setContrato(contratoDTOAEntidad(citaDTO.getContrato()));
+        }
+        if (citaDTO.getExtras() != null) {
+            cita.setExtras(citaDTO.getExtras());
+        }
+        if (citaDTO.getFechaHoraFin() != null) {
+            cita.setFechaHoraFin(citaDTO.getFechaHoraFin());
+        }
+        if (citaDTO.getFechaHoraInicio() != null) {
+            cita.setFechaHoraInicio(citaDTO.getFechaHoraInicio());
+        }
+        if (citaDTO.getFotografo() != null) {
+            cita.setFotografo(fotografoDTOAEntidad(citaDTO.getFotografo()));
+        }
+        if (citaDTO.getLugar() != null) {
+            cita.setLugar(citaDTO.getLugar());
+        }
+        if (citaDTO.getCodigo() != null) {
+            cita.setCodigo(citaDTO.getCodigo());
+        }
+        if (citaDTO.getId() != null) {
+            cita.setId(citaDTO.getId());
+        }
+        // if (citaDTO.getMateriales() != null) {
+        //     cita.setMateriales(materialesDTOAEntidad(citaDTO.getMateriales()));
+        // }
+
         return cita;
     }
 
     /**
-     * Convierte una citaD entidad a una citaDTO
+     * Convierte una cita entidad a una citaDTO
      *
      * @param cita cita que se desea convertir
      * @return cita convertida
      */
     public static CitaDTO citaEntidadADTO(Cita cita) {
-
         CitaDTO citaDTO = new CitaDTO();
-        citaDTO.setContrato(contratoEntidadADTO(cita.getContrato()));
-        citaDTO.setExtras(cita.getExtras());
-        citaDTO.setFechaHoraFin(cita.getFechaHoraFin());
-        citaDTO.setFechaHoraInicio(cita.getFechaHoraInicio());
-        citaDTO.setFotografo(fotografoEntidadADTO(cita.getFotografo()));
-        citaDTO.setLugar(cita.getLugar());
-        //citaDTO.setMateriales(materialesEntidadADTO(cita.getMateriales()));
+
+        if (cita.getContrato() != null) {
+            citaDTO.setContrato(contratoEntidadADTO(cita.getContrato()));
+        }
+        if (cita.getExtras() != null) {
+            citaDTO.setExtras(cita.getExtras());
+        }
+        if (cita.getFechaHoraFin() != null) {
+            citaDTO.setFechaHoraFin(cita.getFechaHoraFin());
+        }
+        if (cita.getFechaHoraInicio() != null) {
+            citaDTO.setFechaHoraInicio(cita.getFechaHoraInicio());
+        }
+        if (cita.getFotografo() != null) {
+            citaDTO.setFotografo(fotografoEntidadADTO(cita.getFotografo()));
+        }
+        if (cita.getLugar() != null) {
+            citaDTO.setLugar(cita.getLugar());
+        }
+        if (cita.getCodigo() != null) {
+            citaDTO.setCodigo(cita.getCodigo());
+        }
+        // if (cita.getMateriales() != null) {
+        //     citaDTO.setMateriales(materialesEntidadADTO(cita.getMateriales()));
+        // }
 
         return citaDTO;
-
     }
 
     /**
@@ -64,15 +101,20 @@ public class ConverterUtil {
      * @return contrato convertido
      */
     public static Contrato contratoDTOAEntidad(ContratoDTO contratoDTO) {
-
         Contrato contrato = new Contrato();
-        //contrato.setCitas(citasDTOAEntidad(contratoDTO.getCitas()));
-        //contrato.setCliente(contratoDTO.getCliente());
-        //contrato.setCompras(contratoDTO.getCompras());
-//        contrato.setEstado(contratoDTO.getEstado());
-//        //contrato.setPaquete(contratoDTO.getPaquete());
-//        contrato.setTematica(contratoDTO.getTematica());
-        contrato.setFolio(contratoDTO.getFolio());
+
+        if (contratoDTO.getEstado() != null) {
+            contrato.setEstado(contratoDTO.getEstado());
+        }
+        if (contratoDTO.getTematica() != null) {
+            contrato.setTematica(contratoDTO.getTematica());
+        }
+        if (contratoDTO.getFolio() != null) {
+            contrato.setFolio(contratoDTO.getFolio());
+        }
+        if (contratoDTO.getId() != null) {
+            contrato.setId(contratoDTO.getId());
+        }
 
         return contrato;
     }
@@ -84,15 +126,17 @@ public class ConverterUtil {
      * @return contrato convertido
      */
     public static ContratoDTO contratoEntidadADTO(Contrato contrato) {
-
         ContratoDTO contratoDTO = new ContratoDTO();
-        //contratoDTO.setCitas(citasEntidadADTO(contrato.getCitas()));
-        //contratoDTO.setCliente(contrato.getCliente());
-        //contratoDTO.setCompras(contrato.getCompras());
-//        contratoDTO.setEstado(contrato.getEstado());
-//        //contratoDTO.setPaquete(contrato.getPaquete());
-//        contratoDTO.setTematica(contrato.getTematica());
-        contratoDTO.setFolio(contrato.getFolio());
+
+        if (contrato.getTematica() != null) {
+            contratoDTO.setTematica(contrato.getTematica());
+        }
+        if (contrato.getFolio() != null) {
+            contratoDTO.setFolio(contrato.getFolio());
+        }
+        if (contrato.getId() != null) {
+            contratoDTO.setId(contrato.getId());
+        }
 
         return contratoDTO;
     }
@@ -134,9 +178,9 @@ public class ConverterUtil {
     public static Fotografo fotografoDTOAEntidad(FotografoDTO fotografoDTO) {
         Fotografo fotografo = new Fotografo();
 
-//        fotografo.setNombrePersona(fotografoDTO.getNombrePersona());
+        fotografo.setNombrePersona(fotografoDTO.getNombrePersona());
         fotografo.setNombreUsuario(fotografoDTO.getNombreUsuario());
-        //FALTA DISCUTIR COSAS CON EL EQUIPO ACERCA PARA PODER TERMINAR EL METODO
+        fotografo.setId(fotografoDTO.getId());
         return fotografo;
     }
 
@@ -150,7 +194,8 @@ public class ConverterUtil {
         FotografoDTO fotografoDTO = new FotografoDTO();
 
         fotografoDTO.setNombrePersona(fotografo.getNombrePersona());
-        //FALTA DISCUTIR COSAS CON EL EQUIPO ACERCA PARA PODER TERMINAR EL METODO
+        fotografoDTO.setNombreUsuario(fotografo.getNombreUsuario());
+        fotografoDTO.setId(fotografo.getId());
         return fotografoDTO;
     }
 
@@ -215,7 +260,5 @@ public class ConverterUtil {
 
         return materialesDTO;
     }
-    
-    
 
 }

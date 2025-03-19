@@ -21,6 +21,7 @@ public class ContratoDTO {
     private Set<CompraDTO> compras = new HashSet<>();
     private List<CitaDTO> citas = new ArrayList<>();
     private String folio;
+    private Long id;
 
     /**
      * Constructor vacío de ContratoDTO. Se usa para crear un objeto sin
@@ -38,12 +39,13 @@ public class ContratoDTO {
      * @param paquete Paquete de servicios asociado al contrato.
      * @param cliente Cliente que firma el contrato.
      */
-    public ContratoDTO(String tematica, String estado, PaqueteDTO paquete, ClienteDTO cliente, String folio) {
+    public ContratoDTO(String tematica, String estado, PaqueteDTO paquete, ClienteDTO cliente, String folio, Long id) {
         this.tematica = tematica;
         this.estado = estado;
         this.paquete = paquete;
         this.cliente = cliente;
         this.folio = folio;
+        this.id = id;
     }
 
     /**
@@ -161,6 +163,15 @@ public class ContratoDTO {
     public void setFolio(String folio) {
         this.folio = folio;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     
     
 

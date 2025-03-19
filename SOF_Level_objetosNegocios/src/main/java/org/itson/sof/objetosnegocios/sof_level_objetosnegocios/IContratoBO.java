@@ -40,11 +40,11 @@ public interface IContratoBO {
     public boolean eliminarContrato (ContratoDTO contrato) throws ObjetosNegocioException;
     
     /**
-     * Método para obtener un contrato
-     * @param contrato contrato que se desea obtener
+     * Método para obtener un contrato por folio
+     * @param folio folio del contrato que se desea obtener
      * @return contrato que se haya encontrado
      * @throws ObjetosNegocioException en caso que ocurra un error en la consulta del contrato
      */
-    public ContratoDTO obtenerContrato (ContratoDTO contrato) throws ObjetosNegocioException;
+    public ContratoDTO obtenerContratoFolio (String folio) throws ObjetosNegocioException;
     
 }
