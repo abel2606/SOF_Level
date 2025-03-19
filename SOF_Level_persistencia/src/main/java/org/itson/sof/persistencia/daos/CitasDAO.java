@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import org.itson.sof.persistencia.conexion.IConexion;
 import static org.itson.sof.persistencia.daos.ContratosDAO.logger;
 import org.itson.sof.persistencia.entidades.Cita;
@@ -39,8 +40,7 @@ public class CitasDAO implements ICitasDAO {
             String jpql = "SELECT c FROM Cita c WHERE c.codigo = :codigoCita";
             Cita citaDeCodigo = em.createQuery(jpql, Cita.class)
                     .setParameter("codigoCita", codigo).getSingleResult();
-                    
-          
+
             transaction.commit();
             logger.info("Cita obtenida: ID(" + citaDeCodigo.getId() + ")");
             return citaDeCodigo;
@@ -52,10 +52,10 @@ public class CitasDAO implements ICitasDAO {
             throw new PersistenciaSOFException("Error al obtener las citas de los contratos");
         } finally {
             em.close();
-        } 
-        
+        }
+
     }
-    
+
     @Override
     public List<Cita> obtenerCitasContratos(long contratoId) throws PersistenciaSOFException {
         EntityManager em = conexion.crearConexion();
@@ -67,9 +67,9 @@ public class CitasDAO implements ICitasDAO {
             List<Cita> citasDeContrato = em.createQuery(jpql, Cita.class)
                     .setParameter("contratoId", contratoId)
                     .getResultList();
-            
+
             transaction.commit();
-            
+
             return citasDeContrato;
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -85,18 +85,17 @@ public class CitasDAO implements ICitasDAO {
     @Override
     public Cita obtenerCita(Cita cita) {
         EntityManager em = conexion.crearConexion();
-        EntityTransaction transaction = em.getTransaction();
-
         try {
-            transaction.begin();
-            Cita result = em.find(Cita.class, cita.getId());
-            transaction.commit();
-            return result;
+            String jpql = "SELECT c FROM Cita c WHERE c.codigo = :codigo";
+            return em.createQuery(jpql, Cita.class)
+                    .setParameter("codigo", cita.getCodigo()) // Extrae el código del objeto
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            logger.log(Level.WARNING, "No se encontró la cita con código: " + cita.getCodigo(), e);
+            return null;  // Puedes lanzar una excepción si prefieres
+
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            logger.log(Level.SEVERE, "Error al obtener la cita", e);
+            logger.log(Level.SEVERE, "Error al obtener la cita por código", e);
             return null;
         } finally {
             em.close();
@@ -114,7 +113,7 @@ public class CitasDAO implements ICitasDAO {
             em.persist(cita);
 
             transaction.commit();
-             logger.info("Cita agregada correctamente: ID(" + cita.getId() + ")");
+            logger.info("Cita agregada correctamente: ID(" + cita.getId() + ")");
 
             return cita;
 
@@ -137,23 +136,36 @@ public class CitasDAO implements ICitasDAO {
         try {
             transaction.begin();
 
-            Cita citaExistente = em.find(Cita.class, cita.getId());
+            Cita citaExistente = obtenerCita(cita);
 
             if (citaExistente == null) {
                 throw new RuntimeException("Cita no encontrada");
             }
 
-            citaExistente.setFechaHoraInicio(cita.getFechaHoraInicio());
-            citaExistente.setFechaHoraFin(cita.getFechaHoraFin());
-            citaExistente.setLugar(cita.getLugar());
-            citaExistente.setExtras(cita.getExtras());
-            citaExistente.setCodigo(cita.getCodigo());
-            citaExistente.setFotografo(cita.getFotografo());
+            // Solo actualiza los valores que no sean nulos
+            if (cita.getFechaHoraInicio() != null) {
+                citaExistente.setFechaHoraInicio(cita.getFechaHoraInicio());
+            }
+            if (cita.getFechaHoraFin() != null) {
+                citaExistente.setFechaHoraFin(cita.getFechaHoraFin());
+            }
+            if (cita.getLugar() != null) {
+                citaExistente.setLugar(cita.getLugar());
+            }
+            if (cita.getExtras() != null) {
+                citaExistente.setExtras(cita.getExtras());
+            }
+            if (cita.getCodigo() != null) {
+                citaExistente.setCodigo(cita.getCodigo());
+            }
+            if (cita.getFotografo() != null) {
+                citaExistente.setFotografo(cita.getFotografo());
+            }
 
             Cita resultado = em.merge(citaExistente);
 
             transaction.commit();
-            logger.info("Cita actualizada correctamente: ID("+cita.getId()+")");
+            logger.info("Cita actualizada correctamente: ID(" + cita.getId() + ")");
             return resultado;
 
         } catch (Exception e) {
@@ -175,18 +187,26 @@ public class CitasDAO implements ICitasDAO {
         try {
             transaction.begin();
 
-            Cita citaExistente = em.find(Cita.class, cita.getId());
+            // Buscar la cita por código
+            String jpql = "SELECT c FROM Cita c WHERE c.codigo = :codigo";
+            Cita citaExistente = em.createQuery(jpql, Cita.class)
+                    .setParameter("codigo", cita.getCodigo())
+                    .getSingleResult();
 
             if (citaExistente == null) {
-                throw new RuntimeException("Cita no encontrada");
+                throw new RuntimeException("Cita no encontrada con código: " + cita.getCodigo());
             }
 
+            // Se elimina la entidad administrada por el EntityManager
             em.remove(citaExistente);
 
             transaction.commit();
-            logger.info("Cita eliminada correctamente: ID("+cita.getId()+")");
+            logger.info("Cita eliminada correctamente: Código(" + cita.getCodigo() + ")");
             return citaExistente;
 
+        } catch (NoResultException e) {
+            logger.log(Level.WARNING, "No se encontró una cita con código: " + cita.getCodigo(), e);
+            return null;
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
@@ -197,7 +217,5 @@ public class CitasDAO implements ICitasDAO {
             em.close();
         }
     }
-
-    
 
 }

@@ -12,9 +12,14 @@
             <version>RELEASE240</version>
         </dependency>
         <dependency>
+            <groupId>com.toedter</groupId>
+            <artifactId>jcalendar</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>SOF_Level_dtos</artifactId>
-            <version>${project.version}</version>
+                <artifactId>SOF_Level_dtos</artifactId>
+                <version>${project.version}</version>
         </dependency>
     </dependencies>
     <properties>

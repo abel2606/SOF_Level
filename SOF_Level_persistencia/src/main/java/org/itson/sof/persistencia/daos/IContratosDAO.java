@@ -15,4 +15,8 @@ import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 public interface IContratosDAO {
     
     public List<Contrato> obtenerTotalContratos() throws PersistenciaSOFException;
+    
+    
+    public Contrato obtenerContratoFolio (String folio)throws PersistenciaSOFException;
+    
 }
