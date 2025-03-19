@@ -32,38 +32,168 @@ public class PantallaCita extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JLabel();
         txtTitulo = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jCalendar1 = new com.toedter.calendar.JCalendar();
+        horarios = new javax.swing.JPanel();
+        sFechaFin = new javax.swing.JSpinner();
+        jLabel6 = new javax.swing.JLabel();
+        sFechaInicio = new javax.swing.JSpinner();
+        cbFotografo = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtaExtras = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtaLugar = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(220, 240, 255));
+        setMaximumSize(new java.awt.Dimension(707, 420));
+        setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(220, 240, 255));
         jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jPanel1.setMaximumSize(new java.awt.Dimension(707, 420));
-        jPanel1.setMinimumSize(new java.awt.Dimension(707, 420));
-        jPanel1.setPreferredSize(new java.awt.Dimension(707, 420));
+        jPanel1.setMaximumSize(new java.awt.Dimension(740, 420));
+        jPanel1.setMinimumSize(new java.awt.Dimension(740, 420));
+        jPanel1.setPreferredSize(new java.awt.Dimension(740, 420));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnCerrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/closeIcon.png"))); // NOI18N
-        jPanel1.add(btnCerrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 10, -1, -1));
+        btnCerrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCerrar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCerrarMouseClicked(evt);
+            }
+        });
+        jPanel1.add(btnCerrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
 
         btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editIcon.png"))); // NOI18N
-        jPanel1.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 20, -1, -1));
+        btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel1.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 20, -1, -1));
 
         btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/deleteIcon.png"))); // NOI18N
-        jPanel1.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, -1, -1));
+        btnEliminar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel1.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 20, -1, -1));
 
+        txtTitulo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         txtTitulo.setText("Detalle cita");
-        jPanel1.add(txtTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 30, -1, -1));
+        jPanel1.add(txtTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, -1));
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setText("Seleccionar fecha");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, -1, -1));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, -1, -1));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setText("Seleccionar horario inicio y fin");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, -1, -1));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setText("Lugar:");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 70, -1, -1));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setText("Fotografo:");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 200, -1, -1));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setText("Extras:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 240, -1, -1));
+
+        jPanel2.setMaximumSize(new java.awt.Dimension(320, 170));
+        jPanel2.setMinimumSize(new java.awt.Dimension(320, 170));
+
+        jCalendar1.setMaximumSize(new java.awt.Dimension(320, 170));
+        jCalendar1.setMinimumSize(new java.awt.Dimension(320, 170));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jCalendar1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jCalendar1, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 360, 170));
+
+        horarios.setBackground(new java.awt.Color(255, 255, 255));
+        horarios.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        horarios.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        sFechaFin.setBorder(null);
+        horarios.add(sFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 10, 130, 30));
+        sFechaFin.setModel(new javax.swing.SpinnerDateModel());
+        sFechaFin.setEditor(new javax.swing.JSpinner.DateEditor(sFechaFin, "hh:mm a"));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel6.setText("-");
+        horarios.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 10, 20, 20));
+
+        sFechaInicio.setBorder(null);
+        horarios.add(sFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 130, 30));
+        sFechaInicio.setModel(new javax.swing.SpinnerDateModel());
+        sFechaInicio.setEditor(new javax.swing.JSpinner.DateEditor(sFechaInicio, "hh:mm a"));
+
+        jPanel1.add(horarios, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, 350, 50));
+
+        cbFotografo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ricardo Gutierrez", " ", " ", " ", " " }));
+        cbFotografo.setBorder(null);
+        jPanel1.add(cbFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 190, 230, 40));
+
+        jButton1.setBackground(new java.awt.Color(160, 36, 38));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Cancelar");
+        jButton1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 370, 120, 30));
+
+        jButton2.setBackground(new java.awt.Color(36, 160, 108));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
+        jButton2.setText("Confirmar");
+        jButton2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jButton2.setOpaque(false);
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 370, 120, 30));
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        txtaExtras.setColumns(20);
+        txtaExtras.setRows(5);
+        txtaExtras.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jScrollPane1.setViewportView(txtaExtras);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 270, 310, 70));
+
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane2.setToolTipText("");
+        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        txtaLugar.setColumns(20);
+        txtaLugar.setRows(5);
+        txtaLugar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jScrollPane2.setViewportView(txtaLugar);
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 100, 310, 70));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnCerrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCerrarMouseClicked
+        dispose();
+    }//GEN-LAST:event_btnCerrarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -104,8 +234,25 @@ public class PantallaCita extends javax.swing.JFrame {
     private javax.swing.JLabel btnCerrar;
     private javax.swing.JLabel btnEditar;
     private javax.swing.JLabel btnEliminar;
+    private javax.swing.JComboBox<String> cbFotografo;
+    private javax.swing.JPanel horarios;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private com.toedter.calendar.JCalendar jCalendar1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSpinner sFechaFin;
+    private javax.swing.JSpinner sFechaInicio;
     private javax.swing.JLabel txtTitulo;
+    private javax.swing.JTextArea txtaExtras;
+    private javax.swing.JTextArea txtaLugar;
     // End of variables declaration//GEN-END:variables
 }
