@@ -93,6 +93,7 @@ public class CitasDAO implements ICitasDAO {
         } catch (NoResultException e) {
             logger.log(Level.WARNING, "No se encontró la cita con código: " + cita.getCodigo(), e);
             return null;  // Puedes lanzar una excepción si prefieres
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error al obtener la cita por código", e);
             return null;
