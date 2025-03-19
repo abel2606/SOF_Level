@@ -2,7 +2,6 @@ package org.itson.sof.sof_dtos;
 
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Clase DTO (Data Transfer Object) que representa una cita dentro del sistema.
@@ -21,6 +20,7 @@ public class CitaDTO {
     private ContratoDTO contrato;
     private FotografoDTO fotografo;
     private List<MaterialDTO> materiales;
+    private Long id;
 
     /**
      * Constructor vacío de CitaDTO. Se usa para inicializar un objeto sin
@@ -40,7 +40,7 @@ public class CitaDTO {
      * @param fotografo Fotógrafo asignado a la cita.
      * @param materiales Materiales utilizados en la cita.
      */
-    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, String codigo, ContratoDTO contrato, FotografoDTO fotografo, List<MaterialDTO> materiales) {    
+    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, String codigo, ContratoDTO contrato, FotografoDTO fotografo, List<MaterialDTO> materiales, Long id) {    
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
         this.lugar = lugar;
@@ -49,6 +49,7 @@ public class CitaDTO {
         this.contrato = contrato;
         this.fotografo = fotografo;
         this.materiales = materiales;
+        this.id = id;
     }
 
     /**
@@ -192,6 +193,16 @@ public class CitaDTO {
     public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    
     
 
     /**

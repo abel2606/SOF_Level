@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.entidades.Fotografo;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
@@ -48,5 +49,26 @@ public class FotografoDAO implements IFotografoDAO {
         }
         
     }
+
+    @Override
+    public Fotografo obtenerFotografoNombreUsuario(String nombreUsuario) throws PersistenciaSOFException {
+        EntityManager em = conexion.crearConexion();
+        try {
+            String jpql = "SELECT f FROM Fotografo f WHERE f.nombreUsuario = :nombreUsuario";
+            return em.createQuery(jpql, Fotografo.class)
+                    .setParameter("nombreUsuario", nombreUsuario)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            logger.log(Level.WARNING, "No se encontró el fotógrafo con usuario: " + nombreUsuario, e);
+            throw new PersistenciaSOFException ("No se encontró el fotógrafo");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al obtener fotógrafo por nombre de usuario", e);
+            throw new PersistenciaSOFException("Error al obtener fotógrafo");
+        } finally {
+            em.close();
+        }
+    }
+    
+    
     
 }

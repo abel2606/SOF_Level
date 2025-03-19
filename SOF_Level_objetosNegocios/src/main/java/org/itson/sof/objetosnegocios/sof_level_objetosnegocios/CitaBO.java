@@ -98,7 +98,8 @@ public class CitaBO implements ICitaBO {
      */
     @Override
     public CitaDTO obtenerCita(CitaDTO citaDTO) throws ObjetosNegocioException{
-        Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
+        Cita cita = new Cita();
+        cita.setCodigo(citaDTO.getCodigo());
         
         try {
             citaDTO = ConverterUtil.citaEntidadADTO(citasDAO.obtenerCita(cita));

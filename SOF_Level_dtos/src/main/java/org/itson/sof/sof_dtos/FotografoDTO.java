@@ -16,6 +16,7 @@ public class FotografoDTO extends UsuarioDTO{
     private String nombrePersona;
     private String telefono;
     private Set<CitaDTO> citas = new HashSet<>();
+    private Long id;
 
     /**
      * Constructor vacío de FotografoDTO. Se utiliza para crear un objeto sin
@@ -31,12 +32,12 @@ public class FotografoDTO extends UsuarioDTO{
      * @param nombrePersona Nombre completo del fotógrafo.
      * @param telefono Número de teléfono del fotógrafo.
      */
-    public FotografoDTO(String correo, String nombrePersona, String telefono, String nombreUsuario, String contrasena) {
+    public FotografoDTO(String correo, String nombrePersona, String telefono, String nombreUsuario, String contrasena, Long id) {
         super(contrasena, nombreUsuario);
         this.correo = correo;
         this.nombrePersona = nombrePersona;
         this.telefono = telefono;
-       
+        this.id = id;
     }
 
     /**
@@ -110,6 +111,16 @@ public class FotografoDTO extends UsuarioDTO{
     public void setCitas(Set<CitaDTO> citas) {
         this.citas = citas;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    
     
     
 

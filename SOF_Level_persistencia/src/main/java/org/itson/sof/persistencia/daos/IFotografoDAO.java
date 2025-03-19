@@ -19,5 +19,13 @@ public interface IFotografoDAO {
      * @throws PersistenciaSOFException lanza una exepcion de tipo persistencia
      */
     public List<Fotografo> obtenerTodosFotografos() throws PersistenciaSOFException;
+    
+    /**
+     * Obtiene un fotografo según el nombre de usuario
+     * @param nombreUsuario nombre del usuario
+     * @return fotografo obtenido
+     * @throws PersistenciaSOFException 
+     */
+    public Fotografo obtenerFotografoNombreUsuario (String nombreUsuario) throws PersistenciaSOFException;
 
 }
