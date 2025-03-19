@@ -4,6 +4,17 @@
  */
 package org.itson.sof.sof_level_presentacion.interfaces;
 
+import java.awt.Container;
+import java.util.LinkedList;
+import java.util.List;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import org.itson.sof.sof_dtos.ClienteDTO;
+import org.itson.sof.sof_dtos.ContratoDTO;
+import org.itson.sof.sof_dtos.PaqueteDTO;
+import org.itson.sof.sof_level_presentacion.componentes.PanelContrato;
+
 /**
  *
  * @author renec
@@ -15,6 +26,27 @@ public class PantallaContratos extends javax.swing.JFrame {
      */
     public PantallaContratos() {
         initComponents();
+        
+        List<ContratoDTO> contratos = new LinkedList<>();
+        
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+        
+        
+        JPanel panelContenedor = new JPanel();
+        panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS)); // Se apilan verticalmente
+
+        for (ContratoDTO contrato : contratos) {
+            PanelContrato panel = new PanelContrato(
+                    contrato.getCliente().getNombre(),
+                    contrato.getPaquete().getNombre(), 
+                    "2024", 
+                    "2023");
+            panelContenedor.add(panel);
+            panelContenedor.add(Box.createVerticalStrut(10));
+        }
+        
+        jScrollPane1.setViewportView(panelContenedor);
     }
 
     /**
@@ -27,6 +59,7 @@ public class PantallaContratos extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         lblContratos = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -56,11 +89,17 @@ public class PantallaContratos extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 850, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 775, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 550, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 120, 850, 550));
@@ -270,6 +309,7 @@ public class PantallaContratos extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblCerrar;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblContratos;
