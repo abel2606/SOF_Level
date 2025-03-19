@@ -29,9 +29,9 @@ public class PantallaContratos extends javax.swing.JFrame {
         
         List<ContratoDTO> contratos = new LinkedList<>();
         
-        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
-        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
-        
+//        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+//        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+//        
         
         JPanel panelContenedor = new JPanel();
         panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS)); // Se apilan verticalmente

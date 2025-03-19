@@ -48,6 +48,8 @@ public class ContratoDTO {
         this.id = id;
     }
 
+    
+
     /**
      * Obtiene la temática del contrato.
      *

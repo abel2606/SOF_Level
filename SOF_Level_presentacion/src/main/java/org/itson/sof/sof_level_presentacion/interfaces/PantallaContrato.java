@@ -49,7 +49,6 @@ public class PantallaContrato extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(1040, 670));
-        setPreferredSize(new java.awt.Dimension(1040, 670));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(220, 240, 255));
