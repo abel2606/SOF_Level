@@ -89,7 +89,6 @@ public class CitasDAO implements ICitasDAO {
 
         try {
             transaction.begin();
-            cita.setId(Long.parseLong("1"));
             Cita result = em.find(Cita.class, cita.getId());
             transaction.commit();
             return result;
