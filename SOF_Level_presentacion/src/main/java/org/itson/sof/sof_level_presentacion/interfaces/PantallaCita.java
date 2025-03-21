@@ -37,7 +37,6 @@ public class PantallaCita extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jCalendar1 = new com.toedter.calendar.JCalendar();
         horarios = new javax.swing.JPanel();
         sFechaFin = new javax.swing.JSpinner();
         jLabel6 = new javax.swing.JLabel();
@@ -107,20 +106,15 @@ public class PantallaCita extends javax.swing.JFrame {
         jPanel2.setMaximumSize(new java.awt.Dimension(320, 170));
         jPanel2.setMinimumSize(new java.awt.Dimension(320, 170));
 
-        jCalendar1.setMaximumSize(new java.awt.Dimension(320, 170));
-        jCalendar1.setMinimumSize(new java.awt.Dimension(320, 170));
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jCalendar1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+            .addGap(0, 360, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jCalendar1, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                .addContainerGap())
+            .addGap(0, 170, Short.MAX_VALUE)
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 360, 170));
@@ -237,7 +231,6 @@ public class PantallaCita extends javax.swing.JFrame {
     private javax.swing.JPanel horarios;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private com.toedter.calendar.JCalendar jCalendar1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

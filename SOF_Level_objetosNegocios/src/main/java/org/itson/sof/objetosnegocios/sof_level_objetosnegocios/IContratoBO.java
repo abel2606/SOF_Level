@@ -4,6 +4,7 @@
  */
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
+import java.util.List;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
@@ -13,7 +14,11 @@ import org.itson.sof.sof_dtos.ContratoDTO;
  * @author haesp
  */
 public interface IContratoBO {
-    
+    /**
+     * Obtener el total de contratos
+     * @return regresar una lista del total de contratos
+     */
+    public List<ContratoDTO> obtenerTotalContratos();
     /**
      * Método para crear un contrato y asignarle un cliente 
      * @param contrato contrato que se desea guardar

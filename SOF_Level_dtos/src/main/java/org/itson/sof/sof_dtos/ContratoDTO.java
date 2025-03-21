@@ -48,8 +48,23 @@ public class ContratoDTO {
         this.id = id;
     }
 
+    /**
+     * Constructor sin id
+     * @param tematica tematica del contrato
+     * @param estado estado actual del contrato
+     * @param paquete paquete del contrato
+     * @param cliente cliente asignado al contrato
+     * @param folio  folio de un contrato
+     */
+    public ContratoDTO(String tematica, String estado, PaqueteDTO paquete, ClienteDTO cliente, String folio) {
+        this.tematica = tematica;
+        this.estado = estado;
+        this.paquete = paquete;
+        this.cliente = cliente;
+        this.folio = folio;
+    }
     
-
+    
     /**
      * Obtiene la temática del contrato.
      *

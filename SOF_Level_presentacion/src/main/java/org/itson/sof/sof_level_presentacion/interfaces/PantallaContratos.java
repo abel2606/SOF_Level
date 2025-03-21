@@ -4,9 +4,8 @@
  */
 package org.itson.sof.sof_level_presentacion.interfaces;
 
-import java.awt.Container;
+import java.awt.Color;
 import java.util.LinkedList;
-import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -27,25 +26,30 @@ public class PantallaContratos extends javax.swing.JFrame {
     public PantallaContratos() {
         initComponents();
         
+
         List<ContratoDTO> contratos = new LinkedList<>();
-        
-//        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
-//        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
-//        
-        
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+        contratos.add(new ContratoDTO("si", "Activio", new PaqueteDTO(30f, "Familiar", null), new ClienteDTO("Juanito", "433", "abel@gmail"), "333d"));
+
         JPanel panelContenedor = new JPanel();
-        panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS)); // Se apilan verticalmente
+        panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
 
         for (ContratoDTO contrato : contratos) {
             PanelContrato panel = new PanelContrato(
                     contrato.getCliente().getNombre(),
-                    contrato.getPaquete().getNombre(), 
-                    "2024", 
+                    contrato.getPaquete().getNombre(),
+                    "2024",
                     "2023");
             panelContenedor.add(panel);
             panelContenedor.add(Box.createVerticalStrut(10));
         }
-        
+        jScrollPane1.getViewport().setBackground(new Color(240, 240, 240));
+        jScrollPane1.setBackground(new Color(240, 240, 240));
+
         jScrollPane1.setViewportView(panelContenedor);
     }
 
@@ -84,6 +88,10 @@ public class PantallaContratos extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(220, 240, 255));
+
+        jScrollPane1.setBackground(new java.awt.Color(204, 102, 0));
+        jScrollPane1.setBorder(null);
+        jScrollPane1.setToolTipText("");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

@@ -4,6 +4,7 @@
  */
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.ConverterUtil;
@@ -57,6 +58,11 @@ public class ContratoBO implements IContratoBO{
         }
         
         
+    }
+
+    @Override
+    public List<ContratoDTO> obtenerTotalContratos() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     
