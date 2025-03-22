@@ -2,6 +2,7 @@ org\itson\sof\sof_level_presentacion\componentes\PanelContrato.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaContrato.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaCita$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaContratos.class
+org\itson\sof\sof_level_presentacion\interfaces\PantallaContratos$2.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaCita$2.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaContrato$1.class
 org\itson\sof\sof_level_presentacion\componentes\ContratoComponente.class

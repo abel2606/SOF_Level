@@ -99,6 +99,11 @@ public class Compra implements Serializable {
     public void setMateriales(Set<Material> materiales) {
         this.materiales = materiales;
     }
+
+    @Override
+    public String toString() {
+        return "Compra{" + "folio=" + folio + ", cantidad=" + cantidad + ", fechaHora=" + fechaHora + ", costo=" + costo + ", proveedor=" + proveedor + ", materiales=" + materiales + '}';
+    }
     
     
 }

@@ -4,9 +4,7 @@ package org.itson.sof.persistencia.entidades;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -133,7 +131,7 @@ public class Cita implements Serializable {
 
     @Override
     public String toString() {
-        return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", contrato=" + contrato + ", fotografo=" + fotografo + ", materiales=" + materiales + '}';
+        return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", fotografo=" + fotografo + ", materiales=" + materiales + '}';
     }
     
     

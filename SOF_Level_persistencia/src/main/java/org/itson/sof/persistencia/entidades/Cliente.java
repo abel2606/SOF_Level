@@ -72,4 +72,11 @@ public class Cliente implements Serializable {
     public void setContratos(Set<Contrato> contratos) {
         this.contratos = contratos;
     }
+
+    @Override
+    public String toString() {
+        return "Cliente{" + "id=" + id + ", nombre=" + nombre + ", telefono=" + telefono + ", correo=" + correo + '}';
+    }
+    
+    
 }

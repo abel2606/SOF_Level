@@ -16,32 +16,32 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Contrato implements Serializable{
-    
+public class Contrato implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "tematica")
     private String tematica;
-    
+
     @Column(name = "estado")
     private String estado;
-    
+
     @Column(name = "folio")
     private String folio;
-    
+
     @ManyToOne
     @JoinColumn(name = "paquete_id")
     private Paquete paquete;
-    
-    @ManyToOne(cascade = CascadeType.PERSIST)
+
+    @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
-    
-    @OneToMany(mappedBy = "contrato", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToMany(mappedBy = "contrato")
     private Set<Compra> compras = new HashSet<>();
-    
+
     @OneToMany(mappedBy = "contrato", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cita> citas = new ArrayList<>();
 
@@ -113,21 +113,17 @@ public class Contrato implements Serializable{
     }
 
     @Override
-public String toString() {
-    return "Contrato{" +
-            "id=" + id +
-            ", tematica=" + tematica +
-            ", estado=" + estado +
-            ", folio=" + folio +
-            ", paquete=" + paquete +
-            ", cliente=" + cliente +
-            ", compras=" + compras +
-            ", citas=" + citas +
-            '}';
-}
+    public String toString() {
+        return "Contrato{"
+                + "id=" + id
+                + ", tematica=" + tematica
+                + ", estado=" + estado
+                + ", folio=" + folio
+                + ", paquete=" + paquete
+                + ", cliente=" + cliente.getNombre()
+                + ", compras=" + compras
+                + ", citas=" + citas
+                + '}';
+    }
 
-    
-    
-    
-    
 }

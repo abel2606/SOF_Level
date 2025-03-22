@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package org.itson.sof.sof_level_presentacion.componentes;
 
 import java.awt.Color;
@@ -9,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.BorderFactory;
-import javax.swing.border.Border;
 
 /**
  *
@@ -19,6 +14,10 @@ public class PanelContrato extends javax.swing.JPanel {
 
     /**
      * Creates new form PanelContrato
+     * @param nombreCliente
+     * @param paquete
+     * @param fechaInicio
+     * @param fechaFin
      */
     public PanelContrato(String nombreCliente, String paquete, String fechaInicio, String fechaFin) {
         initComponents();

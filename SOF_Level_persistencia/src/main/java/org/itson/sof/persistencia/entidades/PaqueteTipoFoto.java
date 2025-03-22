@@ -60,5 +60,12 @@ public class PaqueteTipoFoto implements Serializable {
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
+
+    @Override
+    public String toString() {
+        return "PaqueteTipoFoto{" + "id=" + id + ", tipoFoto=" + cantidad + '}';
+    }
+    
+    
 }
 

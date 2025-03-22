@@ -84,5 +84,12 @@ public class TipoFoto implements Serializable {
     public void setPaquetes(Set<PaqueteTipoFoto> paquetes) {
         this.paquetes = paquetes;
     }
+
+    @Override
+    public String toString() {
+        return "TipoFoto{" + "id=" + id + ", precio=" + precio + ", altura=" + altura + ", anchura=" + anchura + ", marco=" + marco + '}';
+    }
+    
+    
     
 }

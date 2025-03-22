@@ -52,4 +52,9 @@ public class Usuario implements Serializable{
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
+
+    @Override
+    public String toString() {
+        return "Usuario{" + "id=" + id + ", contrasena=" + contrasena + ", nombreUsuario=" + nombreUsuario + '}';
+    }
 }

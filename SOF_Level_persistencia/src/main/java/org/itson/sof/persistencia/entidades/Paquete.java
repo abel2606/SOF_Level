@@ -9,8 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Column;
 import javax.persistence.GenerationType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -67,4 +65,18 @@ public class Paquete implements Serializable {
         this.tiposDeFoto = tiposDeFoto;
     }
 
+    public Set<Contrato> getContratos() {
+        return contratos;
+    }
+
+    public void setContratos(Set<Contrato> contratos) {
+        this.contratos = contratos;
+    }
+
+    @Override
+    public String toString() {
+        return "Paquete{" + "id=" + id + ", precio=" + precio + ", nombre=" + nombre + ", tiposDeFoto=" + tiposDeFoto + '}';
+    }
+    
+    
 }

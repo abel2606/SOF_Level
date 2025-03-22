@@ -74,5 +74,12 @@ public class Material implements Serializable{
     public void setCitas(Set<Cita> citas) {
         this.citas = citas;
     }
+
+    @Override
+    public String toString() {
+        return "Material{" + "id=" + id + ", nombre=" + nombre + ", cantidad=" + cantidad + ", compra=" + compra + '}';
+    }
+    
+    
     
 }

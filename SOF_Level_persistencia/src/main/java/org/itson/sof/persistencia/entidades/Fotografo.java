@@ -60,4 +60,11 @@ public class Fotografo extends Usuario implements Serializable{
         this.citas = citas;
     }
 
+    @Override
+    public String toString() {
+        return "Fotografo{" + "correo=" + correo + ", nombrePersona=" + nombrePersona + ", telefono=" + telefono +  '}';
+    }
+    
+    
+
 }

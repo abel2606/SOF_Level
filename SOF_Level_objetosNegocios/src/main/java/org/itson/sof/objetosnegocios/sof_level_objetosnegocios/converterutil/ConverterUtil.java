@@ -3,13 +3,17 @@ package org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil;
 import java.util.ArrayList;
 import java.util.List;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.Cliente;
 import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.entidades.Fotografo;
 import org.itson.sof.persistencia.entidades.Material;
+import org.itson.sof.persistencia.entidades.Paquete;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
+import org.itson.sof.sof_dtos.PaqueteDTO;
 
 /**
  *
@@ -136,6 +140,27 @@ public class ConverterUtil {
         }
         if (contrato.getId() != null) {
             contratoDTO.setId(contrato.getId());
+        }
+        
+        if (contrato.getEstado() != null) {
+            contratoDTO.setEstado(contrato.getEstado());
+        }
+
+        if (contrato.getCliente() != null) {
+            Cliente cliente = contrato.getCliente();
+            ClienteDTO clienteDTO = new ClienteDTO();
+            clienteDTO.setNombre(cliente.getNombre());
+            clienteDTO.setCorreo(cliente.getCorreo());
+            clienteDTO.setTelefono(cliente.getTelefono());
+            contratoDTO.setCliente(clienteDTO);
+        }
+        
+        if (contrato.getPaquete() != null) {
+            Paquete paquete = contrato.getPaquete();
+            PaqueteDTO paqueteDTO = new PaqueteDTO();
+            paqueteDTO.setNombre(paquete.getNombre());
+            paqueteDTO.setPrecio(paquete.getPrecio());
+            contratoDTO.setPaquete(paqueteDTO);
         }
 
         return contratoDTO;
