@@ -2,7 +2,6 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import javax.swing.JPanel;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
@@ -16,9 +15,10 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private CardLayout cardLayout;
     private PanelContratos pnlContratos;
     private PanelContrato pnlContrato;
-    private boolean menuVisible = true; 
+    private DialogCita dlgCita;
+    private boolean menuVisible = true;
     private ContratoDTO contrato;
-    private CitaDTO cita;
+    
 
     /**
      * Creates new form PantallaPrincipal
@@ -58,13 +58,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }
     
     /**
-     * Cambia el contenido del frame interior al menu de contratos
-     */
-    public void PanelCita(){
-        
-    }
-    
-    /**
      * Cierra sesion
      */
     private void CerrarSesion(){
@@ -96,17 +89,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
     public void setContrato(ContratoDTO contrato) {
         this.contrato = contrato;
-    }
-
-    public CitaDTO getCita() {
-        return cita;
-    }
-
-    public void setCita(CitaDTO cita) {
-        this.cita = cita;
-    }
-    
-    
+    } 
     
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

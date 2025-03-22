@@ -25,6 +25,7 @@ public class PanelContrato extends javax.swing.JPanel {
     ContratoDTO contrato;
     private final PantallaPrincipal principal;
     CitaBO citaBO;
+    DialogCita dlgCita;
     private boolean inicializado = false;
     /**
      * Creates new form PanelContrato
@@ -97,9 +98,13 @@ public class PanelContrato extends javax.swing.JPanel {
      * @param cita cita al que se le hizo click
      */
     private void manejarClicEnCita(CitaDTO cita) {
-        //Notificar el cambio de panel
-        principal.setCita(cita);
-        principal.PanelCita();
+        dlgCita=new DialogCita(principal,true,cita);
+        dlgCita.setVisible(true);
+    }
+    
+    private void añadirCita(){
+        dlgCita=new DialogCita(principal,true,null);
+        dlgCita.setVisible(true);
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -165,6 +170,11 @@ public class PanelContrato extends javax.swing.JPanel {
         add(pnlFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 140, 260, 270));
 
         btnAgregarCita.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
+        btnAgregarCita.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAgregarCitaMouseClicked(evt);
+            }
+        });
         add(btnAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 430, 50, 50));
 
         lblAgregarCita.setText("Agregar cita");
@@ -206,6 +216,10 @@ public class PanelContrato extends javax.swing.JPanel {
 
         add(pnlCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 380, 350, 160));
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAgregarCitaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarCitaMouseClicked
+        añadirCita();
+    }//GEN-LAST:event_btnAgregarCitaMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

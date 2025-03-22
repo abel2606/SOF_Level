@@ -1,31 +1,173 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.FotografoBO;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
+import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.FotografoDTO;
+
 /**
  *
  * @author JazmE
  */
 public class DialogCita extends javax.swing.JDialog {
 
+    CitaDTO cita;
+    FotografoBO fotografoBO;
+    CitaBO citasBO;
+    boolean editando=false;
     /**
      * Creates new form DialogCita
+     * @param parent
+     * @param modal
+     * @param cita
      */
-    public DialogCita(java.awt.Frame parent, boolean modal) {
+    public DialogCita(java.awt.Frame parent, boolean modal,CitaDTO cita) {
         super(parent, modal);
         initComponents();
+        this.cita=cita;
+        fotografoBO=new FotografoBO();
+        citasBO=new CitaBO();
         
-        ConsultarFotografos();
+        AsignarFotografos();
+        AsignarCita();
+        
+        if(cita==null){
+            this.lblDelete.setEnabled(false);
+            this.lblEdit.setEnabled(false);
+            editando=true;
+            HabilitarEditar();
+        }
     }
     
-    public void ConsultarFotografos(){
-        
+    private void AsignarCita() {
+        if (cita != null) {
+            if (cita.getLugar() != null) {
+                this.txtaLugar.setText(cita.getLugar());
+            }
+            if (cita.getFotografo() != null) {
+                String nombreFotografo = cita.getFotografo().getNombrePersona();
+
+                // Recorrer todos los elementos del JComboBox y seleccionar el correcto
+                for (int i = 0; i < cbFotografo.getItemCount(); i++) {
+                    String nombreItem = cbFotografo.getItemAt(i).toString(); // Obtener el nombre del fotógrafo en el JComboBox
+                    if (nombreItem.equals(nombreFotografo)) {
+                        cbFotografo.setSelectedIndex(i); // Seleccionar el índice correspondiente
+                        break; // Salir del bucle una vez encontrado
+                    }
+                }
+            }
+            if (cita.getExtras() != null) {
+                this.txtaExtras.setText(cita.getExtras());
+            }
+            if (cita.getFechaHoraInicio() != null) {
+                
+            }
+            if (cita.getFechaHoraFin() != null) {
+                
+            }
+        }
+
+    }
+
+    public void AsignarFotografos() {
+        try {
+            // Obtener la lista de fotógrafos
+            List<FotografoDTO> fotografos = fotografoBO.obtenerTodosFotografos();
+
+            // Limpiar el JComboBox antes de agregar nuevos elementos
+            cbFotografo.removeAllItems();
+
+            // Agregar los nombres de los fotógrafos al JComboBox
+            for (FotografoDTO fotografo : fotografos) {
+                cbFotografo.addItem(fotografo.getNombrePersona());
+            }
+        } catch (ObjetosNegocioException ex) {
+            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void Cancelar(){
-        
+        this.dispose();
     }
     
-    public void Aceptar(){
+    public void Aceptar() {
+        if (cita == null) {
+            AgregarCita();
+        } else {
+            if (editando) {
+                EditarCita();
+            } else {
+              this.dispose(); 
+            }
+        }
+        this.dispose();
+    }
+
+    private void HabilitarEditar() {
+        if (editando) {
+            //Reactivar los campos
+            this.txtaExtras.setEnabled(true);
+            this.txtaLugar.setEnabled(true);
+            this.cbFotografo.setEnabled(true);
+        }else{
+            //Volver a colocar los valores originales de la cita
+            AsignarCita();
+            //Bloquear los campos
+            this.txtaExtras.setEnabled(false);
+            this.txtaLugar.setEnabled(false);
+            this.cbFotografo.setEnabled(false);
+        }
+    }
+    
+    private void BorrarCita(){
+        try {
+            citasBO.eliminarCita(cita);
+        } catch (ObjetosNegocioException ex) {
+            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //Mostrar mensaje de confirmación
+    }
+
+    private void EditarCita() {
+        cita.setExtras(this.txtaExtras.getText());
+        cita.setLugar(this.txtaLugar.getText());
         
+        cita.getFechaHoraInicio(); //TODO
+        cita.getFechaHoraFin(); //TODO
+        
+        FotografoDTO fotografo=new FotografoDTO();
+        fotografo.setNombrePersona(this.cbFotografo.getSelectedItem().toString());
+        cita.setFotografo(fotografo);
+        
+        try {
+            citasBO.actualizarCita(cita);
+
+        } catch (ObjetosNegocioException ex) {
+            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //Mostrar mensaje de confirmación
+    }
+
+    private void AgregarCita() {
+        cita.setExtras(this.txtaExtras.getText());
+        cita.setLugar(this.txtaLugar.getText());
+        
+        cita.getFechaHoraInicio(); //TODO
+        cita.getFechaHoraFin(); //TODO
+        
+        FotografoDTO fotografo=new FotografoDTO();
+        fotografo.setNombrePersona(this.cbFotografo.getSelectedItem().toString());
+        cita.setFotografo(fotografo);
+        try {
+            citasBO.crearCita(cita);
+        } catch (ObjetosNegocioException ex) {
+            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //Mostrar mensaje de confirmación
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -53,6 +195,8 @@ public class DialogCita extends javax.swing.JDialog {
         txtaExtras = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtaLugar = new javax.swing.JTextArea();
+        lblEdit = new javax.swing.JLabel();
+        lblDelete = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -187,9 +331,26 @@ public class DialogCita extends javax.swing.JDialog {
 
         pnlPrincipal.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 100, 310, 70));
 
-        getContentPane().add(pnlPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        lblEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pencilIcon.png"))); // NOI18N
+        lblEdit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblEditMouseClicked(evt);
+            }
+        });
+        pnlPrincipal.add(lblEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 20, -1, -1));
+
+        lblDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/deleteIconBig.png"))); // NOI18N
+        lblDelete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblDeleteMouseClicked(evt);
+            }
+        });
+        pnlPrincipal.add(lblDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 20, -1, -1));
+
+        getContentPane().add(pnlPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 420));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCerrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCerrarMouseClicked
@@ -204,6 +365,15 @@ public class DialogCita extends javax.swing.JDialog {
         Aceptar();
     }//GEN-LAST:event_btnAceptarMouseClicked
 
+    private void lblDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDeleteMouseClicked
+        BorrarCita();
+    }//GEN-LAST:event_lblDeleteMouseClicked
+
+    private void lblEditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblEditMouseClicked
+        editando=!editando;
+        HabilitarEditar();
+    }//GEN-LAST:event_lblEditMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
@@ -215,6 +385,8 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblDelete;
+    private javax.swing.JLabel lblEdit;
     private javax.swing.JLabel lblExtras;
     private javax.swing.JLabel lblFotografo;
     private javax.swing.JLabel lblLugar;
