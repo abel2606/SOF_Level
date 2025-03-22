@@ -4,6 +4,8 @@
  */
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.ConverterUtil;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
@@ -12,7 +14,10 @@ import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.daos.CitasDAO;
 import org.itson.sof.persistencia.daos.ICitasDAO;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.Contrato;
+import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.ContratoDTO;
 
 /**
  *
@@ -104,8 +109,25 @@ public class CitaBO implements ICitaBO {
         try {
             citaDTO = ConverterUtil.citaEntidadADTO(citasDAO.obtenerCita(cita));
             return citaDTO;
-        }catch (Exception ex){
-            throw new ObjetosNegocioException (ex.getMessage());
+        }catch (Exception ex) {
+            throw new ObjetosNegocioException(ex.getMessage());
+        }
+    }
+
+    public List<CitaDTO> obtenerCitasPorContrato(ContratoDTO contratoDTO) throws ObjetosNegocioException {
+        try {
+            // Obtener la lista de Citas desde el DAO
+            List<Cita> citas = citasDAO.obtenerCitasContratos(contratoDTO.getId());
+
+            // Convertir cada Cita a CitaDTO
+            List<CitaDTO> citasDTO = new ArrayList<>();
+            for (Cita cita : citas) {
+                citasDTO.add(ConverterUtil.citaEntidadADTO(cita));
+            }
+
+            return citasDTO;
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 

@@ -2,6 +2,9 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import javax.swing.JPanel;
+import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
 
 /**
@@ -11,7 +14,11 @@ import org.itson.sof.sof_dtos.UsuarioDTO;
 public class PantallaPrincipal extends javax.swing.JFrame {
     UsuarioDTO usuario;
     private CardLayout cardLayout;
-    private boolean menuVisible = true; // Estado del menú
+    private PanelContratos pnlContratos;
+    private PanelContrato pnlContrato;
+    private boolean menuVisible = true; 
+    private ContratoDTO contrato;
+    private CitaDTO cita;
 
     /**
      * Creates new form PantallaPrincipal
@@ -20,33 +27,41 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         initComponents();
         cardLayout = new CardLayout();
         pnlCentral.setLayout(cardLayout);
-        
-       // Agregar vistas al CardLayout, la primera que se agrega es la que se muestra primero
-        pnlCentral.add(new PanelContratos(), "PanelContratos");
-        pnlCentral.add(new PanelContrato(), "PanelContrato");
-        pnlCentral.add(new PanelCita(), "PanelCita");
 
+        // Agregar paneles al pnlCentral
+        pnlContratos = new PanelContratos(this);
+        pnlContrato = new PanelContrato(this);
+
+        pnlCentral.add(pnlContratos, "PanelContratos");
+        pnlCentral.add(pnlContrato, "PanelContrato");
+
+        // Mostrar la pantalla por defecto
+        PanelContratos();
     }
-    
+
     /**
      * Cambia el contenido del frame interior al menu de contratos
      */
-    private void PanelContratos(){
+    public void PanelContratos(){
+        this.lblTitulo.setText("Contratos");
+        pnlContratos.inicializar();
         cardLayout.show(pnlCentral, "PanelContratos");
     }
     
     /**
      * Cambia el contenido del frame interior al menu de contratos
      */
-    private void PanelContrato(){
+    public void PanelContrato(){
+        this.lblTitulo.setText("Contrato");
+        pnlContrato.inicializar();
         cardLayout.show(pnlCentral, "PanelContrato");
     }
     
     /**
      * Cambia el contenido del frame interior al menu de contratos
      */
-    private void PanelCita(){
-        cardLayout.show(pnlCentral, "PanelCita");
+    public void PanelCita(){
+        
     }
     
     /**
@@ -75,6 +90,24 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         pnlCentral.repaint();
     }
 
+    public ContratoDTO getContrato() {
+        return contrato;
+    }
+
+    public void setContrato(ContratoDTO contrato) {
+        this.contrato = contrato;
+    }
+
+    public CitaDTO getCita() {
+        return cita;
+    }
+
+    public void setCita(CitaDTO cita) {
+        this.cita = cita;
+    }
+    
+    
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -186,7 +219,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuOpcionesLayout.createSequentialGroup()
                 .addGroup(pnlMenuOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlMenuOpcionesLayout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(14, Short.MAX_VALUE)
                         .addGroup(pnlMenuOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblImgClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblImgPaquetes, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -201,7 +234,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                             .addComponent(lblCostos, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblSesion, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 9, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuOpcionesLayout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblImgMateriales, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)

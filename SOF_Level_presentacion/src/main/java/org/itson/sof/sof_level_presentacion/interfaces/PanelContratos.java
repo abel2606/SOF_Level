@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ContratoBO;
 import org.itson.sof.sof_dtos.ContratoDTO;
-import org.itson.sof.sof_level_presentacion.componentes.PanelContrato;
+import org.itson.sof.sof_level_presentacion.componentes.ItemContrato;
 
 /**
  *
@@ -19,51 +19,60 @@ import org.itson.sof.sof_level_presentacion.componentes.PanelContrato;
  */
 public class PanelContratos extends javax.swing.JPanel {
     ContratoBO contratoBO;
-    /**
-     * Creates new form PanelContratos
-     */
-    public PanelContratos() {
-        initComponents();
-        
-        contratoBO=new ContratoBO();
+    private final PantallaPrincipal principal;
+    private boolean inicializado = false;
 
+    public void inicializar() {
+        if (!inicializado) {
+            initComponents();
+            contratoBO = new ContratoBO();
+            inicializado = true;
+        }
         List<ContratoDTO> contratos = ConsultarContratos();
 
-        // Crear un panel de contenedor para los contratos
-        JPanel panelContenedor = new JPanel();
-        panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
-        panelContenedor.setBackground(new Color(220, 240, 255));
+            // Crear un panel de contenedor para los contratos
+            JPanel panelContenedor = new JPanel();
+            panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
+            panelContenedor.setBackground(new Color(220, 240, 255));
 
-        if (contratos.isEmpty()) {
-            //Poner un mensaje si no hay contratos
-            JLabel mensaje = new JLabel("Aun no hay contratos");
-            mensaje.setSize(100, 100);
-            mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 40));
-            panelContenedor.add(mensaje);
-        } else {
-            for (ContratoDTO contrato : contratos) {
-                PanelContrato panel = new PanelContrato(
-                        contrato.getCliente().getNombre(),
-                        contrato.getPaquete().getNombre(),
-                        contrato.getEstado(),
-                        contrato.getTematica());
+            if (contratos.isEmpty()) {
+                //Poner un mensaje si no hay contratos
+                JLabel mensaje = new JLabel("Aun no hay contratos");
+                mensaje.setSize(100, 100);
+                mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 40));
+                panelContenedor.add(mensaje);
+            } else {
+                for (ContratoDTO contrato : contratos) {
+                    ItemContrato panel = new ItemContrato(
+                            contrato.getCliente().getNombre(),
+                            contrato.getPaquete().getNombre(),
+                            contrato.getEstado(),
+                            contrato.getTematica());
 
-                panel.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        manejarClicEnContrato(contrato);
-                    }
-                });
+                    panel.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            manejarClicEnContrato(contrato);
+                        }
+                    });
 
-                panelContenedor.setBackground(new Color(220, 240, 255));
-                panelContenedor.add(panel);
-                panelContenedor.add(Box.createVerticalStrut(10));
+                    panelContenedor.setBackground(new Color(220, 240, 255));
+                    panelContenedor.add(panel);
+                    panelContenedor.add(Box.createVerticalStrut(10));
+                }
             }
-        }
-        scrollPaneContratos.setViewportView(panelContenedor);
-        scrollPaneContratos.getVerticalScrollBar().setUnitIncrement(20);
+            scrollPaneContratos.setViewportView(panelContenedor);
+            scrollPaneContratos.getVerticalScrollBar().setUnitIncrement(20);
     }
-    
+    /**
+     * Creates new form PanelContratos
+     *
+     * @param principal
+     */
+    public PanelContratos(PantallaPrincipal principal) {
+        this.principal = principal;
+    }
+
     /**
      * Devuelve la lista de contratos de la base de datos
      *
@@ -79,8 +88,10 @@ public class PanelContratos extends javax.swing.JPanel {
      */
     private void manejarClicEnContrato(ContratoDTO contrato) {
         //Notificar el cambio de panel
+        principal.setContrato(contrato);
+        principal.PanelContrato();
     }
-
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -103,7 +114,6 @@ public class PanelContratos extends javax.swing.JPanel {
             .addComponent(scrollPaneContratos, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane scrollPaneContratos;

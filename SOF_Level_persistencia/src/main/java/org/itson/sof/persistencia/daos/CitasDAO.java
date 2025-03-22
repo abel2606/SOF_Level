@@ -11,10 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import org.itson.sof.persistencia.conexion.IConexion;
-import static org.itson.sof.persistencia.daos.ContratosDAO.logger;
 import org.itson.sof.persistencia.entidades.Cita;
-import org.itson.sof.persistencia.entidades.Contrato;
-import org.itson.sof.persistencia.entidades.Fotografo;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
 /**

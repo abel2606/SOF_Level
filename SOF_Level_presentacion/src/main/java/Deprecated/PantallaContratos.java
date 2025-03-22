@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ContratoBO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
-import org.itson.sof.sof_level_presentacion.componentes.PanelContrato;
+import org.itson.sof.sof_level_presentacion.componentes.ItemContrato;
 
 /**
  *
@@ -47,7 +47,7 @@ public class PantallaContratos extends javax.swing.JFrame {
             panelContenedor.add(mensaje);
         } else {
             for (ContratoDTO contrato : contratos) {
-                PanelContrato panel = new PanelContrato(
+                ItemContrato panel = new ItemContrato(
                         contrato.getCliente().getNombre(),
                         contrato.getPaquete().getNombre(),
                         contrato.getEstado(),
