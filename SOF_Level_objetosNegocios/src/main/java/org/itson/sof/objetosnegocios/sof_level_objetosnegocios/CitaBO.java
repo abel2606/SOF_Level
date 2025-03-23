@@ -113,7 +113,8 @@ public class CitaBO implements ICitaBO {
             throw new ObjetosNegocioException(ex.getMessage());
         }
     }
-
+    
+    @Override
     public List<CitaDTO> obtenerCitasPorContrato(ContratoDTO contratoDTO) throws ObjetosNegocioException {
         try {
             // Obtener la lista de Citas desde el DAO

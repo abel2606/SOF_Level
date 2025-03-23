@@ -16,7 +16,6 @@ public interface IContratosDAO {
     
     public List<Contrato> obtenerTotalContratos() throws PersistenciaSOFException;
     
-    
     public Contrato obtenerContratoFolio (String folio)throws PersistenciaSOFException;
     
 }

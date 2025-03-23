@@ -1,5 +1,6 @@
 package org.itson.sof.objetosnegocios.gestorcitas;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
@@ -20,23 +21,37 @@ import org.itson.sof.sof_dtos.FotografoDTO;
  */
 public class GestorCitas implements IGestorCitas{
     
+    private static GestorCitas gestor;
     private ICitaBO citaBO;
     private IContratoBO contratoBO;
     private IFotografoBO fotografoBO;
 
-    public GestorCitas() {
+    private GestorCitas() {
         this.citaBO = new CitaBO();
         this.contratoBO = new ContratoBO();
         this.fotografoBO = new FotografoBO();
     }
     
     
+    public static GestorCitas getInstance() {
+        if (gestor == null) {
+            synchronized (GestorCitas.class) {
+                if (gestor == null) {
+                    gestor = new GestorCitas();
+                }
+            }
+        }
+        return gestor;
+    }
+    
+    
+    
     @Override
-    public CitaDTO crearCita (CitaDTO cita, String folioContrato, String nombreUsuarioFotografo) throws GestorException {
+    public CitaDTO crearCita (CitaDTO cita) throws GestorException {
         
         try {
-            ContratoDTO contrato = contratoBO.obtenerContratoFolio(folioContrato);
-            FotografoDTO fotografo = fotografoBO.obtenerFotografoNombreUsuario(nombreUsuarioFotografo);
+            ContratoDTO contrato = contratoBO.obtenerContratoFolio(cita.getContrato().getFolio());
+            FotografoDTO fotografo = fotografoBO.obtenerFotografoNombreUsuario(cita.getFotografo().getNombreUsuario());
             
             cita.setContrato(contrato);
             cita.setFotografo(fotografo);
@@ -79,6 +94,32 @@ public class GestorCitas implements IGestorCitas{
         }
         
     }
-    
-    
+
+    @Override
+    public List<FotografoDTO> obtenerFotografos() throws GestorException {
+        try {
+            return fotografoBO.obtenerTodosFotografos();
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorException (ex.getMessage());
+        }
+    }
+
+    @Override
+    public List<CitaDTO> obtenerCitasContrato(ContratoDTO contrato) throws GestorException {
+        try {
+            return citaBO.obtenerCitasPorContrato(contrato);
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public List<ContratoDTO> obtenerContratos() throws GestorException {
+        return contratoBO.obtenerTotalContratos();
+    }
+
+    @Override
+    public boolean validarCodigo(String tabla, String codigo) throws GestorException {
+        return false;
+    }
 }

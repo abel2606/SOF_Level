@@ -1,5 +1,6 @@
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
+import java.util.List;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
@@ -38,7 +39,15 @@ public interface ICitaBO {
      * Metodo para consultar una cita
      * @param citaDTO cita que se desea consultar
      * @return cita consultada
+     * @throws ObjetosNegocioException
      */
     public CitaDTO obtenerCita (CitaDTO citaDTO) throws ObjetosNegocioException;
     
+    /**
+     * Obtiene todas las citas de un contrato
+     * @param contratoDTO Contrato al que pertenecen las citas
+     * @return Lista de citaDTO
+     * @throws ObjetosNegocioException 
+     */
+    public List<CitaDTO> obtenerCitasPorContrato(ContratoDTO contratoDTO) throws ObjetosNegocioException;
 }

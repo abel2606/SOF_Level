@@ -4,8 +4,11 @@
  */
 package org.itson.sof.objetosnegocios.gestorcitas;
 
+import java.util.List;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.ContratoDTO;
+import org.itson.sof.sof_dtos.FotografoDTO;
 
 /**
  *
@@ -21,7 +24,7 @@ public interface IGestorCitas {
      * @return cita creada
      * @throws GestorException 
      */
-    public CitaDTO crearCita (CitaDTO cita, String folioContrato, String nombreUsuarioFotografo) throws GestorException;
+    public CitaDTO crearCita (CitaDTO cita) throws GestorException;
     
     /**
      * Método para consultar ua cita
@@ -46,6 +49,35 @@ public interface IGestorCitas {
      */
     public CitaDTO eliminarCita (CitaDTO cita) throws GestorException;
     
+    /**
+     * Método para obtener los fotografos registrados
+     * @return lista de fotografos
+     * @throws GestorException
+     * 
+     */
+    public List<FotografoDTO> obtenerFotografos()throws GestorException;
     
+    /**
+     * Obtiene todas las citas de un contrato
+     * @param contrato contrato del qyue se dsean obtener las citas
+     * @return lsita de citas
+     * @throws GestorException 
+     */
+    public List<CitaDTO> obtenerCitasContrato (ContratoDTO contrato) throws GestorException;
     
+    /**
+     * Obtiene todos los contratos tegistrados
+     * @return lista de los contratos
+     * @throws GestorException 
+     */
+    public List<ContratoDTO> obtenerContratos () throws GestorException;
+    
+    /**
+     * Valida si el código de una cita o contrato ya existe
+     * @param tabla tabla que se consultará
+     * @param codigo codigo a consultar
+     * @return true si ya existe
+     * @throws GestorException 
+     */
+    public boolean validarCodigo(String tabla, String codigo) throws GestorException;
 }

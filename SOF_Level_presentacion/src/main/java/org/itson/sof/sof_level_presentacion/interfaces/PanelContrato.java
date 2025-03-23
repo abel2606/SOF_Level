@@ -9,7 +9,10 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.CitaDTO;
@@ -22,9 +25,9 @@ import org.itson.sof.sof_level_presentacion.componentes.ItemCita;
  */
 public class PanelContrato extends javax.swing.JPanel {
 
+    GestorCitas gestor;
     ContratoDTO contrato;
     private final PantallaPrincipal principal;
-    CitaBO citaBO;
     DialogCita dlgCita;
     private boolean inicializado = false;
     /**
@@ -33,12 +36,13 @@ public class PanelContrato extends javax.swing.JPanel {
      */
     public PanelContrato(PantallaPrincipal principal) {
         this.principal=principal;
+        
+        gestor=GestorCitas.getInstance();
     }
 
     public void inicializar() {
         if (!inicializado) {
             initComponents(); 
-            citaBO = new CitaBO(); 
             inicializado = true;
         } 
         contrato=principal.getContrato();
@@ -86,9 +90,9 @@ public class PanelContrato extends javax.swing.JPanel {
      */
     private List<CitaDTO> ConsultarCitas() {
         try {
-            return citaBO.obtenerCitasPorContrato(contrato);
-        } catch (ObjetosNegocioException e) {
-            System.out.println(e);
+            return gestor.obtenerCitasContrato(contrato);
+        } catch (GestorException ex) {
+            JOptionPane.showMessageDialog(principal, ex);
         }
         return null;
     }

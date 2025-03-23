@@ -5,10 +5,15 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ContratoBO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_level_presentacion.componentes.ItemContrato;
@@ -18,14 +23,13 @@ import org.itson.sof.sof_level_presentacion.componentes.ItemContrato;
  * @author JazmE
  */
 public class PanelContratos extends javax.swing.JPanel {
-    ContratoBO contratoBO;
+    GestorCitas gestor;
     private final PantallaPrincipal principal;
     private boolean inicializado = false;
 
     public void inicializar() {
         if (!inicializado) {
             initComponents();
-            contratoBO = new ContratoBO();
             inicializado = true;
         }
         List<ContratoDTO> contratos = ConsultarContratos();
@@ -71,6 +75,7 @@ public class PanelContratos extends javax.swing.JPanel {
      */
     public PanelContratos(PantallaPrincipal principal) {
         this.principal = principal;
+        gestor=GestorCitas.getInstance();
     }
 
     /**
@@ -79,7 +84,12 @@ public class PanelContratos extends javax.swing.JPanel {
      * @return Lista de ContratoDTO
      */
     private List<ContratoDTO> ConsultarContratos() {
-        return contratoBO.obtenerTotalContratos();
+        try {
+            return gestor.obtenerContratos();
+        } catch (GestorException ex) {
+            JOptionPane.showMessageDialog(this, ex);
+        }
+        return null;
     }
 
     /**

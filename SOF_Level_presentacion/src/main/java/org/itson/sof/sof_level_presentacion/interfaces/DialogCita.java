@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
+import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.FotografoBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.DiferenciadorUtils;
@@ -23,9 +25,8 @@ import org.itson.sof.sof_dtos.FotografoDTO;
  */
 public class DialogCita extends javax.swing.JDialog {
 
+    GestorCitas gestor;
     CitaDTO cita;
-    FotografoBO fotografoBO;
-    CitaBO citasBO;
     boolean editando=false;
     List<FotografoDTO> fotografos;
     Frame parent;
@@ -39,10 +40,9 @@ public class DialogCita extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         
+        gestor=GestorCitas.getInstance();
         this.parent=parent;
         this.cita=cita;
-        fotografoBO=new FotografoBO();
-        citasBO=new CitaBO();
         
         inicializar();
     }
@@ -141,7 +141,7 @@ public class DialogCita extends javax.swing.JDialog {
     public void AsignarFotografos() {
         try {
             // Obtener la lista de fotógrafos
-            fotografos = fotografoBO.obtenerTodosFotografos();
+            fotografos = gestor.obtenerFotografos();
 
             // Limpiar el JComboBox antes de agregar nuevos elementos
             cbFotografo.removeAllItems();
@@ -150,8 +150,8 @@ public class DialogCita extends javax.swing.JDialog {
             for (FotografoDTO fotografo : fotografos) {
                 cbFotografo.addItem(fotografo.getNombrePersona());
             }
-        } catch (ObjetosNegocioException ex) {
-            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (GestorException ex) {
+             JOptionPane.showMessageDialog(parent, ex);
         }
     }
     
@@ -209,13 +209,14 @@ public class DialogCita extends javax.swing.JDialog {
 
         if (respuesta == JOptionPane.OK_OPTION) {
             try {
-                citasBO.eliminarCita(cita);
-            } catch (ObjetosNegocioException ex) {
-                Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+                gestor.eliminarCita(cita);
+                //Mostrar mensaje de confirmación
+                JOptionPane.showMessageDialog(parent, "Cita eliminada");
+                this.dispose();
+            } catch (GestorException ex) {
+                JOptionPane.showMessageDialog(parent, ex);
             }
-            //Mostrar mensaje de confirmación
-            JOptionPane.showMessageDialog(parent, "Cita eliminada");
-            this.dispose();
+
         }
     }
 
@@ -231,16 +232,16 @@ public class DialogCita extends javax.swing.JDialog {
                 cita.setFotografo(fotografo);
             }
         }
-        
-        try {
-            citasBO.actualizarCita(cita);
 
-        } catch (ObjetosNegocioException ex) {
-            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            gestor.actualizarCita(cita);
+            //Mostrar mensaje de confirmación
+            JOptionPane.showMessageDialog(parent, "Cita actualizada");
+            this.dispose();
+        } catch (GestorException ex) {
+            JOptionPane.showMessageDialog(parent, ex);
         }
-        //Mostrar mensaje de confirmación
-        JOptionPane.showMessageDialog(parent,"Cita actualizada");
-        this.dispose();
+        
     }
 
     private void AgregarCita() {
@@ -283,14 +284,16 @@ public class DialogCita extends javax.swing.JDialog {
                 cita.setFotografo(fotografo);
             }
         }
+        
         try {
-            citasBO.crearCita(cita);
-        } catch (ObjetosNegocioException ex) {
-            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+            gestor.crearCita(cita);
+            //Mostrar mensaje de confirmación
+            JOptionPane.showMessageDialog(parent, "Cita agregada");
+            this.dispose();
+        } catch (GestorException ex) {
+            JOptionPane.showMessageDialog(parent, ex);
         }
-        //Mostrar mensaje de confirmación
-        JOptionPane.showMessageDialog(parent,"Cita agregada");
-        this.dispose();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
