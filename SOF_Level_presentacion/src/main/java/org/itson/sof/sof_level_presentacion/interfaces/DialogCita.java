@@ -36,6 +36,7 @@ import org.itson.sof.sof_dtos.FotografoDTO;
  */
 public class DialogCita extends javax.swing.JDialog {
 
+    public static CitaDTO citaAgregada;
     GestorCitas gestor;
     CitaDTO cita;
     boolean editando = false;
@@ -378,7 +379,8 @@ public class DialogCita extends javax.swing.JDialog {
         }
 
         try {
-            gestor.crearCita(cita);
+            CitaDTO citaAgregada = gestor.crearCita(cita);
+            DialogCita.citaAgregada = citaAgregada;
             //Mostrar mensaje de confirmación
             JOptionPane.showMessageDialog(parent, "Cita agregada");
             this.dispose();
