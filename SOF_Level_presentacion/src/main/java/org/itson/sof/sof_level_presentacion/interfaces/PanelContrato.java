@@ -18,6 +18,7 @@ import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.Objetos
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_level_presentacion.componentes.ItemCita;
+import org.itson.sof.sof_level_presentacion.interfaces.DialogCita;
 
 /**
  *
@@ -30,57 +31,65 @@ public class PanelContrato extends javax.swing.JPanel {
     private final PantallaPrincipal principal;
     DialogCita dlgCita;
     private boolean inicializado = false;
+
+    public JPanel panelContenedor;
+
     /**
      * Creates new form PanelContrato
+     *
      * @param principal
      */
     public PanelContrato(PantallaPrincipal principal) {
-        this.principal=principal;
-        
-        gestor=GestorCitas.getInstance();
+        this.principal = principal;
+
+        gestor = GestorCitas.getInstance();
     }
 
     public void inicializar() {
         if (!inicializado) {
-            initComponents(); 
+            initComponents();
             inicializado = true;
-        } 
-        contrato=principal.getContrato();
+        }
+        contrato = principal.getContrato();
+        agregarCitasTabla();
+    }
+
+    private void agregarCitasTabla() {
         List<CitaDTO> citas = ConsultarCitas();
 
-            // Crear un panel de contenedor para los contratos
-            JPanel panelContenedor = new JPanel();
-            panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
-            panelContenedor.setBackground(new Color(220, 240, 255));
+        // Crear un panel de contenedor para los contratos
+        panelContenedor = new JPanel();
+        panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
+        panelContenedor.setBackground(new Color(220, 240, 255));
 
-            if (citas.isEmpty()) {
-                //Poner un mensaje si no hay contratos
-                JLabel mensaje = new JLabel("Aun no hay citas");
-                mensaje.setSize(100, 100);
-                mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 15));
-                panelContenedor.add(mensaje);
-            } else {
-                for (CitaDTO cita : citas) {
-                    ItemCita panel = new ItemCita(
-                            cita.getFechaHoraFin());
-                    panel.setPreferredSize(new Dimension(300, 50));
-                    panel.setMaximumSize(new Dimension(300, 50));
-                    panel.setMinimumSize(new Dimension(300, 50));
+        if (citas.isEmpty()) {
+            //Poner un mensaje si no hay contratos
+            JLabel mensaje = new JLabel("Aun no hay citas");
+            mensaje.setSize(100, 100);
+            mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 15));
+            panelContenedor.add(mensaje);
+        } else {
+            for (CitaDTO cita : citas) {
+                ItemCita panel = new ItemCita(
+                        cita.getFechaHoraInicio());
+                panel.setPreferredSize(new Dimension(300, 50));
+                panel.setMaximumSize(new Dimension(300, 50));
+                panel.setMinimumSize(new Dimension(300, 50));
 
-                    panel.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            manejarClicEnCita(cita);
-                        }
-                    });
+                panel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        manejarClicEnCita(cita);
+                    }
+                });
 
-                    panelContenedor.setBackground(new Color(220, 240, 255));
-                    panelContenedor.add(panel);
-                    panelContenedor.add(Box.createVerticalStrut(10));
-                }
+                panelContenedor.setBackground(new Color(220, 240, 255));
+                panelContenedor.add(panel);
+                panelContenedor.add(Box.createVerticalStrut(10));
             }
-            scrollPaneCitas.setViewportView(panelContenedor);
-            scrollPaneCitas.getVerticalScrollBar().setUnitIncrement(20);
+        }
+        scrollPaneCitas.setViewportView(panelContenedor);
+        scrollPaneCitas.getVerticalScrollBar().setUnitIncrement(20);
     }
 
     /**
@@ -96,18 +105,68 @@ public class PanelContrato extends javax.swing.JPanel {
         }
         return null;
     }
-    
+
     /**
      * Metodo que se llama cuando se hace click a una cita
+     *
      * @param cita cita al que se le hizo click
      */
     private void manejarClicEnCita(CitaDTO cita) {
-        dlgCita=new DialogCita(principal,true,cita);
+        dlgCita = new DialogCita(principal, true, cita);
         dlgCita.setVisible(true);
+        System.out.println("Se ha cerrad dlg de agregar");
+        // Si tu modal devuelve algún resultado, puedes consultarlo aquí:
+        if (dlgCita.citaAgregada != null) {
+            actualizarListaCitas();
+        }
     }
-    
-    private void añadirCita(){
-        dlgCita=new DialogCita(principal,true,null);
+
+    private void actualizarListaCitas() {
+        List<CitaDTO> citas = ConsultarCitas();
+        if (citas.isEmpty()) {
+            //Poner un mensaje si no hay contratos
+            JLabel mensaje = new JLabel("Aun no hay citas");
+            mensaje.setSize(100, 100);
+            mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 15));
+            panelContenedor.add(mensaje);
+        } else {
+            if(DialogCita.citaAgregada!=null){
+                ItemCita panel = new ItemCita(
+                        DialogCita.citaAgregada.getFechaHoraInicio());
+                panel.setPreferredSize(new Dimension(300, 50));
+                panel.setMaximumSize(new Dimension(300, 50));
+                panel.setMinimumSize(new Dimension(300, 50));
+
+                panel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        manejarClicEnCita(DialogCita.citaAgregada);
+                    }
+                });
+
+                panelContenedor.setBackground(new Color(220, 240, 255));
+                panelContenedor.add(panel);
+                panelContenedor.add(Box.createVerticalStrut(10));
+            }
+        }
+        scrollPaneCitas.setViewportView(panelContenedor);
+        scrollPaneCitas.getVerticalScrollBar().setUnitIncrement(20);
+    }
+
+    private void añadirCita() {
+        dlgCita = new DialogCita(principal, true, null);
+        dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                System.out.println("El diálogo de cita se ha cerrado.");
+                if (dlgCita.citaAgregada != null) {
+                    actualizarListaCitas();
+                    dlgCita.citaAgregada=null;
+                } else {
+                    JOptionPane.showMessageDialog(principal, "El diálogo fue cerrado sin cambios.");
+                }
+            }
+        });
         dlgCita.setVisible(true);
     }
 
@@ -179,6 +238,11 @@ public class PanelContrato extends javax.swing.JPanel {
                 btnAgregarCitaMouseClicked(evt);
             }
         });
+        btnAgregarCita.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarCitaActionPerformed(evt);
+            }
+        });
         add(btnAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 430, 50, 50));
 
         lblAgregarCita.setText("Agregar cita");
@@ -224,6 +288,10 @@ public class PanelContrato extends javax.swing.JPanel {
     private void btnAgregarCitaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarCitaMouseClicked
         añadirCita();
     }//GEN-LAST:event_btnAgregarCitaMouseClicked
+
+    private void btnAgregarCitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarCitaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAgregarCitaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
