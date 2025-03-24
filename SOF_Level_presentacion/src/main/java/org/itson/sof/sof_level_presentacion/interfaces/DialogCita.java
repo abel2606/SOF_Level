@@ -29,6 +29,7 @@ import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.Dif
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
+import org.itson.sof.sof_dtos.MaterialDTO;
 
 /**
  *
@@ -57,9 +58,10 @@ public class DialogCita extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
-        configurarAutocompletado();
-
         gestor = GestorCitas.getInstance();
+        
+        configurarAutocompletado();
+        
         this.parent = parent;
         this.cita = cita;
 
@@ -74,70 +76,83 @@ public class DialogCita extends javax.swing.JDialog {
 
         jpopmMateriales.add(scrollPane);
 
-        // Lista de materiales
-        List<String> materiales = List.of("Mazapán", "Chocolate", "Caramelo", "Nuez", "Almendra", "Fresa", "Vainilla");
+        try {
+            // Obtiene la lista de materiales desde el método obtenerMateriales()
+            List<MaterialDTO> materiales = gestor.obtenerMateriales();
 
-        // Evento cuando el usuario escribe en el JTextField
-        txtNombreMat.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                actualizarLista();
-            }
+            // Evento cuando el usuario escribe en el JTextField
+            txtNombreMat.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                    actualizarLista();
+                }
 
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                actualizarLista();
-            }
+                public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                    actualizarLista();
+                }
 
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                actualizarLista();
-            }
+                public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                    actualizarLista();
+                }
 
-            private void actualizarLista() {
-                String input = txtNombreMat.getText().trim().toLowerCase();
-                listModel.clear();
+                private void actualizarLista() {
+                    String input = txtNombreMat.getText().trim().toLowerCase();
+                    listModel.clear();
 
-                if (!input.isEmpty()) {
-                    for (String item : materiales) {
-                        if (item.toLowerCase().contains(input)) {
-                            listModel.addElement(item);
+                    if (!input.isEmpty()) {
+                        for (MaterialDTO item : materiales) {
+                            if (item.getNombre().toLowerCase().contains(input)) {
+                                listModel.addElement(item.getNombre()); // Añadimos solo el nombre
+                            }
                         }
-                    }
 
-                    if (!listModel.isEmpty()) {
-                        // Obtener la ubicación del JTextField relativa al JDialog
-                        Point location = txtNombreMat.getLocationOnScreen();
-                        SwingUtilities.convertPointFromScreen(location, DialogCita.this);
-
-                        jpopmMateriales.show(DialogCita.this, location.x, location.y + txtNombreMat.getHeight());
+                        if (!listModel.isEmpty()) {
+                            // Evitar que el popup se cierre inmediatamente
+                            SwingUtilities.invokeLater(() -> {
+                                jpopmMateriales.setVisible(false); // Oculta antes de mostrar para evitar parpadeo
+                                Point location = txtNombreMat.getLocationOnScreen();
+                                SwingUtilities.convertPointFromScreen(location, DialogCita.this);
+                                jpopmMateriales.show(txtNombreMat, 0, txtNombreMat.getHeight());
+                            });
+                        } else {
+                            jpopmMateriales.setVisible(false);
+                        }
                     } else {
                         jpopmMateriales.setVisible(false);
                     }
-                } else {
-                    jpopmMateriales.setVisible(false);
                 }
-            }
-        });
+            });
 
-        // Evento al hacer clic en una opción
-        suggestionList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) {
-                    txtNombreMat.setText(suggestionList.getSelectedValue());
-                    jpopmMateriales.setVisible(false);
+            // Evento al hacer clic en una opción
+            suggestionList.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 1) {
+                        String selectedName = suggestionList.getSelectedValue();
+                        if (selectedName != null) {
+                            txtNombreMat.setText(selectedName);
+                            jpopmMateriales.setVisible(false);
+                        }
+                    }
                 }
-            }
-        });
+            });
 
-        // Evento para seleccionar con ENTER
-        suggestionList.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    txtNombreMat.setText(suggestionList.getSelectedValue());
-                    jpopmMateriales.setVisible(false);
+            // Evento para seleccionar con ENTER
+            suggestionList.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        String selectedName = suggestionList.getSelectedValue();
+                        if (selectedName != null) {
+                            txtNombreMat.setText(selectedName);
+                            jpopmMateriales.setVisible(false);
+                        }
+                    }
                 }
-            }
-        });
+            });
+
+        } catch (GestorException e) {
+            e.printStackTrace();  // Maneja la excepción si ocurre
+        }
     }
 
     private void inicializar() {

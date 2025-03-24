@@ -14,5 +14,5 @@ import org.itson.sof.sof_dtos.MaterialDTO;
  */
 public interface IMaterialBO {
     
-    public List<MaterialDTO> obtenerCita (MaterialDTO materialDTO) throws ObjetosNegocioException;
+    public List<MaterialDTO> obtenerMateriales() throws ObjetosNegocioException;
 }

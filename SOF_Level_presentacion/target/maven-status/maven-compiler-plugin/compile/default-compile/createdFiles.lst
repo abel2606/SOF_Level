@@ -18,7 +18,6 @@ org\itson\sof\sof_level_presentacion\interfaces\DialogCita$8.class
 Deprecated\PantallaContratos$5.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato.class
 org\itson\sof\sof_level_presentacion\componentes\BordeRedondo.class
-Deprecated\AutoCompleteTextField.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$6.class
 Deprecated\PantallaContratos$8.class
@@ -29,10 +28,8 @@ org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$3.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$2.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$9.class
 Deprecated\PantallaContratos.class
-Deprecated\AutoCompleteTextField$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContratos$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$10.class
-Deprecated\AutoCompleteTextField$2.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContratos.class
 Deprecated\PantallaContratos$4.class
 Deprecated\PantallaCita.class

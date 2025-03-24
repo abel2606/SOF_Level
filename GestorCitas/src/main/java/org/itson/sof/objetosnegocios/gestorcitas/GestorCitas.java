@@ -10,10 +10,13 @@ import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.FotografoBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ICitaBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.IContratoBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.IFotografoBO;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.IMaterialBO;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.MaterialBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
+import org.itson.sof.sof_dtos.MaterialDTO;
 
 /**
  *
@@ -24,11 +27,13 @@ public class GestorCitas implements IGestorCitas{
     private static GestorCitas gestor;
     private ICitaBO citaBO;
     private IContratoBO contratoBO;
+    private IMaterialBO materialBO;
     private IFotografoBO fotografoBO;
 
     private GestorCitas() {
         this.citaBO = new CitaBO();
         this.contratoBO = new ContratoBO();
+        this.materialBO = new MaterialBO();
         this.fotografoBO = new FotografoBO();
     }
     
@@ -121,5 +126,14 @@ public class GestorCitas implements IGestorCitas{
     @Override
     public boolean validarCodigo(String tabla, String codigo) throws GestorException {
         return false;
+    }
+
+    @Override
+    public List<MaterialDTO> obtenerMateriales() throws GestorException {
+        try {
+            return materialBO.obtenerMateriales();
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorException(ex.getMessage());
+        }
     }
 }

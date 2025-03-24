@@ -9,6 +9,7 @@ import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
+import org.itson.sof.sof_dtos.MaterialDTO;
 
 /**
  *
@@ -71,7 +72,14 @@ public interface IGestorCitas {
      * @throws GestorException 
      */
     public List<ContratoDTO> obtenerContratos () throws GestorException;
-    
+
+    /**
+     * Obtiene todos los contratos tegistrados
+     * @return lista de los contratos
+     * @throws GestorException 
+     */
+    public List<MaterialDTO> obtenerMateriales () throws GestorException;
+
     /**
      * Valida si el código de una cita o contrato ya existe
      * @param tabla tabla que se consultará

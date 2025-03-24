@@ -18,7 +18,7 @@ public class MaterialBO implements IMaterialBO{
     List<MaterialDTO> materiales = new ArrayList<>();
     
     @Override
-    public List<MaterialDTO> obtenerCita(MaterialDTO materialDTO) throws ObjetosNegocioException {
+    public List<MaterialDTO> obtenerMateriales() throws ObjetosNegocioException {
         materiales.add(new MaterialDTO("Pipshas"));
         materiales.add(new MaterialDTO("Mazapan"));
         materiales.add(new MaterialDTO("Electrolit"));
