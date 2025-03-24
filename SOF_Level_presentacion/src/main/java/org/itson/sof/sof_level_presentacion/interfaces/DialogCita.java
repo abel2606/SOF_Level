@@ -1,15 +1,26 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
+import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SwingUtilities;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
@@ -27,27 +38,108 @@ public class DialogCita extends javax.swing.JDialog {
 
     GestorCitas gestor;
     CitaDTO cita;
-    boolean editando=false;
+    boolean editando = false;
     List<FotografoDTO> fotografos;
     Frame parent;
+
+    private DefaultListModel<String> listModel;
+    private JList<String> suggestionList;
+
     /**
      * Creates new form DialogCita
+     *
      * @param parent
      * @param modal
      * @param cita
      */
-    public DialogCita(java.awt.Frame parent, boolean modal,CitaDTO cita) {
+    public DialogCita(java.awt.Frame parent, boolean modal, CitaDTO cita) {
         super(parent, modal);
         initComponents();
-        
-        gestor=GestorCitas.getInstance();
-        this.parent=parent;
-        this.cita=cita;
-        
+
+        configurarAutocompletado();
+
+        gestor = GestorCitas.getInstance();
+        this.parent = parent;
+        this.cita = cita;
+
         inicializar();
     }
-    
-    private void inicializar(){
+
+    private void configurarAutocompletado() {
+        listModel = new DefaultListModel<>();
+        suggestionList = new JList<>(listModel);
+        JScrollPane scrollPane = new JScrollPane(suggestionList);
+        scrollPane.setPreferredSize(new Dimension(180, 100));
+
+        jpopmMateriales.add(scrollPane);
+
+        // Lista de materiales
+        List<String> materiales = List.of("Mazapán", "Chocolate", "Caramelo", "Nuez", "Almendra", "Fresa", "Vainilla");
+
+        // Evento cuando el usuario escribe en el JTextField
+        txtNombreMat.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                actualizarLista();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                actualizarLista();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                actualizarLista();
+            }
+
+            private void actualizarLista() {
+                String input = txtNombreMat.getText().trim().toLowerCase();
+                listModel.clear();
+
+                if (!input.isEmpty()) {
+                    for (String item : materiales) {
+                        if (item.toLowerCase().contains(input)) {
+                            listModel.addElement(item);
+                        }
+                    }
+
+                    if (!listModel.isEmpty()) {
+                        // Obtener la ubicación del JTextField relativa al JDialog
+                        Point location = txtNombreMat.getLocationOnScreen();
+                        SwingUtilities.convertPointFromScreen(location, DialogCita.this);
+
+                        jpopmMateriales.show(DialogCita.this, location.x, location.y + txtNombreMat.getHeight());
+                    } else {
+                        jpopmMateriales.setVisible(false);
+                    }
+                } else {
+                    jpopmMateriales.setVisible(false);
+                }
+            }
+        });
+
+        // Evento al hacer clic en una opción
+        suggestionList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    txtNombreMat.setText(suggestionList.getSelectedValue());
+                    jpopmMateriales.setVisible(false);
+                }
+            }
+        });
+
+        // Evento para seleccionar con ENTER
+        suggestionList.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    txtNombreMat.setText(suggestionList.getSelectedValue());
+                    jpopmMateriales.setVisible(false);
+                }
+            }
+        });
+    }
+
+    private void inicializar() {
         // Crear un modelo de SpinnerDateModel independiente para cada JSpinner
         SpinnerDateModel modeloSpinnerInicio = new SpinnerDateModel();
         SpinnerDateModel modeloSpinnerFin = new SpinnerDateModel();
@@ -77,11 +169,11 @@ public class DialogCita extends javax.swing.JDialog {
             this.lblEdit.setEnabled(false);
             editando = true;
             Calendar today = Calendar.getInstance();  // Obtiene el calendario con la fecha actual
-            jcalendar.setCalendar(today); 
+            jcalendar.setCalendar(today);
         }
         HabilitarEditar();
     }
-    
+
     private void AsignarCita() {
         if (cita != null) {
             if (cita.getLugar() != null) {
@@ -104,7 +196,7 @@ public class DialogCita extends javax.swing.JDialog {
             }
             if (cita.getFechaHoraInicio() != null && cita.getFechaHoraFin() != null) {
                 jcalendar.setCalendar(cita.getFechaHoraInicio());
-                
+
                 // Obtener la fecha de la cita
                 GregorianCalendar fechaHoraInicio = cita.getFechaHoraInicio();
                 GregorianCalendar fechaHoraFin = cita.getFechaHoraFin();
@@ -151,14 +243,14 @@ public class DialogCita extends javax.swing.JDialog {
                 cbFotografo.addItem(fotografo.getNombrePersona());
             }
         } catch (GestorException ex) {
-             JOptionPane.showMessageDialog(parent, ex);
+            JOptionPane.showMessageDialog(parent, ex);
         }
     }
-    
-    public void Cancelar(){
+
+    public void Cancelar() {
         this.dispose();
     }
-    
+
     public void Aceptar() {
         if (cita == null) {
             int respuesta = JOptionPane.showConfirmDialog(parent, "¿Desea agregar la cita?");
@@ -166,7 +258,7 @@ public class DialogCita extends javax.swing.JDialog {
             if (respuesta == JOptionPane.OK_OPTION) {
                 AgregarCita();
             }
-            
+
         } else {
             if (editando) {
                 int respuesta = JOptionPane.showConfirmDialog(parent, "¿Desea actualizar la cita?");
@@ -174,9 +266,9 @@ public class DialogCita extends javax.swing.JDialog {
                 if (respuesta == JOptionPane.OK_OPTION) {
                     EditarCita();
                 }
-                
+
             } else {
-              this.dispose(); 
+                this.dispose();
             }
         }
         this.dispose();
@@ -223,12 +315,12 @@ public class DialogCita extends javax.swing.JDialog {
     private void EditarCita() {
         cita.setExtras(this.txtaExtras.getText());
         cita.setLugar(this.txtaLugar.getText());
-        
+
         cita.getFechaHoraInicio(); //TODO
         cita.getFechaHoraFin(); //TODO
-        
-        for (FotografoDTO fotografo: fotografos) {
-            if(fotografo.getNombrePersona().equals(this.cbFotografo.getSelectedItem().toString())){
+
+        for (FotografoDTO fotografo : fotografos) {
+            if (fotografo.getNombrePersona().equals(this.cbFotografo.getSelectedItem().toString())) {
                 cita.setFotografo(fotografo);
             }
         }
@@ -241,23 +333,23 @@ public class DialogCita extends javax.swing.JDialog {
         } catch (GestorException ex) {
             JOptionPane.showMessageDialog(parent, ex);
         }
-        
+
     }
 
     private void AgregarCita() {
-        cita=new CitaDTO();
+        cita = new CitaDTO();
         cita.setCodigo(DiferenciadorUtils.generarCodigo());
-        
+
         cita.setExtras(this.txtaExtras.getText());
         cita.setLugar(this.txtaLugar.getText());
-        
-        if (parent instanceof PantallaPrincipal) {  
-            PantallaPrincipal pantallaPrincipal = (PantallaPrincipal) parent;  
+
+        if (parent instanceof PantallaPrincipal) {
+            PantallaPrincipal pantallaPrincipal = (PantallaPrincipal) parent;
             cita.setContrato(pantallaPrincipal.getContrato());
         }
-        
+
         // Obtenemos la fecha seleccionada del JCalendar
-        Date fechaSeleccionada = this.jcalendar.getDate(); 
+        Date fechaSeleccionada = this.jcalendar.getDate();
 
         // Convertimos la fecha seleccionada a GregorianCalendar
         GregorianCalendar fechaHoraInicio = new GregorianCalendar();
@@ -279,12 +371,12 @@ public class DialogCita extends javax.swing.JDialog {
         cita.setFechaHoraInicio(fechaHoraInicio); // Asignar la fecha y hora de inicio
         cita.setFechaHoraFin(fechaHoraFin); // Asignar la fecha y hora de fin
 
-        for (FotografoDTO fotografo: fotografos) {
-            if(fotografo.getNombrePersona().equals(this.cbFotografo.getSelectedItem().toString())){
+        for (FotografoDTO fotografo : fotografos) {
+            if (fotografo.getNombrePersona().equals(this.cbFotografo.getSelectedItem().toString())) {
                 cita.setFotografo(fotografo);
             }
         }
-        
+
         try {
             gestor.crearCita(cita);
             //Mostrar mensaje de confirmación
@@ -299,6 +391,7 @@ public class DialogCita extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jpopmMateriales = new javax.swing.JPopupMenu();
         pnlPrincipal = new javax.swing.JPanel();
         btnCerrar = new javax.swing.JLabel();
         btnEditar = new javax.swing.JLabel();
@@ -324,6 +417,12 @@ public class DialogCita extends javax.swing.JDialog {
         txtaLugar = new javax.swing.JTextArea();
         lblEdit = new javax.swing.JLabel();
         lblDelete = new javax.swing.JLabel();
+        txtCantidad = new javax.swing.JTextField();
+        txtNombreMat = new javax.swing.JTextField();
+        btnAgregar = new javax.swing.JButton();
+        lblExtras1 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -355,23 +454,23 @@ public class DialogCita extends javax.swing.JDialog {
 
         lblSeleccionarFecha.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblSeleccionarFecha.setText("Seleccionar fecha");
-        pnlPrincipal.add(lblSeleccionarFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, -1, -1));
+        pnlPrincipal.add(lblSeleccionarFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, -1));
 
         lblSelecionarHorario.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblSelecionarHorario.setText("Seleccionar horario inicio y fin");
-        pnlPrincipal.add(lblSelecionarHorario, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 350, -1, -1));
+        pnlPrincipal.add(lblSelecionarHorario, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 350, -1, -1));
 
         lblLugar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblLugar.setText("Lugar:");
-        pnlPrincipal.add(lblLugar, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 70, -1, -1));
+        pnlPrincipal.add(lblLugar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 500, -1, -1));
 
         lblFotografo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblFotografo.setText("Fotografo:");
-        pnlPrincipal.add(lblFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 200, -1, -1));
+        pnlPrincipal.add(lblFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 460, -1, -1));
 
         lblExtras.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblExtras.setText("Extras:");
-        pnlPrincipal.add(lblExtras, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 240, -1, -1));
+        lblExtras.setText("Materiales:");
+        pnlPrincipal.add(lblExtras, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 250, -1, -1));
 
         pnlFecha.setBackground(new java.awt.Color(220, 240, 255));
         pnlFecha.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -415,7 +514,7 @@ public class DialogCita extends javax.swing.JDialog {
 
         cbFotografo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ricardo Gutierrez", " ", " ", " ", " " }));
         cbFotografo.setBorder(null);
-        pnlPrincipal.add(cbFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 190, 230, 40));
+        pnlPrincipal.add(cbFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 450, 230, 40));
 
         btnCancelar.setBackground(new java.awt.Color(160, 36, 38));
         btnCancelar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -427,7 +526,7 @@ public class DialogCita extends javax.swing.JDialog {
                 btnCancelarMouseClicked(evt);
             }
         });
-        pnlPrincipal.add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 370, 120, 30));
+        pnlPrincipal.add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 590, 120, 30));
 
         btnAceptar.setBackground(new java.awt.Color(36, 160, 108));
         btnAceptar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -439,7 +538,7 @@ public class DialogCita extends javax.swing.JDialog {
                 btnAceptarMouseClicked(evt);
             }
         });
-        pnlPrincipal.add(btnAceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 370, 120, 30));
+        pnlPrincipal.add(btnAceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 590, 120, 30));
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -449,7 +548,7 @@ public class DialogCita extends javax.swing.JDialog {
         txtaExtras.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jScrollPane1.setViewportView(txtaExtras);
 
-        pnlPrincipal.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 270, 310, 70));
+        pnlPrincipal.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 110, 310, 110));
 
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane2.setToolTipText("");
@@ -460,7 +559,7 @@ public class DialogCita extends javax.swing.JDialog {
         txtaLugar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jScrollPane2.setViewportView(txtaLugar);
 
-        pnlPrincipal.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 100, 310, 70));
+        pnlPrincipal.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 530, 350, 90));
 
         lblEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pencilIcon.png"))); // NOI18N
         lblEdit.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -478,7 +577,50 @@ public class DialogCita extends javax.swing.JDialog {
         });
         pnlPrincipal.add(lblDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 20, -1, -1));
 
-        getContentPane().add(pnlPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 890, 460));
+        txtCantidad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtCantidad.setText("1");
+        txtCantidad.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        txtCantidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCantidadActionPerformed(evt);
+            }
+        });
+        pnlPrincipal.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 290, 60, 50));
+
+        txtNombreMat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtNombreMat.setText("Mazapan");
+        txtNombreMat.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        txtNombreMat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNombreMatActionPerformed(evt);
+            }
+        });
+        pnlPrincipal.add(txtNombreMat, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 290, 190, 50));
+
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
+        btnAgregar.setBorder(null);
+        pnlPrincipal.add(btnAgregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 290, -1, -1));
+
+        lblExtras1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblExtras1.setText("Extras:");
+        pnlPrincipal.add(lblExtras1, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 80, -1, -1));
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Cantidad", "Material", ""
+            }
+        ));
+        jScrollPane3.setViewportView(jTable1);
+
+        pnlPrincipal.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 360, -1, 210));
+
+        getContentPane().add(pnlPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 880, 640));
 
         pack();
         setLocationRelativeTo(null);
@@ -501,13 +643,22 @@ public class DialogCita extends javax.swing.JDialog {
     }//GEN-LAST:event_lblDeleteMouseClicked
 
     private void lblEditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblEditMouseClicked
-        editando=!editando;
+        editando = !editando;
         HabilitarEditar();
     }//GEN-LAST:event_lblEditMouseClicked
+
+    private void txtCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCantidadActionPerformed
+
+    private void txtNombreMatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreMatActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNombreMatActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
+    private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JLabel btnCerrar;
     private javax.swing.JLabel btnEditar;
@@ -516,10 +667,14 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTable1;
     private com.toedter.calendar.JCalendar jcalendar;
+    private javax.swing.JPopupMenu jpopmMateriales;
     private javax.swing.JLabel lblDelete;
     private javax.swing.JLabel lblEdit;
     private javax.swing.JLabel lblExtras;
+    private javax.swing.JLabel lblExtras1;
     private javax.swing.JLabel lblFotografo;
     private javax.swing.JLabel lblLugar;
     private javax.swing.JLabel lblSeleccionarFecha;
@@ -529,6 +684,8 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JPanel pnlPrincipal;
     private javax.swing.JSpinner sFechaFin;
     private javax.swing.JSpinner sFechaInicio;
+    private javax.swing.JTextField txtCantidad;
+    private javax.swing.JTextField txtNombreMat;
     private javax.swing.JLabel txtTitulo;
     private javax.swing.JTextArea txtaExtras;
     private javax.swing.JTextArea txtaLugar;

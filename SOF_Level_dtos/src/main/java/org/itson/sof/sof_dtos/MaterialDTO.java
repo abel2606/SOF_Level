@@ -38,6 +38,15 @@ public class MaterialDTO {
     }
 
     /**
+     * Constructor que inicializa un MaterialDTO con solo el nombre.
+     *
+     * @param nombre Nombre del material.
+     */
+    public MaterialDTO(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    /**
      * Obtiene el nombre del material.
      *
      * @return El nombre del material.
