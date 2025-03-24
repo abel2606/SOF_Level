@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
 import java.util.ArrayList;
@@ -64,7 +61,7 @@ public class MaterialBO implements IMaterialBO{
         try {
             // Obtener la lista de Materiales desde el DAO
             List<Material> materiales = materialesDAO.obtenerMaterialesCita(cita.getCodigo());
-            System.out.println(materiales);
+            
             // Convertir cada Material a MaterialDTO
             List<MaterialDTO> materialDTO = new ArrayList<>();
             for (Material material : materiales) {

@@ -174,14 +174,12 @@ public class PanelContrato extends javax.swing.JPanel {
 
         lblCliente.setText("Cliente:");
         add(lblCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 50, 20));
-
-        txtCliente.setText("Jesus Rene Gonzáles Castro");
         add(txtCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 40, 300, -1));
 
         lblPaquete.setText("Paquete:");
         add(lblPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
-        cmbPaquete.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbPaquete.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo del paquete" }));
         add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 170, -1));
 
         btnEditar.setText("Editar");
@@ -196,8 +194,6 @@ public class PanelContrato extends javax.swing.JPanel {
 
         lblPrecio.setText("Precio:");
         add(lblPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 320, -1, -1));
-
-        txtPrecio.setText("$2500");
         add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, 330, -1));
 
         lblCitas.setText("Citas (X)");
@@ -224,7 +220,7 @@ public class PanelContrato extends javax.swing.JPanel {
         add(lblAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 480, -1, -1));
 
         lblFecha.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        lblFecha.setText("ENERO 2025");
+        lblFecha.setText("MES      AÑO");
         add(lblFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 90, -1, -1));
 
         lblFlechaDerecha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/arrowRightIcon.png"))); // NOI18N

@@ -1,8 +1,6 @@
 package org.itson.sof.objetosnegocios.gestorcitas;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ContratoBO;
@@ -25,10 +23,10 @@ import org.itson.sof.sof_dtos.MaterialDTO;
 public class GestorCitas implements IGestorCitas{
     
     private static GestorCitas gestor;
-    private ICitaBO citaBO;
-    private IContratoBO contratoBO;
-    private IMaterialBO materialBO;
-    private IFotografoBO fotografoBO;
+    private final ICitaBO citaBO;
+    private final IContratoBO contratoBO;
+    private final IMaterialBO materialBO;
+    private final IFotografoBO fotografoBO;
 
     private GestorCitas() {
         this.citaBO = new CitaBO();

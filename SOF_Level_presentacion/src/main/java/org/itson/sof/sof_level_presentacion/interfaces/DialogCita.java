@@ -85,7 +85,6 @@ public class DialogCita extends javax.swing.JDialog {
             materiales = gestor.obtenerMateriales();
             if (cita != null) {
                 materialesSeleccionados = gestor.obtenerMaterialesCita(cita);
-                System.out.println(materialesSeleccionados.size());
             }
 
             DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0);
