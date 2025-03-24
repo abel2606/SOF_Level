@@ -79,6 +79,8 @@ public interface IGestorCitas {
      * @throws GestorException 
      */
     public List<MaterialDTO> obtenerMateriales () throws GestorException;
+    
+    public List<MaterialDTO> obtenerMaterialesCita (CitaDTO cita) throws GestorException;
 
     /**
      * Valida si el código de una cita o contrato ya existe

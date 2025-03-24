@@ -131,7 +131,7 @@ public class Cita implements Serializable {
 
     @Override
     public String toString() {
-        return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", fotografo=" + fotografo + ", materiales=" + materiales + '}';
+        return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", fotografo=" + fotografo.getNombrePersona() + ", materiales=" + materiales.size() + '}';
     }
     
     

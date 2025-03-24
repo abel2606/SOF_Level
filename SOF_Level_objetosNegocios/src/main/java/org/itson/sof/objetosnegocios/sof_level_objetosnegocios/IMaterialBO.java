@@ -6,6 +6,9 @@ package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
 import java.util.List;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
+import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.Material;
+import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
 
 /**
@@ -15,4 +18,6 @@ import org.itson.sof.sof_dtos.MaterialDTO;
 public interface IMaterialBO {
     
     public List<MaterialDTO> obtenerMateriales() throws ObjetosNegocioException;
+    
+    public List<MaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws ObjetosNegocioException;
 }

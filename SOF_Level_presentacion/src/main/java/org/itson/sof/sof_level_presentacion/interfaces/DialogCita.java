@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -21,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
@@ -37,6 +39,8 @@ import org.itson.sof.sof_dtos.MaterialDTO;
  */
 public class DialogCita extends javax.swing.JDialog {
 
+    private List<MaterialDTO> materiales = new ArrayList<>();
+    private List<MaterialDTO> materialesSeleccionados = new ArrayList<>();
     public static CitaDTO citaAgregada;
     GestorCitas gestor;
     CitaDTO cita;
@@ -47,49 +51,51 @@ public class DialogCita extends javax.swing.JDialog {
     private DefaultListModel<String> listModel;
     private JList<String> suggestionList;
 
-    /**
-     * Creates new form DialogCita
-     *
-     * @param parent
-     * @param modal
-     * @param cita
-     */
     public DialogCita(java.awt.Frame parent, boolean modal, CitaDTO cita) {
         super(parent, modal);
         initComponents();
 
         gestor = GestorCitas.getInstance();
-        
-        configurarAutocompletado();
-        
         this.parent = parent;
         this.cita = cita;
+
+        configurarAutocompletado();
 
         inicializar();
     }
 
     private void configurarAutocompletado() {
-        listModel = new DefaultListModel<>();
-        suggestionList = new JList<>(listModel);
-        JScrollPane scrollPane = new JScrollPane(suggestionList);
-        scrollPane.setPreferredSize(new Dimension(180, 100));
+    listModel = new DefaultListModel<>();
+    suggestionList = new JList<>(listModel);
+    JScrollPane scrollPane = new JScrollPane(suggestionList);
+    scrollPane.setPreferredSize(new Dimension(180, 100));
 
-        jpopmMateriales.add(scrollPane);
+    jpopmMateriales.add(scrollPane);
 
         try {
-            // Obtiene la lista de materiales desde el método obtenerMateriales()
-            List<MaterialDTO> materiales = gestor.obtenerMateriales();
+            materiales = gestor.obtenerMateriales();
+            if (cita != null) {
+                materialesSeleccionados = gestor.obtenerMaterialesCita(cita);
+                System.out.println(materialesSeleccionados.size());
+            }
 
-            // Evento cuando el usuario escribe en el JTextField
+            DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0);
+            tblMaterial.setModel(tableModel);
+
+            cargarMaterialesEnTabla(tableModel);
+
             txtNombreMat.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                @Override
                 public void insertUpdate(javax.swing.event.DocumentEvent e) {
                     actualizarLista();
                 }
 
+                @Override
                 public void removeUpdate(javax.swing.event.DocumentEvent e) {
                     actualizarLista();
                 }
 
+                @Override
                 public void changedUpdate(javax.swing.event.DocumentEvent e) {
                     actualizarLista();
                 }
@@ -101,17 +107,16 @@ public class DialogCita extends javax.swing.JDialog {
                     if (!input.isEmpty()) {
                         for (MaterialDTO item : materiales) {
                             if (item.getNombre().toLowerCase().contains(input)) {
-                                listModel.addElement(item.getNombre()); // Añadimos solo el nombre
+                                listModel.addElement(item.getNombre());
                             }
                         }
 
                         if (!listModel.isEmpty()) {
-                            // Evitar que el popup se cierre inmediatamente
                             SwingUtilities.invokeLater(() -> {
-                                jpopmMateriales.setVisible(false); // Oculta antes de mostrar para evitar parpadeo
-                                Point location = txtNombreMat.getLocationOnScreen();
-                                SwingUtilities.convertPointFromScreen(location, DialogCita.this);
-                                jpopmMateriales.show(txtNombreMat, 0, txtNombreMat.getHeight());
+                                if (!jpopmMateriales.isVisible()) {
+                                    Point location = txtNombreMat.getLocationOnScreen();
+                                    jpopmMateriales.show(txtNombreMat, 0, txtNombreMat.getHeight());
+                                }
                             });
                         } else {
                             jpopmMateriales.setVisible(false);
@@ -122,36 +127,88 @@ public class DialogCita extends javax.swing.JDialog {
                 }
             });
 
-            // Evento al hacer clic en una opción
+            // Selección de material desde la lista de autocompletar
             suggestionList.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 1) {
-                        String selectedName = suggestionList.getSelectedValue();
-                        if (selectedName != null) {
-                            txtNombreMat.setText(selectedName);
-                            jpopmMateriales.setVisible(false);
-                        }
+                    if (e.getClickCount() == 1 && suggestionList.getSelectedValue() != null) {
+                        txtNombreMat.setText(suggestionList.getSelectedValue());
+                        jpopmMateriales.setVisible(false);
                     }
                 }
             });
 
-            // Evento para seleccionar con ENTER
+            // Evento de tecla ENTER para selección
             suggestionList.addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent e) {
-                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        String selectedName = suggestionList.getSelectedValue();
-                        if (selectedName != null) {
-                            txtNombreMat.setText(selectedName);
-                            jpopmMateriales.setVisible(false);
-                        }
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER && suggestionList.getSelectedValue() != null) {
+                        txtNombreMat.setText(suggestionList.getSelectedValue());
+                        jpopmMateriales.setVisible(false);
+                    }
+                }
+            });
+
+            // Botón para agregar material a la tabla y a la lista de la cita
+            this.btnAgregar.addActionListener(e -> {
+                String nombre = txtNombreMat.getText().trim();
+                String cantidadTexto = txtCantidad.getText().trim();
+
+                if (nombre.isEmpty() || cantidadTexto.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Debe ingresar nombre y cantidad.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                float cantidad;
+                try {
+                    cantidad = Float.parseFloat(cantidadTexto);
+                    if (cantidad <= 0) {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Ingrese una cantidad válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                MaterialDTO seleccionado = materiales.stream()
+                        .filter(mat -> mat.getNombre().equalsIgnoreCase(nombre))
+                        .findFirst()
+                        .orElse(null);
+
+                if (seleccionado == null) {
+                    JOptionPane.showMessageDialog(null, "Material no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                materialesSeleccionados.add(seleccionado);
+
+                tableModel.addRow(new Object[]{nombre, cantidad});
+
+                txtNombreMat.setText("");
+                txtCantidad.setText("");
+            });
+
+            // Eliminar material de la lista y la tabla con clic
+            tblMaterial.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int filaSeleccionada = tblMaterial.getSelectedRow();
+                    if (filaSeleccionada != -1) {
+                        String nombre = (String) tableModel.getValueAt(filaSeleccionada, 0);
+                        materialesSeleccionados.removeIf(mat -> mat.getNombre().equalsIgnoreCase(nombre));
+                        tableModel.removeRow(filaSeleccionada);
                     }
                 }
             });
 
         } catch (GestorException e) {
-            e.printStackTrace();  // Maneja la excepción si ocurre
+            e.printStackTrace();
+        }
+    }
+    
+    private void cargarMaterialesEnTabla(DefaultTableModel tableModel) {
+        for (MaterialDTO material : materialesSeleccionados) {
+            tableModel.addRow(new Object[]{material.getNombre(), material.getCantidad()});
         }
     }
 
@@ -184,7 +241,7 @@ public class DialogCita extends javax.swing.JDialog {
             this.lblDelete.setEnabled(false);
             this.lblEdit.setEnabled(false);
             editando = true;
-            Calendar today = Calendar.getInstance();  // Obtiene el calendario con la fecha actual
+            Calendar today = Calendar.getInstance(); 
             jcalendar.setCalendar(today);
         }
         HabilitarEditar();
@@ -331,6 +388,8 @@ public class DialogCita extends javax.swing.JDialog {
     private void EditarCita() {
     cita.setExtras(this.txtaExtras.getText());
     cita.setLugar(this.txtaLugar.getText());
+    
+    cita.setMateriales(materialesSeleccionados);
 
     Date fechaSeleccionada = this.jcalendar.getDate();
 
@@ -373,6 +432,8 @@ public class DialogCita extends javax.swing.JDialog {
     private void AgregarCita() {
         cita = new CitaDTO();
         cita.setCodigo(DiferenciadorUtils.generarCodigo());
+        
+        cita.setMateriales(materialesSeleccionados);
 
         cita.setExtras(this.txtaExtras.getText());
         cita.setLugar(this.txtaLugar.getText());
@@ -457,7 +518,7 @@ public class DialogCita extends javax.swing.JDialog {
         btnAgregar = new javax.swing.JButton();
         lblExtras1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblMaterial = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -634,13 +695,18 @@ public class DialogCita extends javax.swing.JDialog {
 
         btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
         btnAgregar.setBorder(null);
+        btnAgregar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAgregarMouseClicked(evt);
+            }
+        });
         pnlPrincipal.add(btnAgregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 290, -1, -1));
 
         lblExtras1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblExtras1.setText("Extras:");
         pnlPrincipal.add(lblExtras1, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 80, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblMaterial.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -651,7 +717,7 @@ public class DialogCita extends javax.swing.JDialog {
                 "Cantidad", "Material", ""
             }
         ));
-        jScrollPane3.setViewportView(jTable1);
+        jScrollPane3.setViewportView(tblMaterial);
 
         pnlPrincipal.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 360, -1, 210));
 
@@ -690,6 +756,10 @@ public class DialogCita extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombreMatActionPerformed
 
+    private void btnAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarMouseClicked
+        
+    }//GEN-LAST:event_btnAgregarMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
@@ -703,7 +773,6 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
     private com.toedter.calendar.JCalendar jcalendar;
     private javax.swing.JPopupMenu jpopmMateriales;
     private javax.swing.JLabel lblDelete;
@@ -719,6 +788,7 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JPanel pnlPrincipal;
     private javax.swing.JSpinner sFechaFin;
     private javax.swing.JSpinner sFechaInicio;
+    private javax.swing.JTable tblMaterial;
     private javax.swing.JTextField txtCantidad;
     private javax.swing.JTextField txtNombreMat;
     private javax.swing.JLabel txtTitulo;

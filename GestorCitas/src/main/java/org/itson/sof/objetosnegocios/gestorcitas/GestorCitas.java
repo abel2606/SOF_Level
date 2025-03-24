@@ -136,4 +136,12 @@ public class GestorCitas implements IGestorCitas{
             throw new GestorException(ex.getMessage());
         }
     }
+   @Override
+    public List<MaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws GestorException {
+        try {
+            return materialBO.obtenerMaterialesCita(cita);
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorException(ex.getMessage());
+        }
+    }
 }

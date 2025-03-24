@@ -15,6 +15,7 @@ public class MaterialDTO {
     private String nombre;
     private Float cantidad;
     private CompraDTO compra;
+    private Long id;
     private Set<CitaDTO> citas = new HashSet<>();
 
     /**
@@ -23,6 +24,14 @@ public class MaterialDTO {
      */
     public MaterialDTO() {
     }
+
+    public MaterialDTO(String nombre, Float cantidad, Long id) {
+        this.nombre = nombre;
+        this.cantidad = cantidad;
+        this.id = id;
+    }
+    
+    
 
     /**
      * Constructor que inicializa un MaterialDTO con valores específicos.
@@ -118,6 +127,14 @@ public class MaterialDTO {
         this.citas = citas;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     /**
      * Devuelve una representación en cadena del objeto MaterialDTO.
      *

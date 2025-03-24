@@ -142,7 +142,6 @@ public class CitasDAO implements ICitasDAO {
                 System.out.println("Se obtuvo cita para actualizar");
             }
 
-            // Solo actualiza los valores que no sean nulos
             if (cita.getFechaHoraInicio() != null) {
                 citaExistente.setFechaHoraInicio(cita.getFechaHoraInicio());
             }
@@ -160,6 +159,9 @@ public class CitasDAO implements ICitasDAO {
             }
             if (cita.getFotografo() != null) {
                 citaExistente.setFotografo(cita.getFotografo());
+            }
+            if(cita.getMateriales()!=null){
+                citaExistente.setMateriales(cita.getMateriales());
             }
 
             Cita resultado = em.merge(citaExistente);

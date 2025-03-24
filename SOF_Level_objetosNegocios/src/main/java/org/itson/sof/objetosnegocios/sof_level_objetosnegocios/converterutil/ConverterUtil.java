@@ -54,9 +54,9 @@ public class ConverterUtil {
         if (citaDTO.getId() != null) {
             cita.setId(citaDTO.getId());
         }
-        // if (citaDTO.getMateriales() != null) {
-        //     cita.setMateriales(materialesDTOAEntidad(citaDTO.getMateriales()));
-        // }
+        if (citaDTO.getMateriales() != null) {
+             cita.setMateriales(materialesDTOAEntidad(citaDTO.getMateriales()));
+        }
 
         return cita;
     }
@@ -234,6 +234,7 @@ public class ConverterUtil {
 
         Material material = new Material();
 
+        material.setId(materialDTO.getId());
         material.setCantidad(materialDTO.getCantidad());
         material.setNombre(materialDTO.getNombre());
 
@@ -251,6 +252,7 @@ public class ConverterUtil {
 
         MaterialDTO materialDTO = new MaterialDTO();
 
+        materialDTO.setId(material.getId());
         materialDTO.setCantidad(material.getCantidad());
         materialDTO.setNombre(material.getNombre());
 

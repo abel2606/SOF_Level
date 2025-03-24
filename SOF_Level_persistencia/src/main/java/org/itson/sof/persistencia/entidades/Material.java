@@ -3,17 +3,17 @@ package org.itson.sof.persistencia.entidades;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
-public class Material implements Serializable{
+public class Material implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +25,13 @@ public class Material implements Serializable{
     @Column(name = "cantidad")
     private Float cantidad;
     
-    @ManyToOne
-    @JoinColumn(name = "folio", nullable = false)
-    private Compra compra;
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Compra> compras = new HashSet<>();
     
     @ManyToMany(mappedBy = "materiales")
     private Set<Cita> citas = new HashSet<>();
 
-    public Material() {
-    }
+    public Material() {}
 
     public Long getId() {
         return id;
@@ -59,13 +57,13 @@ public class Material implements Serializable{
         this.cantidad = cantidad;
     }
 
-    public Compra getCompra() {
-        return compra;
+    public Set<Compra> getCompras() {
+        return compras;
     }
 
-    public void setCompra(Compra compra) {
-        this.compra = compra;
-    }    
+    public void setCompras(Set<Compra> compras) {
+        this.compras = compras;
+    }
 
     public Set<Cita> getCitas() {
         return citas;
@@ -77,9 +75,6 @@ public class Material implements Serializable{
 
     @Override
     public String toString() {
-        return "Material{" + "id=" + id + ", nombre=" + nombre + ", cantidad=" + cantidad + ", compra=" + compra + '}';
+        return "Material{" + "id=" + id + ", nombre=" + nombre + ", cantidad=" + cantidad + '}';
     }
-    
-    
-    
 }
