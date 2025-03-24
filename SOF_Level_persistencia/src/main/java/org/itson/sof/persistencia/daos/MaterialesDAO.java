@@ -44,15 +44,22 @@ public class MaterialesDAO implements IMaterialesDAO{
     }
 
     @Override
-    public List<Material> obtenerMaterialesCita(Long id) throws PersistenciaSOFException {
+    public List<Material> obtenerMaterialesCita(String codigo) throws PersistenciaSOFException {
         EntityManager em = conexion.crearConexion();
         try {
-            // Crear la consulta JPQL para obtener los materiales asociados a la cita con el id especificado
-            String jpql = "SELECT m FROM Material m JOIN m.citas c WHERE c.id = :id";
+            // Paso 1: Obtener el id de la cita usando el código
+            String jpqlCita = "SELECT c.id FROM Cita c WHERE c.codigo = :codigo";
 
-            // Ejecutar la consulta utilizando EntityManager
-            List<Material> materiales = em.createQuery(jpql, Material.class)
-                    .setParameter("id", id)
+            Long citaId = em.createQuery(jpqlCita, Long.class)
+                    .setParameter("codigo", codigo)
+                    .getSingleResult();
+
+            // Paso 2: Crear la consulta JPQL para obtener los materiales asociados a la cita con el id obtenido
+            String jpqlMateriales = "SELECT m FROM Material m JOIN m.citas c WHERE c.id = :id";
+
+            // Ejecutar la consulta para obtener los materiales
+            List<Material> materiales = em.createQuery(jpqlMateriales, Material.class)
+                    .setParameter("id", citaId)
                     .getResultList();
 
             // Retornar los materiales obtenidos
@@ -63,5 +70,6 @@ public class MaterialesDAO implements IMaterialesDAO{
             throw new PersistenciaSOFException("Error al obtener los materiales de la cita", e);
         }
     }
+
 
 }

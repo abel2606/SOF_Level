@@ -17,5 +17,5 @@ public interface IMaterialesDAO {
     
     public List<Material> obtenerTodosMateriales() throws PersistenciaSOFException;
     
-    public List<Material> obtenerMaterialesCita(Long id) throws PersistenciaSOFException;
+    public List<Material> obtenerMaterialesCita(String codigo) throws PersistenciaSOFException;
 }

@@ -63,7 +63,7 @@ public class MaterialBO implements IMaterialBO{
     public List<MaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws ObjetosNegocioException {
         try {
             // Obtener la lista de Materiales desde el DAO
-            List<Material> materiales = materialesDAO.obtenerMaterialesCita(cita.getId());
+            List<Material> materiales = materialesDAO.obtenerMaterialesCita(cita.getCodigo());
             System.out.println(materiales);
             // Convertir cada Material a MaterialDTO
             List<MaterialDTO> materialDTO = new ArrayList<>();
