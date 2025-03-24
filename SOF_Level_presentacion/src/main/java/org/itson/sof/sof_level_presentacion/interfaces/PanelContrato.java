@@ -28,6 +28,7 @@ public class PanelContrato extends javax.swing.JPanel {
     ContratoDTO contrato;
     private final PantallaPrincipal principal;
     DialogCita dlgCita;
+    boolean unicaCita;
     private boolean inicializado = false;
 
     public JPanel panelContenedor;
@@ -97,7 +98,13 @@ public class PanelContrato extends javax.swing.JPanel {
      */
     private List<CitaDTO> ConsultarCitas() {
         try {
-            return gestor.obtenerCitasContrato(contrato);
+            List<CitaDTO> citas = gestor.obtenerCitasContrato(contrato);
+            if (citas != null) {
+                if (citas.size() == 1) {
+                    unicaCita = true;
+                }
+            }
+            return citas;
         } catch (GestorException ex) {
             JOptionPane.showMessageDialog(principal, ex);
         }
@@ -110,7 +117,7 @@ public class PanelContrato extends javax.swing.JPanel {
      * @param cita cita al que se le hizo click
      */
     private void manejarClicEnCita(CitaDTO cita) {
-        dlgCita = new DialogCita(principal, true, cita);
+        dlgCita = new DialogCita(principal, true, cita, unicaCita);
         dlgCita.setVisible(true);
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -121,9 +128,8 @@ public class PanelContrato extends javax.swing.JPanel {
         });
     }
 
-
     private void añadirCita() {
-        dlgCita = new DialogCita(principal, true, null);
+        dlgCita = new DialogCita(principal, true, null,true);
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {

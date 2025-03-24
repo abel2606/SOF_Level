@@ -3,10 +3,12 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
@@ -45,9 +49,20 @@ public class DialogCita extends javax.swing.JDialog {
     private DefaultListModel<String> listModel;
     private JList<String> suggestionList;
 
-    public DialogCita(java.awt.Frame parent, boolean modal, CitaDTO cita) {
+    public DialogCita(java.awt.Frame parent, boolean modal, CitaDTO cita, boolean unicaCita) {
         super(parent, modal);
         initComponents();
+        this.setResizable(false);
+
+        if (unicaCita) {
+            // Remover el MouseListener
+            for (MouseListener listener : lblDelete.getMouseListeners()) {
+                lblDelete.removeMouseListener(listener);
+            }
+
+            // Deshabilitar el componente
+            this.lblDelete.setEnabled(false);
+        }
 
         gestor = GestorCitas.getInstance();
         this.parent = parent;
@@ -207,6 +222,65 @@ public class DialogCita extends javax.swing.JDialog {
     }
 
     private void inicializar() {
+        
+        // Limitar los caracteres en el JTextArea
+        int limiteCaracteres = 180; 
+        int limiteCaracteresPequeño = 4;
+
+// Activar el ajuste de línea para que el texto se recorra a un nuevo renglón
+        this.txtaLugar.setLineWrap(true);
+        this.txtaLugar.setWrapStyleWord(true);
+
+        this.txtaExtras.setLineWrap(true);
+        this.txtaExtras.setWrapStyleWord(true);
+
+// Limitar la cantidad de caracteres en txtaLugar
+        this.txtaLugar.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                // Evitar la mutación en el hilo de notificación usando invokeLater
+                SwingUtilities.invokeLater(() -> {
+                    if (txtaLugar.getText().length() > limiteCaracteres) {
+                        txtaLugar.setText(txtaLugar.getText().substring(0, limiteCaracteres));
+                    }
+                });
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                // No es necesario hacer nada al eliminar texto
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // No se usa para texto normal, solo para cambios de formato
+            }
+        });
+
+// Limitar la cantidad de caracteres en txtaExtras
+        this.txtaExtras.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                // Evitar la mutación en el hilo de notificación usando invokeLater
+                SwingUtilities.invokeLater(() -> {
+                    if (txtaExtras.getText().length() > limiteCaracteres) {
+                        txtaExtras.setText(txtaExtras.getText().substring(0, limiteCaracteres));
+                    }
+                });
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                // No es necesario hacer nada al eliminar texto
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // No se usa para texto normal, solo para cambios de formato
+            }
+        });
+
+
         // Crear un modelo de SpinnerDateModel independiente para cada JSpinner
         SpinnerDateModel modeloSpinnerInicio = new SpinnerDateModel();
         SpinnerDateModel modeloSpinnerFin = new SpinnerDateModel();
@@ -232,6 +306,12 @@ public class DialogCita extends javax.swing.JDialog {
         AsignarCita();
 
         if (cita == null) {
+            for (MouseListener listener : lblDelete.getMouseListeners()) {
+                lblDelete.removeMouseListener(listener);
+            }
+            for (MouseListener listener : lblEdit.getMouseListeners()) {
+                lblEdit.removeMouseListener(listener);
+            }
             this.lblDelete.setEnabled(false);
             this.lblEdit.setEnabled(false);
             editando = true;
@@ -350,6 +430,8 @@ public class DialogCita extends javax.swing.JDialog {
             this.jcalendar.setEnabled(true);
             this.sFechaFin.setEnabled(true);
             this.sFechaInicio.setEnabled(true);
+            this.btnAgregar.setEnabled(true);
+            this.tblMaterial.setEnabled(true);
         } else {
             //Volver a colocar los valores originales de la cita
             AsignarCita();
@@ -360,6 +442,8 @@ public class DialogCita extends javax.swing.JDialog {
             this.jcalendar.setEnabled(false);
             this.sFechaFin.setEnabled(false);
             this.sFechaInicio.setEnabled(false);
+            this.btnAgregar.setEnabled(false);
+            this.tblMaterial.setEnabled(false);
         }
     }
 
