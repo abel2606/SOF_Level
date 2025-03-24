@@ -114,44 +114,15 @@ public class PanelContrato extends javax.swing.JPanel {
     private void manejarClicEnCita(CitaDTO cita) {
         dlgCita = new DialogCita(principal, true, cita);
         dlgCita.setVisible(true);
-        System.out.println("Se ha cerrad dlg de agregar");
-        // Si tu modal devuelve algún resultado, puedes consultarlo aquí:
-        if (dlgCita.citaAgregada != null) {
-            actualizarListaCitas();
-        }
-    }
-
-    private void actualizarListaCitas() {
-        List<CitaDTO> citas = ConsultarCitas();
-        if (citas.isEmpty()) {
-            //Poner un mensaje si no hay contratos
-            JLabel mensaje = new JLabel("Aun no hay citas");
-            mensaje.setSize(100, 100);
-            mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 15));
-            panelContenedor.add(mensaje);
-        } else {
-            if(DialogCita.citaAgregada!=null){
-                ItemCita panel = new ItemCita(
-                        DialogCita.citaAgregada.getFechaHoraInicio());
-                panel.setPreferredSize(new Dimension(300, 50));
-                panel.setMaximumSize(new Dimension(300, 50));
-                panel.setMinimumSize(new Dimension(300, 50));
-
-                panel.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        manejarClicEnCita(DialogCita.citaAgregada);
-                    }
-                });
-
-                panelContenedor.setBackground(new Color(220, 240, 255));
-                panelContenedor.add(panel);
-                panelContenedor.add(Box.createVerticalStrut(10));
+        dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                System.out.println("El diálogo de cita se ha cerrado.");
+                agregarCitasTabla();
             }
-        }
-        scrollPaneCitas.setViewportView(panelContenedor);
-        scrollPaneCitas.getVerticalScrollBar().setUnitIncrement(20);
+        });
     }
+
 
     private void añadirCita() {
         dlgCita = new DialogCita(principal, true, null);
@@ -160,8 +131,8 @@ public class PanelContrato extends javax.swing.JPanel {
             public void windowClosed(java.awt.event.WindowEvent e) {
                 System.out.println("El diálogo de cita se ha cerrado.");
                 if (dlgCita.citaAgregada != null) {
-                    actualizarListaCitas();
-                    dlgCita.citaAgregada=null;
+                    agregarCitasTabla();
+                    dlgCita.citaAgregada = null;
                 } else {
                     JOptionPane.showMessageDialog(principal, "El diálogo fue cerrado sin cambios.");
                 }

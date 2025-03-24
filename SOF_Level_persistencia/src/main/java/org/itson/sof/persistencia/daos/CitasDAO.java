@@ -138,6 +138,9 @@ public class CitasDAO implements ICitasDAO {
             if (citaExistente == null) {
                 throw new RuntimeException("Cita no encontrada");
             }
+            else{
+                System.out.println("Se obtuvo cita para actualizar");
+            }
 
             // Solo actualiza los valores que no sean nulos
             if (cita.getFechaHoraInicio() != null) {
@@ -162,7 +165,7 @@ public class CitasDAO implements ICitasDAO {
             Cita resultado = em.merge(citaExistente);
 
             transaction.commit();
-            logger.info("Cita actualizada correctamente: ID(" + cita.getId() + ")");
+            logger.info("Cita actualizada correctamente: ID(" + resultado.getId() + ")");
             return resultado;
 
         } catch (Exception e) {

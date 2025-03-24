@@ -329,28 +329,46 @@ public class DialogCita extends javax.swing.JDialog {
     }
 
     private void EditarCita() {
-        cita.setExtras(this.txtaExtras.getText());
-        cita.setLugar(this.txtaLugar.getText());
+    cita.setExtras(this.txtaExtras.getText());
+    cita.setLugar(this.txtaLugar.getText());
 
-        cita.getFechaHoraInicio(); //TODO
-        cita.getFechaHoraFin(); //TODO
+    Date fechaSeleccionada = this.jcalendar.getDate();
 
-        for (FotografoDTO fotografo : fotografos) {
-            if (fotografo.getNombrePersona().equals(this.cbFotografo.getSelectedItem().toString())) {
-                cita.setFotografo(fotografo);
-            }
-        }
+    GregorianCalendar fechaHoraInicio = new GregorianCalendar();
+    fechaHoraInicio.setTime(fechaSeleccionada);
 
-        try {
-            gestor.actualizarCita(cita);
-            //Mostrar mensaje de confirmación
-            JOptionPane.showMessageDialog(parent, "Cita actualizada");
-            this.dispose();
-        } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(parent, ex);
-        }
+    Date horaInicio = (Date) sFechaInicio.getValue(); 
+    Date horaFin = (Date) sFechaFin.getValue(); 
 
+    fechaHoraInicio.set(Calendar.HOUR_OF_DAY, horaInicio.getHours()); 
+    fechaHoraInicio.set(Calendar.MINUTE, horaInicio.getMinutes()); 
+
+    GregorianCalendar fechaHoraFin = (GregorianCalendar) fechaHoraInicio.clone(); 
+    fechaHoraFin.set(Calendar.HOUR_OF_DAY, horaFin.getHours()); 
+    fechaHoraFin.set(Calendar.MINUTE, horaFin.getMinutes()); 
+
+    if (fechaHoraFin.before(fechaHoraInicio)) {
+        JOptionPane.showMessageDialog(parent, "La hora de fin no puede ser antes de la hora de inicio.", "Error", JOptionPane.ERROR_MESSAGE);
+        return; 
     }
+
+    cita.setFechaHoraInicio(fechaHoraInicio); 
+    cita.setFechaHoraFin(fechaHoraFin); 
+
+    for (FotografoDTO fotografo : fotografos) {
+        if (fotografo.getNombrePersona().equals(this.cbFotografo.getSelectedItem().toString())) {
+            cita.setFotografo(fotografo);
+        }
+    }
+
+    try {
+        gestor.actualizarCita(cita); 
+        JOptionPane.showMessageDialog(parent, "Cita actualizada");
+        this.dispose();
+    } catch (GestorException ex) {
+        JOptionPane.showMessageDialog(parent, ex);
+    }
+}
 
     private void AgregarCita() {
         cita = new CitaDTO();
