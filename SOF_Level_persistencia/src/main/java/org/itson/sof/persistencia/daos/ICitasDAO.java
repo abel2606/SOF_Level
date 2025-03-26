@@ -45,7 +45,20 @@ public interface ICitasDAO {
      */
     public Cita actualizarCita(Cita cita);
     
+    /**
+     * Elimina una cita existente
+     * @param cita cita a eliminar
+     * @return cita que se elimino
+     */
     public Cita eliminarcita(Cita cita);
     
+    
+    /**
+     * Obtiente una lista de citas por medio de la fecha hora de inicio y fecha hora de fin
+     * @param cita cita que contiene las fechas 
+     * @return lista de citas que coinciden
+     * @throws PersistenciaSOFException
+     */
+    public List<Cita> obtenerCitasFecha (Cita cita) throws PersistenciaSOFException;
     
 }

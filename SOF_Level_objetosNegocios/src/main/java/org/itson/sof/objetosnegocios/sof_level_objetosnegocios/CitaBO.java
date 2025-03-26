@@ -45,6 +45,10 @@ public class CitaBO implements ICitaBO {
         Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
 
         try {
+            if (citasDAO.obtenerCitasFecha(cita).size()!=0){
+                throw new ObjetosNegocioException ("Se han encontrado citas que interfieren con esta, cambie la fecha");
+            }
+            
             cita = citasDAO.agregarCita(cita);
             return citaDTO;
         } catch (Exception ex) {
@@ -63,8 +67,14 @@ public class CitaBO implements ICitaBO {
     @Override
     public CitaDTO actualizarCita(CitaDTO citaDTO) throws ObjetosNegocioException {
         Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
+        
+        
 
         try {
+            if (citasDAO.obtenerCitasFecha(cita).size()!=0){
+                throw new ObjetosNegocioException ("Se han encontrado citas que interfieren con esta, cambie la fecha");
+            }
+            
             cita = citasDAO.actualizarCita(cita);
             citaDTO = ConverterUtil.citaEntidadADTO(cita);
             return citaDTO;

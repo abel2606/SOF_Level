@@ -4,12 +4,16 @@
  */
 package org.itson.sof.persistencia.daos;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.entidades.Cita;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
@@ -104,6 +108,10 @@ public class CitasDAO implements ICitasDAO {
         EntityManager em = conexion.crearConexion();
         EntityTransaction transaction = em.getTransaction();
 
+        if (cita.getLugar() == null || cita.getLugar() == "") {
+            cita.setLugar("PENDIENTE");
+        }
+
         try {
             transaction.begin();
 
@@ -137,8 +145,7 @@ public class CitasDAO implements ICitasDAO {
 
             if (citaExistente == null) {
                 throw new RuntimeException("Cita no encontrada");
-            }
-            else{
+            } else {
                 System.out.println("Se obtuvo cita para actualizar");
             }
 
@@ -160,7 +167,7 @@ public class CitasDAO implements ICitasDAO {
             if (cita.getFotografo() != null) {
                 citaExistente.setFotografo(cita.getFotografo());
             }
-            if(cita.getMateriales()!=null){
+            if (cita.getMateriales() != null) {
                 citaExistente.setMateriales(cita.getMateriales());
             }
 
@@ -218,6 +225,50 @@ public class CitasDAO implements ICitasDAO {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public List<Cita> obtenerCitasFecha(Cita cita) {
+
+        EntityManager em = conexion.crearConexion();
+        List<Cita> citas = new ArrayList<>();
+
+        try {
+            GregorianCalendar fechaInicio = cita.getFechaHoraInicio();
+            GregorianCalendar fechaFin = cita.getFechaHoraFin();
+
+            GregorianCalendar unaHoraAntes = (GregorianCalendar) fechaInicio.clone();
+            unaHoraAntes.add(Calendar.HOUR, -1);
+
+            GregorianCalendar unaHoraDespues = (GregorianCalendar) fechaFin.clone();
+            unaHoraDespues.add(Calendar.HOUR, 1);
+
+            TypedQuery<Cita> query = em.createQuery(
+                    "SELECT c FROM Cita c WHERE "
+                    + "c.codigo <> :codigo AND ("
+                    + "(c.fechaHoraInicio BETWEEN :inicio AND :fin "
+                    + "OR c.fechaHoraFin BETWEEN :inicio AND :fin "
+                    + "OR (:inicio BETWEEN c.fechaHoraInicio AND c.fechaHoraFin) "
+                    + "OR (:fin BETWEEN c.fechaHoraInicio AND c.fechaHoraFin)) "
+                    + "OR (c.fechaHoraFin BETWEEN :antes AND :inicio) "
+                    + "OR (c.fechaHoraInicio BETWEEN :fin AND :despues))", Cita.class
+            );
+
+            query.setParameter("codigo", cita.getCodigo());  // Excluir la cita con el mismo código
+            query.setParameter("inicio", fechaInicio);
+            query.setParameter("fin", fechaFin);
+            query.setParameter("antes", unaHoraAntes);
+            query.setParameter("despues", unaHoraDespues);
+
+            citas = query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        return citas;
+
     }
 
 }

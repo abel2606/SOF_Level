@@ -35,8 +35,9 @@ public class PruebasCitas {
         
         citaDTO.setCodigo("12345");
         citaDTO.setExtras("Llevar globos");
-        citaDTO.setFechaHoraFin(new GregorianCalendar());
-        citaDTO.setFechaHoraInicio(new GregorianCalendar());
+        citaDTO.setFechaHoraFin(new GregorianCalendar(2025, 3, 18, 11, 0));
+        citaDTO.setFechaHoraInicio(new GregorianCalendar(2025, 3, 18, 10, 0));
+        citaDTO.setLugar("La laguna");
         
         ContratoDTO contrato = new ContratoDTO();
         try {
@@ -57,9 +58,9 @@ public class PruebasCitas {
         citaDTO.setFotografo(fotografo);
         
         try{
-            citaBO.crearCita(citaDTO);
+            citaBO.actualizarCita(citaDTO);
         }catch (ObjetosNegocioException ex){
-            System.out.println("IH NO SE PUDO");
+            System.err.println(ex.getMessage());
         }
         
         
