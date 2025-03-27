@@ -15,6 +15,7 @@ import org.itson.sof.persistencia.daos.ICitasDAO;
 import org.itson.sof.persistencia.daos.IContratosDAO;
 import org.itson.sof.persistencia.daos.IFotografoDAO;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.Cliente;
 import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.entidades.Fotografo;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
@@ -24,7 +25,7 @@ public class PruebaMapeo {
     static final Logger logger = Logger.getLogger(PruebaMapeo.class.getName());
 
     public static void main(String[] args) throws PersistenciaSOFException {
-        boolean salir = false;
+boolean salir = false;
         Scanner sc = new Scanner(System.in);
         IConexion conexion;
         conexion = new Conexion();
@@ -33,9 +34,17 @@ public class PruebaMapeo {
         ICitasDAO citasDAO = new CitasDAO(conexion);
         IFotografoDAO fotografosDAO = new FotografoDAO(conexion);
 
+        Cliente cliente = new Cliente();
         
-        System.out.println((fotografosDAO.obtenerFotografoNombreUsuario("carlosL")).getNombrePersona());
-        System.out.println(contratosDAO.obtenerContratoFolio("FOLIO123").getTematica());
+        cliente.setCorreo("abel@gmail.com");
+        cliente.setNombre("juanito");
+        cliente.setTelefono("545454");
+        
+        
+        Cita cita = new Cita();
+        cita.setLugar("dslfkjsd");        
+        
+        citasDAO.agregarCita(cita);
         
 //        System.out.println("*****************");
 //        System.out.println("Total de contratos:");

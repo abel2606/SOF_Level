@@ -37,6 +37,9 @@ public class PantallaCita extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jPopupMenu2 = new javax.swing.JPopupMenu();
+        popupMenu1 = new java.awt.PopupMenu();
         pnlPrincipal = new javax.swing.JPanel();
         btnCerrar = new javax.swing.JLabel();
         btnEditar = new javax.swing.JLabel();
@@ -59,6 +62,10 @@ public class PantallaCita extends javax.swing.JFrame {
         txtaExtras = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtaLugar = new javax.swing.JTextArea();
+        scrollbar1 = new java.awt.Scrollbar();
+        choice1 = new java.awt.Choice();
+
+        popupMenu1.setLabel("popupMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(220, 240, 255));
@@ -194,6 +201,8 @@ public class PantallaCita extends javax.swing.JFrame {
         jScrollPane2.setViewportView(txtaLugar);
 
         pnlPrincipal.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 100, 310, 70));
+        pnlPrincipal.add(scrollbar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 130, -1, -1));
+        pnlPrincipal.add(choice1, new org.netbeans.lib.awtextra.AbsoluteConstraints(538, 60, 130, -1));
 
         getContentPane().add(pnlPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
@@ -221,7 +230,10 @@ public class PantallaCita extends javax.swing.JFrame {
     private javax.swing.JLabel btnEditar;
     private javax.swing.JLabel btnEliminar;
     private javax.swing.JComboBox<String> cbFotografo;
+    private java.awt.Choice choice1;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblExtras;
@@ -232,8 +244,10 @@ public class PantallaCita extends javax.swing.JFrame {
     private javax.swing.JPanel pnlFecha;
     private javax.swing.JPanel pnlHorarios;
     private javax.swing.JPanel pnlPrincipal;
+    private java.awt.PopupMenu popupMenu1;
     private javax.swing.JSpinner sFechaFin;
     private javax.swing.JSpinner sFechaInicio;
+    private java.awt.Scrollbar scrollbar1;
     private javax.swing.JLabel txtTitulo;
     private javax.swing.JTextArea txtaExtras;
     private javax.swing.JTextArea txtaLugar;

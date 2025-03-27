@@ -116,6 +116,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         btnMenuDesplegable = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         pnlCentral.setBackground(new java.awt.Color(220, 240, 255));

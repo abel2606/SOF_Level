@@ -139,7 +139,7 @@ public class PanelContrato extends javax.swing.JPanel {
                     agregarCitasTabla();
                     dlgCita.citaAgregada = null;
                 } else {
-                    JOptionPane.showMessageDialog(principal, "El diálogo fue cerrado sin cambios.");
+                    System.out.println("El dialogo fue cerrado sin cambios");
                 }
             }
         });

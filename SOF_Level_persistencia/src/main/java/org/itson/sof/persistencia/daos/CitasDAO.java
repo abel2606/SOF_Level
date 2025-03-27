@@ -123,9 +123,7 @@ public class CitasDAO implements ICitasDAO {
             return cita;
 
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
+            
             logger.log(Level.SEVERE, "Error al agregar la cita", e);
             return null;
         } finally {
