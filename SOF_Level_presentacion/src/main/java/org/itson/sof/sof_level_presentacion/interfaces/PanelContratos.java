@@ -5,8 +5,6 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -14,7 +12,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
-import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ContratoBO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_level_presentacion.componentes.ItemContrato;
 
@@ -51,7 +48,8 @@ public class PanelContratos extends javax.swing.JPanel {
                             contrato.getCliente().getNombre(),
                             contrato.getPaquete().getNombre(),
                             contrato.getEstado(),
-                            contrato.getTematica());
+                            contrato.getTematica(), 
+                            contrato.getFolio());
 
                     panel.addMouseListener(new MouseAdapter() {
                         @Override

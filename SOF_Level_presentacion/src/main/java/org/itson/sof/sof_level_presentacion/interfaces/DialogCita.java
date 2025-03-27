@@ -499,10 +499,10 @@ public class DialogCita extends javax.swing.JDialog {
 
     try {
         gestor.actualizarCita(cita); 
-        JOptionPane.showMessageDialog(parent, "Cita actualizada");
+        JOptionPane.showMessageDialog(this, "Cita actualizada");
         this.dispose();
     } catch (GestorException ex) {
-        JOptionPane.showMessageDialog(parent, ex);
+        JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
     }
 }
 
@@ -556,7 +556,7 @@ public class DialogCita extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(parent, "Cita agregada");
             this.dispose();
         } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(parent, ex);
+              JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error al crear la cita", JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -711,6 +711,11 @@ public class DialogCita extends javax.swing.JDialog {
                 btnAceptarMouseClicked(evt);
             }
         });
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAceptarActionPerformed(evt);
+            }
+        });
         pnlPrincipal.add(btnAceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 590, 120, 30));
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -836,6 +841,10 @@ public class DialogCita extends javax.swing.JDialog {
     private void btnAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarMouseClicked
         
     }//GEN-LAST:event_btnAgregarMouseClicked
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAceptarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

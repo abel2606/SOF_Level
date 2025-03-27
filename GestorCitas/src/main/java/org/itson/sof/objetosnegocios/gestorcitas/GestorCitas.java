@@ -142,4 +142,9 @@ public class GestorCitas implements IGestorCitas{
             throw new GestorException(ex.getMessage());
         }
     }
+
+    @Override
+    public ContratoDTO obtenerContrato(String folio) throws GestorException {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

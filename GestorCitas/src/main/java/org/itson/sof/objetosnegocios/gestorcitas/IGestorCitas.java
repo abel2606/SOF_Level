@@ -90,4 +90,13 @@ public interface IGestorCitas {
      * @throws GestorException 
      */
     public boolean validarCodigo(String tabla, String codigo) throws GestorException;
+    
+    /**
+     * Método que obitene un contrato a través de su folio
+     * @param folio folio del contrato
+     * @return contrato obtenido
+     * @throws GestorException 
+     */
+    public ContratoDTO obtenerContrato(String folio) throws GestorException;
+    
 }

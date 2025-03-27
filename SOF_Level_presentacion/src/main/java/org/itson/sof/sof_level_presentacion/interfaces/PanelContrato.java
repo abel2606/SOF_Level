@@ -51,6 +51,7 @@ public class PanelContrato extends javax.swing.JPanel {
         }
         contrato = principal.getContrato();
         agregarCitasTabla();
+        llenarCamposContrato();
     }
 
     private void agregarCitasTabla() {
@@ -144,6 +145,17 @@ public class PanelContrato extends javax.swing.JPanel {
         });
         dlgCita.setVisible(true);
     }
+    
+    
+    private void llenarCamposContrato (){
+        txtCliente.setText(contrato.getCliente().getNombre());
+        txtTematica.setText(contrato.getTematica());
+        txtPrecio.setText("$ "+contrato.getPaquete().getPrecio());
+        
+        txtCliente.setEnabled(false);
+        txtTematica.setEnabled(false);
+        txtPrecio.setEnabled(false);
+    }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -174,6 +186,8 @@ public class PanelContrato extends javax.swing.JPanel {
 
         lblCliente.setText("Cliente:");
         add(lblCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 50, 20));
+
+        txtCliente.setEditable(false);
         add(txtCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 40, 300, -1));
 
         lblPaquete.setText("Paquete:");

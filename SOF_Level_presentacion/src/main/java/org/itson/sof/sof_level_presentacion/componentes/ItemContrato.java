@@ -18,13 +18,15 @@ public class ItemContrato extends javax.swing.JPanel {
      * @param paquete
      * @param fechaInicio
      * @param fechaFin
+     * @param folio
      */
-    public ItemContrato(String nombreCliente, String paquete, String fechaInicio, String fechaFin) {
+    public ItemContrato(String nombreCliente, String paquete, String fechaInicio, String fechaFin, String folio) {
         initComponents();
         lblNombreCliente.setText("Cliente: " + nombreCliente);
         lblPaquete.setText("Paquete: " + paquete);
         lblFechaInicio.setText(fechaInicio);
         lblFechaFin.setText(fechaFin);
+        lblFolio.setText(folio);
 
         int radius = 50;
         setBorder(BorderFactory.createCompoundBorder(
@@ -54,6 +56,7 @@ public class ItemContrato extends javax.swing.JPanel {
         lblFechaInicio = new javax.swing.JLabel();
         lblNombreCliente = new javax.swing.JLabel();
         lblFechaInicio1 = new javax.swing.JLabel();
+        lblFolio = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -78,6 +81,10 @@ public class ItemContrato extends javax.swing.JPanel {
         lblFechaInicio1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblFechaInicio1.setText("-");
 
+        lblFolio.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        lblFolio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblFolio.setText("19/05/2025");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -88,11 +95,14 @@ public class ItemContrato extends javax.swing.JPanel {
                     .addComponent(lblPaquete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblNombreCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblFechaInicio1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblFechaFin)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblFechaInicio1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblFechaFin))
+                    .addComponent(lblFolio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(28, 28, 28))
         );
         layout.setVerticalGroup(
@@ -104,9 +114,14 @@ public class ItemContrato extends javax.swing.JPanel {
                     .addComponent(lblFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblFechaInicio1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
-                .addComponent(lblPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblFolio, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -115,6 +130,7 @@ public class ItemContrato extends javax.swing.JPanel {
     private javax.swing.JLabel lblFechaFin;
     private javax.swing.JLabel lblFechaInicio;
     private javax.swing.JLabel lblFechaInicio1;
+    private javax.swing.JLabel lblFolio;
     private javax.swing.JLabel lblNombreCliente;
     private javax.swing.JLabel lblPaquete;
     // End of variables declaration//GEN-END:variables

@@ -51,7 +51,8 @@ public class PantallaContratos extends javax.swing.JFrame {
                         contrato.getCliente().getNombre(),
                         contrato.getPaquete().getNombre(),
                         contrato.getEstado(),
-                        contrato.getTematica());
+                        contrato.getTematica(), 
+                        contrato.getFolio());
 
                 panel.addMouseListener(new MouseAdapter() {
                     @Override
