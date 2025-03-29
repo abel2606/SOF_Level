@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -29,6 +30,7 @@ import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.DiferenciadorUtils;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.CitaMaterialDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
 
@@ -85,7 +87,9 @@ public class DialogCita extends javax.swing.JDialog {
         try {
             materiales = gestor.obtenerMateriales();
             if (cita != null) {
-                materialesSeleccionados = gestor.obtenerMaterialesCita(cita);
+                gestor.obtenerMaterialesCita(cita).forEach((materialCita) -> {
+                    materialesSeleccionados.add(materialCita.getMaterial());
+                });
             }
 
             DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0);
@@ -472,7 +476,11 @@ public class DialogCita extends javax.swing.JDialog {
         cita.setExtras(this.txtaExtras.getText());
         cita.setLugar(this.txtaLugar.getText());
 
-        cita.setMateriales(materialesSeleccionados);
+        List<CitaMaterialDTO> citaMateriales = materialesSeleccionados.stream()
+                .map(material -> new CitaMaterialDTO(material, material.getCantidad()))
+                .collect(Collectors.toList());
+        
+        cita.setCitaMateriales(citaMateriales);
 
         Date fechaSeleccionada = this.jcalendar.getDate();
 
@@ -516,7 +524,11 @@ public class DialogCita extends javax.swing.JDialog {
         cita = new CitaDTO();
         cita.setCodigo(DiferenciadorUtils.generarCodigo());
 
-        cita.setMateriales(materialesSeleccionados);
+        List<CitaMaterialDTO> citaMateriales = materialesSeleccionados.stream()
+                .map(material -> new CitaMaterialDTO(material, material.getCantidad()))
+                .collect(Collectors.toList());
+
+        cita.setCitaMateriales(citaMateriales);
 
         cita.setExtras(this.txtaExtras.getText());
         cita.setLugar(this.txtaLugar.getText());

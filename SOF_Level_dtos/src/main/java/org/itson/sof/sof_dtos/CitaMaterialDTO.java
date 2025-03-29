@@ -21,6 +21,15 @@ public class CitaMaterialDTO {
         this.cantidad = cantidad;
     }
 
+    public CitaMaterialDTO(MaterialDTO material, float cantidad) {
+        this.material = material;
+        this.cantidad = cantidad;
+    }
+    
+    
+    
+    
+
     public Long getId() {
         return id;
     }
