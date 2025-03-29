@@ -31,6 +31,11 @@ public class CitaMaterial implements Serializable {
     
     public CitaMaterial() {}
     
+    public CitaMaterial(Cita cita, Material material, float cantidad) {
+        this.cita = cita;
+        this.material = material;
+        this.cantidad = cantidad;
+    }
     public Long getId() {
         return id;
     }

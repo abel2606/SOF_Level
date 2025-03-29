@@ -1,4 +1,3 @@
-
 package org.itson.sof.persistencia.daos;
 
 import java.util.List;
@@ -6,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import org.itson.sof.persistencia.conexion.IConexion;
+import org.itson.sof.persistencia.entidades.CitaMaterial;
 import org.itson.sof.persistencia.entidades.Material;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
@@ -13,9 +13,9 @@ import org.itson.sof.persistencia.exception.PersistenciaSOFException;
  *
  * @author JazmE
  */
-public class MaterialesDAO implements IMaterialesDAO{
-    
-     private final IConexion conexion;
+public class MaterialesDAO implements IMaterialesDAO {
+
+    private final IConexion conexion;
     static final Logger logger = Logger.getLogger(ContratosDAO.class.getName());
 
     public MaterialesDAO(IConexion conexion) {
@@ -38,32 +38,30 @@ public class MaterialesDAO implements IMaterialesDAO{
     }
 
     @Override
-    public List<Material> obtenerMaterialesCita(String codigo) throws PersistenciaSOFException {
+    public List<CitaMaterial> obtenerMaterialesCita(String codigo) throws PersistenciaSOFException {
         EntityManager em = conexion.crearConexion();
         try {
             // Paso 1: Obtener el id de la cita usando el código
             String jpqlCita = "SELECT c.id FROM Cita c WHERE c.codigo = :codigo";
-
             Long citaId = em.createQuery(jpqlCita, Long.class)
                     .setParameter("codigo", codigo)
                     .getSingleResult();
 
-            // Paso 2: Crear la consulta JPQL para obtener los materiales asociados a la cita con el id obtenido
-            String jpqlMateriales = "SELECT m FROM Material m JOIN m.citas c WHERE c.id = :id";
-
-            // Ejecutar la consulta para obtener los materiales
-            List<Material> materiales = em.createQuery(jpqlMateriales, Material.class)
+            // Paso 2: Obtener los CitaMaterial que están relacionados con la cita
+            String jpqlMateriales = "SELECT cm FROM CitaMaterial cm WHERE cm.cita.id = :id";
+            List<CitaMaterial> citaMateriales = em.createQuery(jpqlMateriales, CitaMaterial.class)
                     .setParameter("id", citaId)
                     .getResultList();
 
-            // Retornar los materiales obtenidos
-            return materiales;
+            // Retornar la lista de CitaMaterial
+            return citaMateriales;
 
         } catch (Exception e) {
             // Manejar cualquier error relacionado con la persistencia
             throw new PersistenciaSOFException("Error al obtener los materiales de la cita", e);
+        } finally {
+            em.close();
         }
     }
-
 
 }

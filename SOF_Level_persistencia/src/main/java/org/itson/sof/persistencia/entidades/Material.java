@@ -28,8 +28,8 @@ public class Material implements Serializable {
     @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Compra> compras = new HashSet<>();
     
-    @ManyToMany(mappedBy = "materiales")
-    private Set<Cita> citas = new HashSet<>();
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CitaMaterial> citaMateriales = new HashSet<>();
 
     public Material() {}
 
@@ -65,16 +65,20 @@ public class Material implements Serializable {
         this.compras = compras;
     }
 
-    public Set<Cita> getCitas() {
-        return citas;
+    public Set<CitaMaterial> getCitaMateriales() {
+        return citaMateriales;
     }
 
-    public void setCitas(Set<Cita> citas) {
-        this.citas = citas;
+    public void setCitaMateriales(Set<CitaMaterial> citaMateriales) {
+        this.citaMateriales = citaMateriales;
     }
 
     @Override
     public String toString() {
-        return "Material{" + "id=" + id + ", nombre=" + nombre + ", cantidad=" + cantidad + '}';
+        return "Material{" + "id=" + id + ", nombre=" + nombre + ", cantidad=" + cantidad + ", compras=" + compras + ", citaMateriales=" + citaMateriales + '}';
     }
+
+    
+
+    
 }

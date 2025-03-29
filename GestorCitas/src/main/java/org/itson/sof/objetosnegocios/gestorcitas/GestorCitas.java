@@ -12,6 +12,7 @@ import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.IMaterialBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.MaterialBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.CitaMaterialDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
@@ -134,8 +135,9 @@ public class GestorCitas implements IGestorCitas{
             throw new GestorException(ex.getMessage());
         }
     }
-   @Override
-    public List<MaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws GestorException {
+    
+    @Override
+    public List<CitaMaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws GestorException {
         try {
             return materialBO.obtenerMaterialesCita(cita);
         } catch (ObjetosNegocioException ex) {

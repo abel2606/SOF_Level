@@ -3,12 +3,14 @@ package org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil;
 import java.util.ArrayList;
 import java.util.List;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.CitaMaterial;
 import org.itson.sof.persistencia.entidades.Cliente;
 import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.entidades.Fotografo;
 import org.itson.sof.persistencia.entidades.Material;
 import org.itson.sof.persistencia.entidades.Paquete;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.CitaMaterialDTO;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
@@ -54,12 +56,85 @@ public class ConverterUtil {
         if (citaDTO.getId() != null) {
             cita.setId(citaDTO.getId());
         }
-        if (citaDTO.getMateriales() != null) {
-             cita.setMateriales(materialesDTOAEntidad(citaDTO.getMateriales()));
+        if (citaDTO.getCitaMateriales() != null) {
+            cita.setCitaMateriales(citaMaterialesDTOAEntidad(citaDTO.getCitaMateriales(), cita));
         }
-
         return cita;
     }
+    
+    /**
+     * Convierte un materialDTO a una entidad Material.
+     *
+     * @param materialDTO material a convertir.
+     * @return material convertido.
+     */
+    public static Material materialDTOAEntidad(MaterialDTO materialDTO) {
+        Material material = new Material();
+        material.setId(materialDTO.getId());
+        material.setNombre(materialDTO.getNombre());
+        material.setCantidad(materialDTO.getCantidad());
+        return material;
+    }
+
+
+/**
+     * Convierte un material entidad a un materialDTO.
+     *
+     * @param material material a convertir.
+     * @return materialDTO convertido.
+     */
+    public static MaterialDTO materialEntidadADTO(Material material) {
+        MaterialDTO materialDTO = new MaterialDTO();
+        materialDTO.setId(material.getId());
+        materialDTO.setNombre(material.getNombre());
+        materialDTO.setCantidad(material.getCantidad());
+        return materialDTO;
+    }
+
+
+    /**
+     * Convierte una lista de CitaMaterial entidad a una lista de CitaMaterialDTO.
+     *
+     * @param citaMateriales Lista de CitaMaterial entidad.
+     * @return Lista de CitaMaterialDTO.
+     */
+    public static List<CitaMaterialDTO> citaMaterialesEntidadADTO(List<CitaMaterial> citaMateriales) {
+        List<CitaMaterialDTO> citaMaterialDTOs = new ArrayList<>();
+
+        for (CitaMaterial citaMaterial : citaMateriales) {
+            CitaMaterialDTO citaMaterialDTO = new CitaMaterialDTO();
+            citaMaterialDTO.setId(citaMaterial.getId());
+            citaMaterialDTO.setCantidad(citaMaterial.getCantidad());
+            citaMaterialDTO.setMaterial(materialEntidadADTO(citaMaterial.getMaterial()));
+            citaMaterialDTOs.add(citaMaterialDTO);
+        }
+
+        return citaMaterialDTOs;
+    }
+
+
+    /**
+     * Convierte una lista de CitaMaterialDTO a una lista de CitaMaterial entidad.
+     *
+     * @param citaMaterialDTOs Lista de CitaMaterialDTO.
+     * @param cita Cita asociada.
+     * @return Lista de CitaMaterial entidad.
+     */
+    public static List<CitaMaterial> citaMaterialesDTOAEntidad(List<CitaMaterialDTO> citaMaterialDTOs, Cita cita) {
+        List<CitaMaterial> citaMateriales = new ArrayList<>();
+
+        for (CitaMaterialDTO citaMaterialDTO : citaMaterialDTOs) {
+            CitaMaterial citaMaterial = new CitaMaterial();
+            citaMaterial.setCita(cita);
+            citaMaterial.setCantidad(citaMaterialDTO.getCantidad());
+            citaMaterial.setMaterial(materialDTOAEntidad(citaMaterialDTO.getMaterial()));
+            citaMateriales.add(citaMaterial);
+        }
+
+        return citaMateriales;
+    }
+    
+ 
 
     /**
      * Convierte una cita entidad a una citaDTO
@@ -141,7 +216,7 @@ public class ConverterUtil {
         if (contrato.getId() != null) {
             contratoDTO.setId(contrato.getId());
         }
-        
+
         if (contrato.getEstado() != null) {
             contratoDTO.setEstado(contrato.getEstado());
         }
@@ -154,7 +229,7 @@ public class ConverterUtil {
             clienteDTO.setTelefono(cliente.getTelefono());
             contratoDTO.setCliente(clienteDTO);
         }
-        
+
         if (contrato.getPaquete() != null) {
             Paquete paquete = contrato.getPaquete();
             PaqueteDTO paqueteDTO = new PaqueteDTO();
@@ -222,42 +297,6 @@ public class ConverterUtil {
         fotografoDTO.setNombreUsuario(fotografo.getNombreUsuario());
         fotografoDTO.setId(fotografo.getId());
         return fotografoDTO;
-    }
-
-    /**
-     * Metodo que convierte un material DTO a un material entidad
-     *
-     * @param materialDTO material a convertir
-     * @return material convertido
-     */
-    public static Material materialDTOAEntidad(MaterialDTO materialDTO) {
-
-        Material material = new Material();
-
-        material.setId(materialDTO.getId());
-        material.setCantidad(materialDTO.getCantidad());
-        material.setNombre(materialDTO.getNombre());
-
-        return material;
-
-    }
-
-    /**
-     * Metodo que convierte un material entidad a un material DTO
-     *
-     * @param material material a convertir
-     * @return material convertido
-     */
-    public static MaterialDTO materialEntidadADTO(Material material) {
-
-        MaterialDTO materialDTO = new MaterialDTO();
-
-        materialDTO.setId(material.getId());
-        materialDTO.setCantidad(material.getCantidad());
-        materialDTO.setNombre(material.getNombre());
-
-        return materialDTO;
-
     }
 
     /**

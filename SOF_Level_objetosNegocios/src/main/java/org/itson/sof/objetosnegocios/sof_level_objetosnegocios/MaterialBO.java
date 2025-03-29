@@ -1,4 +1,3 @@
-
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
 import java.util.ArrayList;
@@ -13,28 +12,29 @@ import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.daos.IMaterialesDAO;
 import org.itson.sof.persistencia.daos.MaterialesDAO;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.CitaMaterial;
 import org.itson.sof.persistencia.entidades.Material;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.CitaMaterialDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
 
 /**
  *
  * @author haesp
  */
-public class MaterialBO implements IMaterialBO{
+public class MaterialBO implements IMaterialBO {
 
-    
     private IMaterialesDAO materialesDAO;
 
     public MaterialBO() {
         IConexion conexion = new Conexion();
         this.materialesDAO = new MaterialesDAO(conexion);
     }
-    
+
     @Override
     public List<MaterialDTO> obtenerMateriales() throws ObjetosNegocioException {
-        
+
         try {
             // Obtienes las entidades de contratos desde el DAO
             List<Material> materiales = this.materialesDAO.obtenerTodosMateriales();
@@ -55,23 +55,21 @@ public class MaterialBO implements IMaterialBO{
             return null;
         }
     }
-    
-    @Override
-    public List<MaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws ObjetosNegocioException {
-        try {
-            // Obtener la lista de Materiales desde el DAO
-            List<Material> materiales = materialesDAO.obtenerMaterialesCita(cita.getCodigo());
-            
-            // Convertir cada Material a MaterialDTO
-            List<MaterialDTO> materialDTO = new ArrayList<>();
-            for (Material material : materiales) {
-                materialDTO.add(ConverterUtil.materialEntidadADTO(material));
-            }
 
-            return materialDTO;
+    @Override
+    public List<CitaMaterialDTO> obtenerMaterialesCita(CitaDTO citaDTO) throws ObjetosNegocioException {
+        try {
+            // Obtener la lista de CitaMaterial desde el DAO usando el código de la cita
+            List<CitaMaterial> citaMateriales = materialesDAO.obtenerMaterialesCita(citaDTO.getCodigo());
+
+            // Convertir los CitaMaterial a CitaMaterialDTO usando ConverterUtil
+            List<CitaMaterialDTO> citaMaterialDTOs = ConverterUtil.citaMaterialesEntidadADTO(citaMateriales); // Llamamos a la versión que acepta lista
+
+            return citaMaterialDTOs;
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException(ex.getMessage());
+            Logger.getLogger(MaterialBO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ObjetosNegocioException("Error al obtener los materiales de la cita: " + ex.getMessage());
         }
     }
-    
+
 }

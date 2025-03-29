@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Cita implements Serializable {
@@ -45,14 +47,8 @@ public class Cita implements Serializable {
     @JoinColumn(name = "fotografo_id")
     private Fotografo fotografo;
 
-    @ManyToMany
-    @JoinTable(
-            name = "cita_material",
-            joinColumns = @JoinColumn(name = "cita_id"),
-            inverseJoinColumns = @JoinColumn(name = "material_id")
-    )
-    private List<Material> materiales = new ArrayList<>();
-
+    @OneToMany(mappedBy = "cita", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CitaMaterial> citaMateriales = new ArrayList<>();
     public Cita() {
     }
 
@@ -113,12 +109,12 @@ public class Cita implements Serializable {
         this.contrato = contrato;
     }
 
-    public List<Material> getMateriales() {
-        return materiales;
+    public List<CitaMaterial> getCitaMateriales() {
+        return citaMateriales;
     }
 
-    public void setMateriales(List<Material> materiales) {
-        this.materiales = materiales;
+    public void setCitaMateriales(List<CitaMaterial> citaMateriales) {
+        this.citaMateriales = citaMateriales;
     }
 
     public Fotografo getFotografo() {
@@ -131,8 +127,10 @@ public class Cita implements Serializable {
 
     @Override
     public String toString() {
-        return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", fotografo=" + fotografo.getNombrePersona() + ", materiales=" + materiales.size() + '}';
+        return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", contrato=" + contrato + ", fotografo=" + fotografo + ", citaMateriales=" + citaMateriales + '}';
     }
+
+    
     
     
 

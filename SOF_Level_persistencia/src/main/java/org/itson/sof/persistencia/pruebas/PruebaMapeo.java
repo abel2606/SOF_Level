@@ -1,11 +1,13 @@
 package org.itson.sof.persistencia.pruebas;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
 import org.itson.sof.persistencia.conexion.Conexion;
 import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.daos.CitasDAO;
@@ -15,9 +17,11 @@ import org.itson.sof.persistencia.daos.ICitasDAO;
 import org.itson.sof.persistencia.daos.IContratosDAO;
 import org.itson.sof.persistencia.daos.IFotografoDAO;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.CitaMaterial;
 import org.itson.sof.persistencia.entidades.Cliente;
 import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.entidades.Fotografo;
+import org.itson.sof.persistencia.entidades.Material;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
 public class PruebaMapeo {
@@ -25,7 +29,7 @@ public class PruebaMapeo {
     static final Logger logger = Logger.getLogger(PruebaMapeo.class.getName());
 
     public static void main(String[] args) throws PersistenciaSOFException {
-boolean salir = false;
+        boolean salir = false;
         Scanner sc = new Scanner(System.in);
         IConexion conexion;
         conexion = new Conexion();
@@ -34,18 +38,54 @@ boolean salir = false;
         ICitasDAO citasDAO = new CitasDAO(conexion);
         IFotografoDAO fotografosDAO = new FotografoDAO(conexion);
 
-        Cliente cliente = new Cliente();
-        
-        cliente.setCorreo("abel@gmail.com");
-        cliente.setNombre("juanito");
-        cliente.setTelefono("545454");
-        
-        
-        Cita cita = new Cita();
-        cita.setLugar("dslfkjsd");        
-        
-        citasDAO.agregarCita(cita);
-        
+        String codigoCita = "CITA123";  // Este es el código de la cita que queremos obtener
+        try {
+            Cita cita = citasDAO.obtenerCitaCodigo(codigoCita);
+
+            if (cita != null) {
+                // Crear los nuevos materiales que queremos agregar
+                List<CitaMaterial> nuevosMateriales = new ArrayList<>();
+
+                // Crear CitaMaterial, en este caso simulamos un material llamado "Material X"
+                Material materialX = new Material();  // Este debe ser un objeto Material que ya exista en tu base de datos
+                materialX.setNombre("globo verde");
+                materialX.setCantidad(0.0f);  // Cantidad solicitada
+
+                CitaMaterial citaMaterial = new CitaMaterial();
+                citaMaterial.setMaterial(materialX);
+                citaMaterial.setCantidad(0);  // Cuántos materiales de este tipo se van a usar
+
+                 Material materialY = new Material();  // Este debe ser un objeto Material que ya exista en tu base de datos
+                materialY.setNombre("mazapanes");
+                materialY.setCantidad(10.0f);  // Cantidad solicitada
+
+                CitaMaterial citaMaterial2 = new CitaMaterial();
+                citaMaterial2.setMaterial(materialY);
+                citaMaterial2.setCantidad(3);  // Cuántos materiales de este tipo se van a usar
+
+                nuevosMateriales.add(citaMaterial2);
+                nuevosMateriales.add(citaMaterial);
+                // Asignar los nuevos materiales a la cita
+                cita.setCitaMateriales(nuevosMateriales);
+
+                // Ahora actualizamos la cita con los nuevos materiales
+                Cita citaActualizada = citasDAO.actualizarCita(cita);
+
+                if (citaActualizada != null) {
+                    System.out.println("Cita actualizada con éxito: " + citaActualizada);
+                } else {
+                    System.out.println("Error al actualizar la cita.");
+                }
+            } else {
+                System.out.println("Cita no encontrada.");
+            }
+        } catch (PersistenciaSOFException e) {
+            System.out.println("Error al obtener la cita: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Error de actualización: " + e.getMessage());
+        }
+    }
+
 //        System.out.println("*****************");
 //        System.out.println("Total de contratos:");
 //
@@ -222,7 +262,6 @@ boolean salir = false;
 //                    throw new AssertionError();
 //            }
 //        }
-
 //        // Crear un Cliente
 //        Cliente cliente = new Cliente();
 //        cliente.setNombre("Juan Pérez");
@@ -262,5 +301,5 @@ boolean salir = false;
 //
 //        // Cerrar el EntityManager
 //        em.close();
-    }
 }
+

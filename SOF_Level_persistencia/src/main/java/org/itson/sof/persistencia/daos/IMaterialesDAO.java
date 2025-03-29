@@ -6,6 +6,7 @@ package org.itson.sof.persistencia.daos;
 
 import java.util.List;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.CitaMaterial;
 import org.itson.sof.persistencia.entidades.Material;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
@@ -14,8 +15,8 @@ import org.itson.sof.persistencia.exception.PersistenciaSOFException;
  * @author JazmE
  */
 public interface IMaterialesDAO {
-    
+
     public List<Material> obtenerTodosMateriales() throws PersistenciaSOFException;
-    
-    public List<Material> obtenerMaterialesCita(String codigo) throws PersistenciaSOFException;
+
+    public List<CitaMaterial> obtenerMaterialesCita(String codigo) throws PersistenciaSOFException;
 }

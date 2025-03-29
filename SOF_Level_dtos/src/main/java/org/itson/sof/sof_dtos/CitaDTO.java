@@ -19,7 +19,7 @@ public class CitaDTO {
     private String codigo;
     private ContratoDTO contrato;
     private FotografoDTO fotografo;
-    private List<MaterialDTO> materiales;
+    private List<CitaMaterialDTO> citaMateriales;
     private Long id;
 
     /**
@@ -40,7 +40,7 @@ public class CitaDTO {
      * @param fotografo Fotógrafo asignado a la cita.
      * @param materiales Materiales utilizados en la cita.
      */
-    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, String codigo, ContratoDTO contrato, FotografoDTO fotografo, List<MaterialDTO> materiales, Long id) {    
+    public CitaDTO(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFin, String lugar, String extras, String codigo, ContratoDTO contrato, FotografoDTO fotografo, List<CitaMaterialDTO> citaMateriales) {    
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
         this.lugar = lugar;
@@ -48,8 +48,7 @@ public class CitaDTO {
         this.codigo = codigo;
         this.contrato = contrato;
         this.fotografo = fotografo;
-        this.materiales = materiales;
-        this.id = id;
+        this.citaMateriales = citaMateriales;
     }
 
     /**
@@ -160,23 +159,19 @@ public class CitaDTO {
         this.fotografo = fotografo;
     }
 
+    public List<CitaMaterialDTO> getCitaMateriales() {
+        return citaMateriales;
+    }
+
     /**
      * Obtiene el conjunto de materiales utilizados en la cita.
      *
      * @return Conjunto de materiales de la cita.
      */
-    public List<MaterialDTO> getMateriales() {
-        return materiales;
+    public void setCitaMateriales(List<CitaMaterialDTO> citaMateriales) {    
+        this.citaMateriales = citaMateriales;
     }
-
-    /**
-     * Establece el conjunto de materiales utilizados en la cita.
-     *
-     * @param materiales Nuevo conjunto de materiales de la cita.
-     */
-    public void setMateriales(List<MaterialDTO> materiales) {
-        this.materiales = materiales;
-    }
+    
 
     /**
      * Obtiene el codigo de una cita
@@ -221,7 +216,7 @@ public class CitaDTO {
         sb.append(", codigo=").append(codigo);
         sb.append(", contrato=").append(contrato);
         sb.append(", fotografo=").append(fotografo);
-        sb.append(", materiales=").append(materiales);
+        sb.append(", citaMateriales=").append(citaMateriales);
         sb.append('}');
         return sb.toString();
     }

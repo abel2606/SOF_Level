@@ -7,6 +7,7 @@ package org.itson.sof.objetosnegocios.gestorcitas;
 import java.util.List;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.CitaMaterialDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
@@ -80,7 +81,7 @@ public interface IGestorCitas {
      */
     public List<MaterialDTO> obtenerMateriales () throws GestorException;
     
-    public List<MaterialDTO> obtenerMaterialesCita (CitaDTO cita) throws GestorException;
+    public List<CitaMaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws GestorException;
 
     /**
      * Valida si el código de una cita o contrato ya existe

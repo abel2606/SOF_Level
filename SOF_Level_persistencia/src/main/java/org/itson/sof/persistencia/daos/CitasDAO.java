@@ -16,6 +16,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.entidades.Cita;
+import org.itson.sof.persistencia.entidades.CitaMaterial;
+import org.itson.sof.persistencia.entidades.Material;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
 /**
@@ -123,7 +125,7 @@ public class CitasDAO implements ICitasDAO {
             return cita;
 
         } catch (Exception e) {
-            
+
             logger.log(Level.SEVERE, "Error al agregar la cita", e);
             return null;
         } finally {
@@ -165,8 +167,38 @@ public class CitasDAO implements ICitasDAO {
             if (cita.getFotografo() != null) {
                 citaExistente.setFotografo(cita.getFotografo());
             }
-            if (cita.getMateriales() != null) {
-                citaExistente.setMateriales(cita.getMateriales());
+            if (cita.getCitaMateriales() != null) {
+                // Limpiar las relaciones previas
+                citaExistente.getCitaMateriales().clear();
+
+                for (CitaMaterial citaMaterial : cita.getCitaMateriales()) {
+                    // Buscar el material por nombre en la base de datos
+                    TypedQuery<Material> query = em.createQuery(
+                            "SELECT m FROM Material m WHERE m.nombre = :nombre", Material.class
+                    );
+                    query.setParameter("nombre", citaMaterial.getMaterial().getNombre());
+
+                    List<Material> materialesEncontrados = query.getResultList();
+
+                    if (materialesEncontrados.isEmpty()) {
+                        throw new RuntimeException("Material no encontrado con nombre: " + citaMaterial.getMaterial().getNombre());
+                    }
+
+                    Material material = materialesEncontrados.get(0); // Debe haber solo uno porque los nombres son únicos
+
+                    // Verificar disponibilidad de material antes de asignarlo
+                    if (material.getCantidad() < citaMaterial.getCantidad()) {
+                        throw new RuntimeException("No hay suficiente material disponible.");
+                    }
+
+                    // Descontar la cantidad en el material
+                    material.setCantidad(material.getCantidad() - citaMaterial.getCantidad());
+
+                    // Agregar la relación
+                    citaMaterial.setCita(citaExistente);
+                    citaMaterial.setMaterial(material);
+                    citaExistente.getCitaMateriales().add(citaMaterial);
+                }
             }
 
             Cita resultado = em.merge(citaExistente);
