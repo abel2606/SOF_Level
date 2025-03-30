@@ -1,11 +1,18 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
+import com.toedter.calendar.JCalendar;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -15,8 +22,8 @@ import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
+import org.itson.sof.sof_level_presentacion.componentes.EvaluadorCitasFecha;
 import org.itson.sof.sof_level_presentacion.componentes.ItemCita;
-import org.itson.sof.sof_level_presentacion.interfaces.DialogCita;
 
 /**
  *
@@ -30,6 +37,9 @@ public class PanelContrato extends javax.swing.JPanel {
     DialogCita dlgCita;
     boolean unicaCita;
     private boolean inicializado = false;
+    ItemScrollCitas scrollCitas;
+    private Calendar fechaAnterior;
+    boolean primeraVez=true;
 
     public JPanel panelContenedor;
 
@@ -49,14 +59,119 @@ public class PanelContrato extends javax.swing.JPanel {
             initComponents();
             inicializado = true;
         }
+        this.fechaAnterior = Calendar.getInstance();
+        fechaAnterior.setTime(jCalendarCitas.getDate());
         contrato = principal.getContrato();
-        agregarCitasTabla();
+        agregarCitas();
         llenarCamposContrato();
     }
 
-    private void agregarCitasTabla() {
-        List<CitaDTO> citas = ConsultarCitas();
+    private void decorarCalendario(List<CitaDTO> citas){ 
+        System.out.println("Decorando calendario");
+        // Contar cuántas citas hay por día
+        Map<String, Integer> citasPorDia = new HashMap<>();
+        
+        for (CitaDTO cita : citas) {
+            GregorianCalendar cal = cita.getFechaHoraInicio();
+            String key = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
+            
+            citasPorDia.put(key, citasPorDia.getOrDefault(key, 0) + 1);
+        }
 
+        // Agregar el evaluador de fecha para cambiar el color
+        jCalendarCitas.getDayChooser().addDateEvaluator(new EvaluadorCitasFecha(citasPorDia));
+        
+        if (primeraVez) {
+            fechaAnterior.set(Calendar.DAY_OF_MONTH, 1); // Establecer el día a 1
+            jCalendarCitas.setCalendar(fechaAnterior);
+            primeraVez = false;
+        }
+
+        // Obtener todos los PropertyChangeListeners registrados en el JCalendar
+        PropertyChangeListener[] listeners = jCalendarCitas.getPropertyChangeListeners();
+        
+        // Remover todos los listeners
+        for (PropertyChangeListener listener : listeners) {
+            jCalendarCitas.removePropertyChangeListener(listener);
+        }
+       
+        jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
+            // Obtener la fecha seleccionada
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.setTime(jCalendarCitas.getDate()); // Convertir Date a Calendar
+
+            // Comprobar si solo el día ha cambiado
+            if (fechaAnterior.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
+                fechaAnterior.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
+                fechaAnterior.get(Calendar.DAY_OF_MONTH) != selectedDate.get(Calendar.DAY_OF_MONTH)) {
+
+                // Si el día cambió, ejecutamos la lógica
+                String key = selectedDate.get(Calendar.YEAR) + "-" +
+                             selectedDate.get(Calendar.MONTH) + "-" +
+                             selectedDate.get(Calendar.DAY_OF_MONTH);
+
+                // Mostrar las citas para el día seleccionado
+                mostrarCitasDelDia(key);
+            }
+            fechaAnterior.setTime(jCalendarCitas.getDate()); // Actualizamos la fecha anterior
+        });
+    }
+    
+    private void mostrarCitasDelDia(String key) {
+        List<CitaDTO> citasDelDia = obtenerCitasDelDia(key);
+
+        if (citasDelDia.isEmpty()) {
+            System.out.println("No hay citas en este día.");
+        } else {
+            if (scrollCitas != null) {
+                if (scrollCitas.isVisible()) {
+                    System.out.println("Ya hay un dialog");
+                    return;
+                }
+            }
+            // Convertir la clave en el formato YYYY-MM-DD a un objeto Calendar
+            String[] dateParts = key.split("-");
+            int year = Integer.parseInt(dateParts[0]);
+            int month = Integer.parseInt(dateParts[1]);
+            int day = Integer.parseInt(dateParts[2]);
+
+            // Crear un objeto Calendar para la fecha seleccionada
+            Calendar selectedCalendar = new GregorianCalendar(year, month, day);
+
+            // Obtener el día, mes y año
+            String dia = String.format("%02d", selectedCalendar.get(Calendar.DAY_OF_MONTH));  // Día con dos dígitos
+            String mes = String.format("%02d", selectedCalendar.get(Calendar.MONTH) + 1);     // Mes con dos dígitos (sumamos 1 porque el mes comienza desde 0)
+            String anio = String.valueOf(selectedCalendar.get(Calendar.YEAR));                // Año
+
+            // Crear un nuevo ItemScrollCitas con las citas y mostrarlo
+            scrollCitas = new ItemScrollCitas(principal, true, citasDelDia);
+            scrollCitas.setTitle("Citas del día " + dia + "/" + mes + "/" + anio + ":");
+            scrollCitas.setVisible(true);
+            scrollCitas.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                System.out.println("El diálogo de citas se ha cerrado.");
+                agregarCitas();
+            }
+        });
+        }
+    }
+
+    private List<CitaDTO> obtenerCitasDelDia(String key) {
+        // Filtrar y obtener las citas que coinciden con el día seleccionado
+        return ConsultarCitas().stream()
+            .filter(cita -> {
+                GregorianCalendar fechaCita = cita.getFechaHoraInicio();
+                String citaKey = fechaCita.get(Calendar.YEAR) + "-" + fechaCita.get(Calendar.MONTH) + "-" + fechaCita.get(Calendar.DAY_OF_MONTH);
+                return citaKey.equals(key);
+            })
+            .toList();
+    }
+
+    private void agregarCitas() {
+        List<CitaDTO> citas = ConsultarCitas();
+        decorarCalendario(citas);
+        
         // Crear un panel de contenedor para los contratos
         panelContenedor = new JPanel();
         panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
@@ -124,7 +239,7 @@ public class PanelContrato extends javax.swing.JPanel {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
                 System.out.println("El diálogo de cita se ha cerrado.");
-                agregarCitasTabla();
+                agregarCitas();
             }
         });
     }
@@ -136,7 +251,7 @@ public class PanelContrato extends javax.swing.JPanel {
             public void windowClosed(java.awt.event.WindowEvent e) {
                 System.out.println("El diálogo de cita se ha cerrado.");
                 if (dlgCita.citaAgregada != null) {
-                    agregarCitasTabla();
+                    agregarCitas();
                     dlgCita.citaAgregada = null;
                 } else {
                     System.out.println("El dialogo fue cerrado sin cambios");
@@ -145,8 +260,7 @@ public class PanelContrato extends javax.swing.JPanel {
         });
         dlgCita.setVisible(true);
     }
-    
-    
+      
     private void llenarCamposContrato (){
         txtCliente.setText(contrato.getCliente().getNombre());
         txtTematica.setText(contrato.getTematica());
@@ -170,14 +284,11 @@ public class PanelContrato extends javax.swing.JPanel {
         lblPrecio = new javax.swing.JLabel();
         txtPrecio = new javax.swing.JTextField();
         lblCitas = new javax.swing.JLabel();
-        pnlFecha = new javax.swing.JPanel();
         btnAgregarCita = new javax.swing.JButton();
         lblAgregarCita = new javax.swing.JLabel();
-        lblFecha = new javax.swing.JLabel();
-        lblFlechaDerecha = new javax.swing.JLabel();
-        lblFlechaIzquierda = new javax.swing.JLabel();
         pnlCitas = new javax.swing.JPanel();
         scrollPaneCitas = new javax.swing.JScrollPane();
+        jCalendarCitas = new com.toedter.calendar.JCalendar();
 
         setBackground(new java.awt.Color(220, 240, 255));
         setMaximumSize(new java.awt.Dimension(550, 750));
@@ -188,34 +299,30 @@ public class PanelContrato extends javax.swing.JPanel {
         add(lblCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 50, 20));
 
         txtCliente.setEditable(false);
-        add(txtCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 40, 300, -1));
+        add(txtCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, 300, -1));
 
         lblPaquete.setText("Paquete:");
         add(lblPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
         cmbPaquete.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo del paquete" }));
-        add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 170, -1));
+        add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 170, -1));
 
         btnEditar.setText("Editar");
-        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 90, 110, -1));
+        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 90, 110, -1));
 
         lblTematica.setText("Tematica:");
         add(lblTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, -1, -1));
 
         txtTematica.setColumns(20);
         txtTematica.setRows(5);
-        add(txtTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 190, 410, -1));
+        add(txtTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 140, 20));
 
         lblPrecio.setText("Precio:");
-        add(lblPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 320, -1, -1));
-        add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, 330, -1));
+        add(lblPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 210, -1, -1));
+        add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 140, -1));
 
         lblCitas.setText("Citas (X)");
-        add(lblCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 360, -1, -1));
-
-        pnlFecha.setBackground(new java.awt.Color(220, 240, 255));
-        pnlFecha.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        add(pnlFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 140, 260, 270));
+        add(lblCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 350, -1, -1));
 
         btnAgregarCita.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
         btnAgregarCita.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -232,16 +339,6 @@ public class PanelContrato extends javax.swing.JPanel {
 
         lblAgregarCita.setText("Agregar cita");
         add(lblAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 480, -1, -1));
-
-        lblFecha.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        lblFecha.setText("MES      AÑO");
-        add(lblFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 90, -1, -1));
-
-        lblFlechaDerecha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/arrowRightIcon.png"))); // NOI18N
-        add(lblFlechaDerecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 90, 40, 40));
-
-        lblFlechaIzquierda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/arrowLeftIcon.png"))); // NOI18N
-        add(lblFlechaIzquierda, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 90, 40, 40));
 
         pnlCitas.setBackground(new java.awt.Color(220, 240, 255));
         pnlCitas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -267,7 +364,8 @@ public class PanelContrato extends javax.swing.JPanel {
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
-        add(pnlCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 380, 350, 160));
+        add(pnlCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 380, 350, 160));
+        add(jCalendarCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 140, 460, 220));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarCitaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarCitaMouseClicked
@@ -283,17 +381,14 @@ public class PanelContrato extends javax.swing.JPanel {
     private javax.swing.JButton btnAgregarCita;
     private javax.swing.JButton btnEditar;
     private javax.swing.JComboBox<String> cmbPaquete;
+    private com.toedter.calendar.JCalendar jCalendarCitas;
     private javax.swing.JLabel lblAgregarCita;
     private javax.swing.JLabel lblCitas;
     private javax.swing.JLabel lblCliente;
-    private javax.swing.JLabel lblFecha;
-    private javax.swing.JLabel lblFlechaDerecha;
-    private javax.swing.JLabel lblFlechaIzquierda;
     private javax.swing.JLabel lblPaquete;
     private javax.swing.JLabel lblPrecio;
     private javax.swing.JLabel lblTematica;
     private javax.swing.JPanel pnlCitas;
-    private javax.swing.JPanel pnlFecha;
     private javax.swing.JScrollPane scrollPaneCitas;
     private javax.swing.JTextField txtCliente;
     private javax.swing.JTextField txtPrecio;

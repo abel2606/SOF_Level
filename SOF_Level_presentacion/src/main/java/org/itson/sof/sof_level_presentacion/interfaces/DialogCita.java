@@ -533,8 +533,7 @@ public class DialogCita extends javax.swing.JDialog {
         cita.setExtras(this.txtaExtras.getText());
         cita.setLugar(this.txtaLugar.getText());
 
-        if (parent instanceof PantallaPrincipal) {
-            PantallaPrincipal pantallaPrincipal = (PantallaPrincipal) parent;
+        if (parent instanceof PantallaPrincipal pantallaPrincipal) {
             cita.setContrato(pantallaPrincipal.getContrato());
         }
 
