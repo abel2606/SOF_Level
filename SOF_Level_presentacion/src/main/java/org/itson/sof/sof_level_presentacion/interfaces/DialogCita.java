@@ -10,11 +10,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -72,6 +75,26 @@ public class DialogCita extends javax.swing.JDialog {
         this.cita = cita;
 
         configurarAutocompletado();
+
+        Calendar hoy = Calendar.getInstance();
+        hoy.set(Calendar.HOUR_OF_DAY, 0);
+        hoy.set(Calendar.MINUTE, 0);
+        hoy.set(Calendar.SECOND, 0);
+        hoy.set(Calendar.MILLISECOND, 0);
+
+        // Avanzar al día siguiente para que hoy no sea seleccionable
+        hoy.add(Calendar.DAY_OF_YEAR, 1);
+
+        jcalendar.addPropertyChangeListener("calendar", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                Calendar seleccionado = jcalendar.getCalendar();
+                if (seleccionado.before(hoy)) { // Si la fecha seleccionada es hoy o pasada
+                    jcalendar.setCalendar(hoy); // Restablecer a la primera fecha válida (mañana)
+                    JOptionPane.showMessageDialog(parent, "Solo puedes seleccionar fechas futuras", "Fecha no válida", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
 
         inicializar();
     }
@@ -479,7 +502,7 @@ public class DialogCita extends javax.swing.JDialog {
         List<CitaMaterialDTO> citaMateriales = materialesSeleccionados.stream()
                 .map(material -> new CitaMaterialDTO(material, material.getCantidad()))
                 .collect(Collectors.toList());
-        
+
         cita.setCitaMateriales(citaMateriales);
 
         Date fechaSeleccionada = this.jcalendar.getDate();
@@ -555,6 +578,20 @@ public class DialogCita extends javax.swing.JDialog {
         GregorianCalendar fechaHoraFin = (GregorianCalendar) fechaHoraInicio.clone(); // Hacemos una copia para la hora de fin
         fechaHoraFin.set(Calendar.HOUR_OF_DAY, horaFin.getHours()); // Establecer la hora de fin
         fechaHoraFin.set(Calendar.MINUTE, horaFin.getMinutes()); // Establecer los minutos de fin
+
+        if (fechaHoraInicio.after(fechaHoraFin)) {
+            JOptionPane.showMessageDialog(parent, "La hora fin debe ser despues de lahora de inicio", "Horas no válidas", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Calcular la diferencia en minutos
+        long diferenciaMilisegundos = fechaHoraFin.getTimeInMillis() - fechaHoraInicio.getTimeInMillis();
+        long diferenciaMinutos = TimeUnit.MILLISECONDS.toMinutes(diferenciaMilisegundos);
+
+        if (diferenciaMinutos < 30) {
+            JOptionPane.showMessageDialog(parent, "La hora fin debe ser al menos 30 minutos después de la hora de inicio", "Horas no válidas", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         // Ahora, asignamos estos valores a los atributos del objeto Cita
         cita.setFechaHoraInicio(fechaHoraInicio); // Asignar la fecha y hora de inicio

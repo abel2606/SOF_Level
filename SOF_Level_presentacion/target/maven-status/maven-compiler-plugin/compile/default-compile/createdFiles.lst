@@ -44,6 +44,7 @@ org\itson\sof\sof_level_presentacion\interfaces\DialogCita$10.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$5.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContratos.class
 Deprecated\PantallaContratos$4.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCita$16.class
 Deprecated\PantallaCita.class
 org\itson\sof\sof_level_presentacion\interfaces\ItemScrollCitas$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$1.class
