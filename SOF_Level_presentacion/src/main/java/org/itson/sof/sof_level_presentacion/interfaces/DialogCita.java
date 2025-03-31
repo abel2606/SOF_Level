@@ -111,8 +111,11 @@ public class DialogCita extends javax.swing.JDialog {
             materiales = gestor.obtenerMateriales();
             if (cita != null) {
                 gestor.obtenerMaterialesCita(cita).forEach((materialCita) -> {
-                    materialesSeleccionados.add(materialCita.getMaterial());
+                    materialesSeleccionados.add(new MaterialDTO(materialCita.getMaterial().getNombre(), materialCita.getCantidad()));
+                    
                 });
+                
+                
             }
 
             DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0);
@@ -215,6 +218,8 @@ public class DialogCita extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(null, "Material no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                
+                seleccionado.setCantidad(cantidad);
 
                 materialesSeleccionados.add(seleccionado);
 

@@ -39,7 +39,7 @@ public class PanelContrato extends javax.swing.JPanel {
     private boolean inicializado = false;
     ItemScrollCitas scrollCitas;
     private Calendar fechaAnterior;
-    boolean primeraVez=true;
+    boolean primeraVez = true;
 
     public JPanel panelContenedor;
 
@@ -64,23 +64,29 @@ public class PanelContrato extends javax.swing.JPanel {
         contrato = principal.getContrato();
         agregarCitas();
         llenarCamposContrato();
+
+        cmbPaquete.removeAllItems(); // Limpiar cualquier dato previo
+        if (contrato != null && contrato.getPaquete() != null) {
+            cmbPaquete.addItem(contrato.getPaquete().getNombre());
+        }
+        cmbPaquete.enable(false);
     }
 
-    private void decorarCalendario(List<CitaDTO> citas){ 
+    private void decorarCalendario(List<CitaDTO> citas) {
         System.out.println("Decorando calendario");
         // Contar cuántas citas hay por día
         Map<String, Integer> citasPorDia = new HashMap<>();
-        
+
         for (CitaDTO cita : citas) {
             GregorianCalendar cal = cita.getFechaHoraInicio();
             String key = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
-            
+
             citasPorDia.put(key, citasPorDia.getOrDefault(key, 0) + 1);
         }
 
         // Agregar el evaluador de fecha para cambiar el color
         jCalendarCitas.getDayChooser().addDateEvaluator(new EvaluadorCitasFecha(citasPorDia));
-        
+
         if (primeraVez) {
             fechaAnterior.set(Calendar.DAY_OF_MONTH, 1); // Establecer el día a 1
             jCalendarCitas.setCalendar(fechaAnterior);
@@ -89,26 +95,26 @@ public class PanelContrato extends javax.swing.JPanel {
 
         // Obtener todos los PropertyChangeListeners registrados en el JCalendar
         PropertyChangeListener[] listeners = jCalendarCitas.getPropertyChangeListeners();
-        
+
         // Remover todos los listeners
         for (PropertyChangeListener listener : listeners) {
             jCalendarCitas.removePropertyChangeListener(listener);
         }
-       
+
         jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
             // Obtener la fecha seleccionada
             Calendar selectedDate = Calendar.getInstance();
             selectedDate.setTime(jCalendarCitas.getDate()); // Convertir Date a Calendar
 
             // Comprobar si solo el día ha cambiado
-            if (fechaAnterior.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
-                fechaAnterior.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
-                fechaAnterior.get(Calendar.DAY_OF_MONTH) != selectedDate.get(Calendar.DAY_OF_MONTH)) {
+            if (fechaAnterior.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR)
+                    && fechaAnterior.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH)
+                    && fechaAnterior.get(Calendar.DAY_OF_MONTH) != selectedDate.get(Calendar.DAY_OF_MONTH)) {
 
                 // Si el día cambió, ejecutamos la lógica
-                String key = selectedDate.get(Calendar.YEAR) + "-" +
-                             selectedDate.get(Calendar.MONTH) + "-" +
-                             selectedDate.get(Calendar.DAY_OF_MONTH);
+                String key = selectedDate.get(Calendar.YEAR) + "-"
+                        + selectedDate.get(Calendar.MONTH) + "-"
+                        + selectedDate.get(Calendar.DAY_OF_MONTH);
 
                 // Mostrar las citas para el día seleccionado
                 mostrarCitasDelDia(key);
@@ -116,7 +122,7 @@ public class PanelContrato extends javax.swing.JPanel {
             fechaAnterior.setTime(jCalendarCitas.getDate()); // Actualizamos la fecha anterior
         });
     }
-    
+
     private void mostrarCitasDelDia(String key) {
         List<CitaDTO> citasDelDia = obtenerCitasDelDia(key);
 
@@ -148,30 +154,30 @@ public class PanelContrato extends javax.swing.JPanel {
             scrollCitas.setTitle("Citas del día " + dia + "/" + mes + "/" + anio + ":");
             scrollCitas.setVisible(true);
             scrollCitas.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent e) {
-                System.out.println("El diálogo de citas se ha cerrado.");
-                agregarCitas();
-            }
-        });
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    System.out.println("El diálogo de citas se ha cerrado.");
+                    agregarCitas();
+                }
+            });
         }
     }
 
     private List<CitaDTO> obtenerCitasDelDia(String key) {
         // Filtrar y obtener las citas que coinciden con el día seleccionado
         return ConsultarCitas().stream()
-            .filter(cita -> {
-                GregorianCalendar fechaCita = cita.getFechaHoraInicio();
-                String citaKey = fechaCita.get(Calendar.YEAR) + "-" + fechaCita.get(Calendar.MONTH) + "-" + fechaCita.get(Calendar.DAY_OF_MONTH);
-                return citaKey.equals(key);
-            })
-            .toList();
+                .filter(cita -> {
+                    GregorianCalendar fechaCita = cita.getFechaHoraInicio();
+                    String citaKey = fechaCita.get(Calendar.YEAR) + "-" + fechaCita.get(Calendar.MONTH) + "-" + fechaCita.get(Calendar.DAY_OF_MONTH);
+                    return citaKey.equals(key);
+                })
+                .toList();
     }
 
     private void agregarCitas() {
         List<CitaDTO> citas = ConsultarCitas();
         decorarCalendario(citas);
-        
+
         // Crear un panel de contenedor para los contratos
         panelContenedor = new JPanel();
         panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
@@ -245,7 +251,7 @@ public class PanelContrato extends javax.swing.JPanel {
     }
 
     private void añadirCita() {
-        dlgCita = new DialogCita(principal, true, null,true);
+        dlgCita = new DialogCita(principal, true, null, true);
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
@@ -260,12 +266,12 @@ public class PanelContrato extends javax.swing.JPanel {
         });
         dlgCita.setVisible(true);
     }
-      
-    private void llenarCamposContrato (){
+
+    private void llenarCamposContrato() {
         txtCliente.setText(contrato.getCliente().getNombre());
         txtTematica.setText(contrato.getTematica());
-        txtPrecio.setText("$ "+contrato.getPaquete().getPrecio());
-        
+        txtPrecio.setText("$ " + contrato.getPaquete().getPrecio());
+
         txtCliente.setEnabled(false);
         txtTematica.setEnabled(false);
         txtPrecio.setEnabled(false);
@@ -304,7 +310,7 @@ public class PanelContrato extends javax.swing.JPanel {
         lblPaquete.setText("Paquete:");
         add(lblPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
-        cmbPaquete.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo del paquete" }));
+        cmbPaquete.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo del paquete", "mlm", " " }));
         add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 170, -1));
 
         btnEditar.setText("Editar");

@@ -268,10 +268,10 @@ public class CitasDAO implements ICitasDAO {
             GregorianCalendar fechaFin = cita.getFechaHoraFin();
 
             GregorianCalendar unaHoraAntes = (GregorianCalendar) fechaInicio.clone();
-            unaHoraAntes.add(Calendar.HOUR, -1);
+            unaHoraAntes.add(Calendar.MINUTE, -29);
 
             GregorianCalendar unaHoraDespues = (GregorianCalendar) fechaFin.clone();
-            unaHoraDespues.add(Calendar.HOUR, 1);
+            unaHoraDespues.add(Calendar.MINUTE, 30);
 
             TypedQuery<Cita> query = em.createQuery(
                     "SELECT c FROM Cita c WHERE "

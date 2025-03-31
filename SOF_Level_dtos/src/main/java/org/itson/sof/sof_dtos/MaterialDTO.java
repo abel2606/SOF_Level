@@ -25,6 +25,13 @@ public class MaterialDTO {
     public MaterialDTO() {
     }
 
+    public MaterialDTO(String nombre, Float cantidad) {
+        this.nombre = nombre;
+        this.cantidad = cantidad;
+    }
+    
+    
+
     public MaterialDTO(String nombre, Float cantidad, Long id) {
         this.nombre = nombre;
         this.cantidad = cantidad;

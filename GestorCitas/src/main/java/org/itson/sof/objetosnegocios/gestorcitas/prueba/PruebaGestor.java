@@ -68,12 +68,12 @@ public class PruebaGestor {
 // Crear un nuevo objeto de MaterialDTO para el globo
         MaterialDTO globoMaterial = new MaterialDTO();
         globoMaterial.setNombre("globo verde");
-        globoMaterial.setCantidad(1.0f); // Se agrega 1 más de globo
+        globoMaterial.setCantidad(2.0f); // Se agrega 1 más de globo
 
 // Crear CitaMaterialDTO para asociar el material con la cita
         CitaMaterialDTO citaMaterialDTO = new CitaMaterialDTO();
         citaMaterialDTO.setMaterial(globoMaterial);
-        citaMaterialDTO.setCantidad(1.0f); // Aumentamos la cantidad del material
+        citaMaterialDTO.setCantidad(2.0f); // Aumentamos la cantidad del material
 
 // Obtener la lista de materiales de la cita (no la sobrescribas)
         List<CitaMaterialDTO> listaMateriales = citaActualizar.getCitaMateriales();  // Obtener la lista de materiales
