@@ -398,12 +398,16 @@ public class DialogCita extends javax.swing.JDialog {
 
                         try {
                             List<String> horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada2, horaInicioSeleccionada);
-                            for (String horarioFin : horariosDisponibleFechaFin) {
-                                cmbFechaFin.addItem(horarioFin);
+                            if (horariosDisponibleFechaFin.isEmpty()) {
+                                cmbFechaFin.addItem("No hay horarios");
+                            } else {
+                                for (String horarioFin : horariosDisponibleFechaFin) {
+                                    cmbFechaFin.addItem(horarioFin);
+                                }
                             }
                         } catch (GestorException ex) {
                             Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        }   
                     } else {
                         cmbFechaFin.setEnabled(false);
                     }
@@ -511,6 +515,9 @@ public class DialogCita extends javax.swing.JDialog {
     public void Aceptar() {
         boolean citaCompleta = true;
         if (cmbFechaInicio.getSelectedItem() == null || cmbFechaFin.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(parent, "Favor de seleccionar tanto la fecha de inicio como la de fin.");
+            return; // Salir si alguna de las fechas no está seleccionada
+        }else if(cmbFechaFin.getSelectedItem().equals("No hay horarios")){
             JOptionPane.showMessageDialog(parent, "Favor de seleccionar tanto la fecha de inicio como la de fin.");
             return; // Salir si alguna de las fechas no está seleccionada
         }

@@ -1,13 +1,15 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
+import com.toedter.calendar.IDateEvaluator;
 import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDayChooser;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -40,6 +42,9 @@ public class PanelContrato extends javax.swing.JPanel {
     ItemScrollCitas scrollCitas;
     private Calendar fechaAnterior;
     boolean primeraVez = true;
+    private EvaluadorCitasFecha evaluadorActual;
+    private boolean puedeAbrir=true;
+
 
     public JPanel panelContenedor;
 
@@ -73,7 +78,6 @@ public class PanelContrato extends javax.swing.JPanel {
     }
 
     private void decorarCalendario(List<CitaDTO> citas) {
-        System.out.println("Decorando calendario");
         // Contar cuántas citas hay por día
         Map<String, Integer> citasPorDia = new HashMap<>();
 
@@ -84,46 +88,54 @@ public class PanelContrato extends javax.swing.JPanel {
             citasPorDia.put(key, citasPorDia.getOrDefault(key, 0) + 1);
         }
 
-        // Agregar el evaluador de fecha para cambiar el color
-        jCalendarCitas.getDayChooser().addDateEvaluator(new EvaluadorCitasFecha(citasPorDia));
+        // Obtener el DayChooser del JCalendar
+        JDayChooser dayChooser = jCalendarCitas.getDayChooser();
+
+        // Remover el evaluador antiguo si existe
+        if (evaluadorActual != null) {
+            dayChooser.removeDateEvaluator(evaluadorActual);
+        }
+
+        // Crear y agregar un nuevo evaluador actualizado
+        evaluadorActual = new EvaluadorCitasFecha(citasPorDia);
+        dayChooser.addDateEvaluator(evaluadorActual);
+
+        jCalendarCitas.getDayChooser().revalidate();
+        jCalendarCitas.getDayChooser().repaint();
 
         if (primeraVez) {
             fechaAnterior.set(Calendar.DAY_OF_MONTH, 1); // Establecer el día a 1
             jCalendarCitas.setCalendar(fechaAnterior);
             primeraVez = false;
+            
+            jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
+                // Obtener la fecha seleccionada
+                Calendar selectedDate = Calendar.getInstance();
+                selectedDate.setTime(jCalendarCitas.getDate()); // Convertir Date a Calendar
+
+                //Comprobar si solo el día ha cambiado
+                if ((fechaAnterior.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR)
+                        && fechaAnterior.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH)
+                        && fechaAnterior.get(Calendar.DAY_OF_MONTH) != selectedDate.get(Calendar.DAY_OF_MONTH))) {
+                    // Si el día cambió, ejecutamos la lógica
+                    String key = selectedDate.get(Calendar.YEAR) + "-"
+                            + selectedDate.get(Calendar.MONTH) + "-"
+                            + selectedDate.get(Calendar.DAY_OF_MONTH);
+
+                    // Mostrar las citas para el día seleccionado
+                    mostrarCitasDelDia(key);
+                }
+                fechaAnterior.setTime(jCalendarCitas.getDate()); // Actualizamos la fecha anterior
+
+            });
         }
 
-        // Obtener todos los PropertyChangeListeners registrados en el JCalendar
-        PropertyChangeListener[] listeners = jCalendarCitas.getPropertyChangeListeners();
-
-        // Remover todos los listeners
-        for (PropertyChangeListener listener : listeners) {
-            jCalendarCitas.removePropertyChangeListener(listener);
-        }
-
-        jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
-            // Obtener la fecha seleccionada
-            Calendar selectedDate = Calendar.getInstance();
-            selectedDate.setTime(jCalendarCitas.getDate()); // Convertir Date a Calendar
-
-            // Comprobar si solo el día ha cambiado
-            if (fechaAnterior.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR)
-                    && fechaAnterior.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH)
-                    && fechaAnterior.get(Calendar.DAY_OF_MONTH) != selectedDate.get(Calendar.DAY_OF_MONTH)) {
-
-                // Si el día cambió, ejecutamos la lógica
-                String key = selectedDate.get(Calendar.YEAR) + "-"
-                        + selectedDate.get(Calendar.MONTH) + "-"
-                        + selectedDate.get(Calendar.DAY_OF_MONTH);
-
-                // Mostrar las citas para el día seleccionado
-                mostrarCitasDelDia(key);
-            }
-            fechaAnterior.setTime(jCalendarCitas.getDate()); // Actualizamos la fecha anterior
-        });
     }
 
     private void mostrarCitasDelDia(String key) {
+        if(!puedeAbrir){
+            return;
+        }
         List<CitaDTO> citasDelDia = obtenerCitasDelDia(key);
 
         if (citasDelDia.isEmpty()) {
@@ -135,6 +147,7 @@ public class PanelContrato extends javax.swing.JPanel {
                     return;
                 }
             }
+
             // Convertir la clave en el formato YYYY-MM-DD a un objeto Calendar
             String[] dateParts = key.split("-");
             int year = Integer.parseInt(dateParts[0]);
@@ -143,7 +156,7 @@ public class PanelContrato extends javax.swing.JPanel {
 
             // Crear un objeto Calendar para la fecha seleccionada
             Calendar selectedCalendar = new GregorianCalendar(year, month, day);
-
+            
             // Obtener el día, mes y año
             String dia = String.format("%02d", selectedCalendar.get(Calendar.DAY_OF_MONTH));  // Día con dos dígitos
             String mes = String.format("%02d", selectedCalendar.get(Calendar.MONTH) + 1);     // Mes con dos dígitos (sumamos 1 porque el mes comienza desde 0)
@@ -157,7 +170,12 @@ public class PanelContrato extends javax.swing.JPanel {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
                     System.out.println("El diálogo de citas se ha cerrado.");
+                    puedeAbrir=false;
+                    fechaAnterior.set(Calendar.DAY_OF_MONTH, 1); // Establecer el día a 1
+                    jCalendarCitas.setCalendar(fechaAnterior);
                     agregarCitas();
+                    System.out.println("Citas agregadas");
+                    puedeAbrir=true;
                 }
             });
         }
@@ -246,6 +264,7 @@ public class PanelContrato extends javax.swing.JPanel {
             public void windowClosed(java.awt.event.WindowEvent e) {
                 System.out.println("El diálogo de cita se ha cerrado.");
                 agregarCitas();
+                System.out.println("Citas agregadas");
             }
         });
     }
