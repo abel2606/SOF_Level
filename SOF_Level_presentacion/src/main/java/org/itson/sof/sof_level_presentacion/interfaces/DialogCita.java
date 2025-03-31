@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -390,10 +391,7 @@ public class DialogCita extends javax.swing.JDialog {
                     cmbFechaInicio.addItem(horario);
                 }
             }
-
-            // Deshabilitar el ComboBox de fin al inicio
-            cmbFechaFin.setEnabled(false);
-
+            
             // Si ya existe una cita, seleccionamos los horarios disponibles para el fin basándonos en la hora de inicio
             if (cita != null) {
                 // Obtener los horarios disponibles para el fin, según la hora de inicio seleccionada
@@ -408,7 +406,65 @@ public class DialogCita extends javax.swing.JDialog {
                 } catch (GestorException ex) {
                     Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+                // Obtener la hora de la cita (en este caso, tomamos la hora de inicio)
+            GregorianCalendar fechaHoraInicio = this.cita.getFechaHoraInicio();
+            GregorianCalendar fechaHoraFin = this.cita.getFechaHoraFin();
+            int horaCita = fechaHoraInicio.get(Calendar.HOUR_OF_DAY);
+            int minutoCita = fechaHoraInicio.get(Calendar.MINUTE);
+
+            int horaCitaFin = fechaHoraFin.get(Calendar.HOUR_OF_DAY);
+            int minutoCitaFin = fechaHoraFin.get(Calendar.MINUTE);
+
+            // Convertir a formato "HH:mm"
+            String horaCitaStr = String.format("%02d:%02d", horaCita, minutoCita);
+            String horaCitaStrFin = String.format("%02d:%02d", horaCitaFin, minutoCitaFin);
+
+            // Obtener el modelo del ComboBox
+            ComboBoxModel<String> model = cmbFechaInicio.getModel();
+             ComboBoxModel<String> modelFin = cmbFechaFin.getModel();
+             //TODO: 
+             System.out.println(horaCitaStr);
+             System.out.println(horaCitaStrFin);
+
+            // Verificar si el ComboBox está vacío
+            if (model.getSize() == 0) {
+                System.out.println("El ComboBox está vacío.");
+                return;
             }
+
+            // Recorrer los elementos del ComboBox
+            for (int i = 0; i < model.getSize(); i++) {
+                if (i < model.getSize()) {  // Asegurarse de que no estamos fuera de rango
+                    String horarioComboBox = model.getElementAt(i);
+                    System.out.println("horario combo box"+horarioComboBox);
+
+                    // Si el horario en el ComboBox coincide con la hora de la cita, seleccionarlo
+                    if (horarioComboBox.equals(horaCitaStr)) {
+                        System.out.println("Cita de inicio encontrada: "+ i);
+                        cmbFechaInicio.setSelectedIndex(i);  // Selecciona el item correspondiente
+                        break;  // No es necesario seguir buscando
+                    }
+                }
+            }
+
+            // Recorrer los elementos del ComboBox para la fecha de fin
+            for (int i = 0; i < modelFin.getSize(); i++) {
+                if (i < modelFin.getSize()) {  // Asegurarse de que no estamos fuera de rango
+                        String horarioComboBox = modelFin.getElementAt(i);
+
+                        // Si el horario en el ComboBox coincide con la hora de fin de la cita, seleccionarlo
+                        if (horarioComboBox.equals(horaCitaStrFin)) {
+                            System.out.println("Cita de fin encontrada: " + i);
+                            cmbFechaFin.setSelectedIndex(i);  // Selecciona el item correspondiente
+                            break;  // No es necesario seguir buscando
+                        }
+                    }
+                }
+            }
+
+            // Deshabilitar el ComboBox de fin al inicio
+            //cmbFechaFin.setEnabled(false);
 
             // Configurar la acción cuando se seleccione un horario de inicio
             cmbFechaInicio.addActionListener(new ActionListener() {
