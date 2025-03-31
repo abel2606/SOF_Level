@@ -148,6 +148,7 @@ public class CitaBO implements ICitaBO {
     public List<String> obtenerHorariosDisponibles(String fechaInicio) throws ObjetosNegocioException {
         List<Cita> citasOcupadas;
         try {
+            // Se obtiene la lista de citas ocupadas en la fecha proporcionada
             citasOcupadas = citasDAO.obtenerCitasPorFecha(fechaInicio);
         } catch (PersistenciaSOFException ex) {
             Logger.getLogger(CitaBO.class.getName()).log(Level.SEVERE, "Error al obtener citas", ex);
@@ -155,36 +156,54 @@ public class CitaBO implements ICitaBO {
         }
 
         List<String> horariosDisponibles = new ArrayList<>();
-        //Esto es como lo vi en ele ejemplo, pero pues se puede a cualquier hora
-        LocalTime inicio = LocalTime.of(02, 0);
-        LocalTime fin = LocalTime.of(23, 0);
+        LocalTime inicio = LocalTime.of(2, 0); // Hora de inicio del horario disponible
+        LocalTime fin = LocalTime.of(23, 0); // Hora de fin del horario disponible
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         List<LocalTime> todosLosHorarios = new ArrayList<>();
+        // Se generan los horarios cada 30 minutos dentro del rango establecido
         while (inicio.isBefore(fin)) {
             todosLosHorarios.add(inicio);
             inicio = inicio.plusMinutes(30);
         }
 
-        // Generamos una lista con los horarios disponibles para la fecha de inicio
+        // Obtener la última hora de fin de todas las citas
+        LocalTime ultimaHoraFin = citasOcupadas.stream()
+                .map(c -> c.getFechaHoraFin().toInstant().atZone(ZoneId.systemDefault()).toLocalTime())
+                .max(LocalTime::compareTo)
+                .orElse(LocalTime.MIN);
+        LocalTime inicioHorariosDespues = ultimaHoraFin.plusMinutes(30);
+
+        // Evaluamos cada horario generado
         for (LocalTime horaActual : todosLosHorarios) {
             boolean ocupado = false;
+            boolean permitido = true;
 
-            // Comprobamos si este horario está ocupado por alguna cita
             for (Cita cita : citasOcupadas) {
                 LocalTime inicioCita = cita.getFechaHoraInicio().toInstant()
                         .atZone(ZoneId.systemDefault()).toLocalTime();
                 LocalTime finCita = cita.getFechaHoraFin().toInstant()
                         .atZone(ZoneId.systemDefault()).toLocalTime();
 
-                // Verificamos si la horaActual cae dentro del rango de alguna cita ocupada
-                if (!horaActual.isBefore(inicioCita) && horaActual.isBefore(finCita)) {
+                // 1. No permitir horarios dentro de una cita ni exactamente en su fin
+                if ((!horaActual.isBefore(inicioCita) && horaActual.isBefore(finCita)) || horaActual.equals(finCita)) {
                     ocupado = true;
+                    break;
+                }
+
+                // 2. Permitir horarios al menos 1 hora antes del inicio de la cita
+                if (horaActual.plusHours(1).isAfter(inicioCita) && horaActual.isBefore(inicioCita)) {
+                    permitido = false;
                 }
             }
 
-            // Solo añadimos al listado de horarios disponibles si no está ocupado
-            if (!ocupado) {
+            // 3. Permitir solo los horarios estrictamente después de 30 minutos del fin de la última cita
+            if (horaActual.isAfter(inicioHorariosDespues)) {
+                permitido = true;
+            }
+
+            // Agregar solo los horarios que cumplan las reglas
+            if (!ocupado && permitido) {
                 horariosDisponibles.add(horaActual.format(formatter));
             }
         }
