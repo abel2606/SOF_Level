@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -12,6 +13,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -313,46 +316,60 @@ public class DialogCita extends javax.swing.JDialog {
             }
         });
 
-        // Crear un modelo de SpinnerDateModel independiente para cada JSpinner
-        SpinnerDateModel modeloSpinnerInicio = new SpinnerDateModel();
-        SpinnerDateModel modeloSpinnerFin = new SpinnerDateModel();
-
-        // Asignar el modelo a cada JSpinner
-        this.sFechaInicio.setModel(modeloSpinnerInicio);
-        this.sFechaFin.setModel(modeloSpinnerFin);
-
-        // Configurar los editores para mostrar solo la hora
-        JSpinner.DateEditor editorInicio = new JSpinner.DateEditor(sFechaInicio, "HH:mm");
-        JSpinner.DateEditor editorFin = new JSpinner.DateEditor(sFechaFin, "HH:mm");
-
-        // Establecer los editores para cada spinner
-        sFechaInicio.setEditor(editorInicio);
-        sFechaFin.setEditor(editorFin);
-
-        // Establecer la fecha/hora actual como valor predeterminado
-        Date horaActual = new Date();
-        sFechaInicio.setValue(horaActual);
-        sFechaFin.setValue(horaActual);
-
         cmbFechaInicio.removeAllItems();
+        cmbFechaFin.removeAllItems();
 
         List<String> horariosDisponibles;
         List<String> horariosDisponibleFechaFin;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
         try {
             //Esto es para agregar los horarios disponibles del día seleccionado, sin contar aquellos horarios ya ocupados
-            horariosDisponibles = gestor.obtenerHorariosDisponibles("2025-03-31");
-            for (String horariosDisponible : horariosDisponibles) {
-                cmbFechaInicio.addItem(horariosDisponible);
 
-                //Una vez seleccionada la fecha de inicio, se podra seleccionar una fecha fin contemplando solo aquellas horas disponibles
-            }
-            
-            
-            horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin("2025-03-31", "08:00:00");
+            Date fechaDate = jcalendar.getCalendar().getTime();
 
-            for (String horadisponiblef : horariosDisponibleFechaFin) {
-                cmbFechaFin.addItem(horadisponiblef);
+            if(cita!=null){
+                fechaDate = jcalendar.getDate();
             }
+            String fechaStr = sdf.format(fechaDate);
+
+            System.out.println("Fecha seleccionada: " + fechaStr);
+
+            System.out.println(fechaStr);
+
+            // Obtener horarios disponibles de la base de datos
+            horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaStr);
+            for (String horario : horariosDisponibles) {
+                cmbFechaInicio.addItem(horario);
+            }
+
+            // Deshabilitar el ComboBox de fin al inicio
+            cmbFechaFin.setEnabled(false);
+
+            cmbFechaInicio.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String horaInicioSeleccionada = (String) cmbFechaInicio.getSelectedItem();
+
+                    if (horaInicioSeleccionada != null) {
+                        cmbFechaFin.setEnabled(true);
+                        cmbFechaFin.removeAllItems();
+
+                        try {
+                            List<String> horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaStr, horaInicioSeleccionada);
+
+                            for (String horarioFin : horariosDisponibleFechaFin) {
+                                cmbFechaFin.addItem(horarioFin);
+                            }
+                        } catch (GestorException ex) {
+                            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        cmbFechaFin.setEnabled(false);
+                    }
+                }
+            });
+
         } catch (GestorException ex) {
             Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -399,11 +416,9 @@ public class DialogCita extends javax.swing.JDialog {
             if (cita.getFechaHoraInicio() != null && cita.getFechaHoraFin() != null) {
                 jcalendar.setCalendar(cita.getFechaHoraInicio());
 
-                // Obtener la fecha de la cita
                 GregorianCalendar fechaHoraInicio = cita.getFechaHoraInicio();
                 GregorianCalendar fechaHoraFin = cita.getFechaHoraFin();
 
-                // Crear una nueva fecha sin alterar el día, mes y año
                 Date fechaInicioSinHora = fechaHoraInicio.getTime();
                 Date fechaFinSinHora = fechaHoraFin.getTime();
 
@@ -426,8 +441,8 @@ public class DialogCita extends javax.swing.JDialog {
                 calendarFin.set(Calendar.SECOND, fechaHoraFin.get(Calendar.SECOND));
 
                 // Establecer la nueva fecha con hora en los JSpinners
-                this.sFechaInicio.setValue(calendarInicio.getTime());
-                this.sFechaFin.setValue(calendarFin.getTime());
+                cmbFechaInicio.setSelectedItem(calendarInicio.getTime());
+                cmbFechaFin.setSelectedItem(calendarFin.getTime());
             }
         }
     }
@@ -489,8 +504,8 @@ public class DialogCita extends javax.swing.JDialog {
             this.txtaLugar.setEnabled(true);
             this.cbFotografo.setEnabled(true);
             this.jcalendar.setEnabled(true);
-            this.sFechaFin.setEnabled(true);
-            this.sFechaInicio.setEnabled(true);
+            this.cmbFechaFin.setEnabled(true);
+            this.cmbFechaInicio.setEnabled(true);
             this.btnAgregar.setEnabled(true);
             this.tblMaterial.setEnabled(true);
         } else {
@@ -501,8 +516,8 @@ public class DialogCita extends javax.swing.JDialog {
             this.txtaLugar.setEnabled(false);
             this.cbFotografo.setEnabled(false);
             this.jcalendar.setEnabled(false);
-            this.sFechaFin.setEnabled(false);
-            this.sFechaInicio.setEnabled(false);
+            this.cmbFechaFin.setEnabled(false);
+            this.cmbFechaInicio.setEnabled(false);
             this.btnAgregar.setEnabled(false);
             this.tblMaterial.setEnabled(false);
         }
@@ -539,8 +554,22 @@ public class DialogCita extends javax.swing.JDialog {
         GregorianCalendar fechaHoraInicio = new GregorianCalendar();
         fechaHoraInicio.setTime(fechaSeleccionada);
 
-        Date horaInicio = (Date) sFechaInicio.getValue();
-        Date horaFin = (Date) sFechaFin.getValue();
+        // Obtener las horas seleccionadas de los ComboBox
+        String horaInicioStr = (String) cmbFechaInicio.getSelectedItem();
+        String horaFinStr = (String) cmbFechaFin.getSelectedItem();
+
+        // Convertir las horas seleccionadas en Date
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Date horaInicio = null;
+        Date horaFin = null;
+
+        try {
+            horaInicio = sdf.parse(horaInicioStr); // Convertir la hora de inicio en Date
+            horaFin = sdf.parse(horaFinStr); // Convertir la hora de fin en Date
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(parent, "Error al parsear la hora.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         fechaHoraInicio.set(Calendar.HOUR_OF_DAY, horaInicio.getHours());
         fechaHoraInicio.set(Calendar.MINUTE, horaInicio.getMinutes());
@@ -596,20 +625,34 @@ public class DialogCita extends javax.swing.JDialog {
         GregorianCalendar fechaHoraInicio = new GregorianCalendar();
         fechaHoraInicio.setTime(fechaSeleccionada);
 
-        // Obtener la hora desde el JSpinner (hora de inicio y fin)
-        Date horaInicio = (Date) sFechaInicio.getValue(); // Obtener la hora del JSpinner de hora de inicio
-        Date horaFin = (Date) sFechaFin.getValue(); // Obtener la hora del JSpinner de hora de fin
+        // Obtener las horas seleccionadas desde los ComboBox
+        String horaInicioStr = (String) cmbFechaInicio.getSelectedItem();
+        String horaFinStr = (String) cmbFechaFin.getSelectedItem();
+
+        // Convertimos las horas seleccionadas en Date
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Date horaInicio = null;
+        Date horaFin = null;
+
+        try {
+            horaInicio = sdf.parse(horaInicioStr); // Convertir la hora de inicio en Date
+            horaFin = sdf.parse(horaFinStr); // Convertir la hora de fin en Date
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(parent, "Error al parsear la hora.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Establecer las horas de inicio y fin en los objetos GregorianCalendar
-        fechaHoraInicio.set(Calendar.HOUR_OF_DAY, horaInicio.getHours()); // Establecer la hora de inicio
-        fechaHoraInicio.set(Calendar.MINUTE, horaInicio.getMinutes()); // Establecer los minutos de inicio
+        fechaHoraInicio.set(Calendar.HOUR_OF_DAY, horaInicio.getHours());
+        fechaHoraInicio.set(Calendar.MINUTE, horaInicio.getMinutes());
 
         GregorianCalendar fechaHoraFin = (GregorianCalendar) fechaHoraInicio.clone(); // Hacemos una copia para la hora de fin
-        fechaHoraFin.set(Calendar.HOUR_OF_DAY, horaFin.getHours()); // Establecer la hora de fin
-        fechaHoraFin.set(Calendar.MINUTE, horaFin.getMinutes()); // Establecer los minutos de fin
+        fechaHoraFin.set(Calendar.HOUR_OF_DAY, horaFin.getHours());
+        fechaHoraFin.set(Calendar.MINUTE, horaFin.getMinutes());
 
+        // Validar que la hora de fin no sea antes que la hora de inicio
         if (fechaHoraInicio.after(fechaHoraFin)) {
-            JOptionPane.showMessageDialog(parent, "La hora fin debe ser despues de lahora de inicio", "Horas no válidas", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(parent, "La hora fin debe ser después de la hora de inicio", "Horas no válidas", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -617,15 +660,16 @@ public class DialogCita extends javax.swing.JDialog {
         long diferenciaMilisegundos = fechaHoraFin.getTimeInMillis() - fechaHoraInicio.getTimeInMillis();
         long diferenciaMinutos = TimeUnit.MILLISECONDS.toMinutes(diferenciaMilisegundos);
 
+        // Validar que la diferencia sea al menos 30 minutos
         if (diferenciaMinutos < 30) {
             JOptionPane.showMessageDialog(parent, "La hora fin debe ser al menos 30 minutos después de la hora de inicio", "Horas no válidas", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Ahora, asignamos estos valores a los atributos del objeto Cita
-        cita.setFechaHoraInicio(fechaHoraInicio); // Asignar la fecha y hora de inicio
-        cita.setFechaHoraFin(fechaHoraFin); // Asignar la fecha y hora de fin
+        cita.setFechaHoraInicio(fechaHoraInicio);
+        cita.setFechaHoraFin(fechaHoraFin);
 
+        // Asignar el fotógrafo seleccionado
         for (FotografoDTO fotografo : fotografos) {
             if (fotografo.getNombrePersona().equals(this.cbFotografo.getSelectedItem().toString())) {
                 cita.setFotografo(fotografo);
@@ -635,13 +679,11 @@ public class DialogCita extends javax.swing.JDialog {
         try {
             CitaDTO citaAgregada = gestor.crearCita(cita);
             DialogCita.citaAgregada = citaAgregada;
-            //Mostrar mensaje de confirmación
             JOptionPane.showMessageDialog(parent, "Cita agregada");
             this.dispose();
         } catch (GestorException ex) {
             JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error al crear la cita", JOptionPane.ERROR_MESSAGE);
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -660,10 +702,6 @@ public class DialogCita extends javax.swing.JDialog {
         lblExtras = new javax.swing.JLabel();
         pnlFecha = new javax.swing.JPanel();
         jcalendar = new com.toedter.calendar.JCalendar();
-        pnlHorarios = new javax.swing.JPanel();
-        sFechaFin = new javax.swing.JSpinner();
-        jLabel6 = new javax.swing.JLabel();
-        sFechaInicio = new javax.swing.JSpinner();
         cbFotografo = new javax.swing.JComboBox<>();
         btnCancelar = new javax.swing.JButton();
         btnAceptar = new javax.swing.JButton();
@@ -750,26 +788,6 @@ public class DialogCita extends javax.swing.JDialog {
         );
 
         pnlPrincipal.add(pnlFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 500, 240));
-
-        pnlHorarios.setBackground(new java.awt.Color(255, 255, 255));
-        pnlHorarios.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        pnlHorarios.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        sFechaFin.setBorder(null);
-        pnlHorarios.add(sFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 10, 130, 30));
-        sFechaFin.setModel(new javax.swing.SpinnerDateModel());
-        sFechaFin.setEditor(new javax.swing.JSpinner.DateEditor(sFechaFin, "hh:mm a"));
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel6.setText("-");
-        pnlHorarios.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 10, 20, 20));
-
-        sFechaInicio.setBorder(null);
-        pnlHorarios.add(sFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 130, 30));
-        sFechaInicio.setModel(new javax.swing.SpinnerDateModel());
-        sFechaInicio.setEditor(new javax.swing.JSpinner.DateEditor(sFechaInicio, "hh:mm a"));
-
-        pnlPrincipal.add(pnlHorarios, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 380, 350, 50));
 
         cbFotografo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ricardo Gutierrez", " ", " ", " ", " " }));
         cbFotografo.setBorder(null);
@@ -958,7 +976,6 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> cbFotografo;
     private javax.swing.JComboBox<String> cmbFechaFin;
     private javax.swing.JComboBox<String> cmbFechaInicio;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -973,10 +990,7 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JLabel lblSeleccionarFecha;
     private javax.swing.JLabel lblSelecionarHorario;
     private javax.swing.JPanel pnlFecha;
-    private javax.swing.JPanel pnlHorarios;
     private javax.swing.JPanel pnlPrincipal;
-    private javax.swing.JSpinner sFechaFin;
-    private javax.swing.JSpinner sFechaInicio;
     private javax.swing.JTable tblMaterial;
     private javax.swing.JTextField txtCantidad;
     private javax.swing.JTextField txtNombreMat;
