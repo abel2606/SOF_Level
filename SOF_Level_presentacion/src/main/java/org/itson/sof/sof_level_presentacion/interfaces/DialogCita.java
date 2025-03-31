@@ -510,6 +510,10 @@ public class DialogCita extends javax.swing.JDialog {
 
     public void Aceptar() {
         boolean citaCompleta = true;
+        if (cmbFechaInicio.getSelectedItem() == null || cmbFechaFin.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(parent, "Favor de seleccionar tanto la fecha de inicio como la de fin.");
+            return; // Salir si alguna de las fechas no está seleccionada
+        }
         if (txtaLugar.getText().isBlank() && txtaLugar.getText().isEmpty()) {
             JOptionPane.showMessageDialog(parent, "Favor de ingresar un lugar");
 
@@ -533,6 +537,7 @@ public class DialogCita extends javax.swing.JDialog {
                     this.dispose();
                 }
             }
+
         }
 
     }
