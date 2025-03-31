@@ -105,6 +105,8 @@ public class DialogCita extends javax.swing.JDialog {
 
         // Avanzar al día siguiente para que hoy no sea seleccionable
         hoy.add(Calendar.DAY_OF_YEAR, 1);
+        
+        jcalendar.setCalendar(hoy);
 
         jcalendar.addPropertyChangeListener("calendar", new PropertyChangeListener() {
             @Override
@@ -446,8 +448,8 @@ public class DialogCita extends javax.swing.JDialog {
             this.lblDelete.setEnabled(false);
             this.lblEdit.setEnabled(false);
             editando = true;
-            Calendar today = Calendar.getInstance();
-            jcalendar.setCalendar(today);
+            //Calendar today = Calendar.getInstance();
+            //jcalendar.setCalendar(today);
         }
         HabilitarEditar();
     }
