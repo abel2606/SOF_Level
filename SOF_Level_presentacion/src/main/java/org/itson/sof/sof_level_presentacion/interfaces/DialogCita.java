@@ -56,6 +56,7 @@ public class DialogCita extends javax.swing.JDialog {
     boolean editando = false;
     List<FotografoDTO> fotografos;
     Frame parent;
+    private boolean inicializado = false;
 
     private DefaultListModel<String> listModel;
     private JList<String> suggestionList;
@@ -94,7 +95,7 @@ public class DialogCita extends javax.swing.JDialog {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 Calendar seleccionado = jcalendar.getCalendar();
-                if (seleccionado.before(hoy)) { // Si la fecha seleccionada es hoy o pasada
+                if (seleccionado.before(hoy) && inicializado) { // Si la fecha seleccionada es hoy o pasada
                     jcalendar.setCalendar(hoy); // Restablecer a la primera fecha válida (mañana)
                     JOptionPane.showMessageDialog(parent, "Solo puedes seleccionar fechas futuras", "Fecha no válida", JOptionPane.WARNING_MESSAGE);
                 }
@@ -102,6 +103,7 @@ public class DialogCita extends javax.swing.JDialog {
         });
 
         inicializar();
+        inicializado = true;
     }
 
     private void configurarAutocompletado() {
