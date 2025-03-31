@@ -50,4 +50,6 @@ public interface ICitaBO {
      * @throws ObjetosNegocioException 
      */
     public List<CitaDTO> obtenerCitasPorContrato(ContratoDTO contratoDTO) throws ObjetosNegocioException;
+    
+    public List<String> obtenerHorariosDisponibles(String fecha) throws ObjetosNegocioException;
 }

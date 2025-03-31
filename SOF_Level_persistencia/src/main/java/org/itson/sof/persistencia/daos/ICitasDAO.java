@@ -61,4 +61,12 @@ public interface ICitasDAO {
      */
     public List<Cita> obtenerCitasFecha (Cita cita) throws PersistenciaSOFException;
     
+    /**
+     * 
+     * @param fecha
+     * @return
+     * @throws PersistenciaSOFException 
+     */
+    public List<Cita> obtenerCitasPorFecha(String fecha) throws PersistenciaSOFException;
+    
 }

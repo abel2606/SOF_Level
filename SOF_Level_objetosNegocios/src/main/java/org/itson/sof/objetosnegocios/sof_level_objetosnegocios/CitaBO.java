@@ -4,8 +4,12 @@
  */
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.ConverterUtil;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
@@ -45,10 +49,10 @@ public class CitaBO implements ICitaBO {
         Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
 
         try {
-            if (citasDAO.obtenerCitasFecha(cita).size()!=0){
-                throw new ObjetosNegocioException ("Se han encontrado citas que interfieren con esta, cambie la fecha");
+            if (citasDAO.obtenerCitasFecha(cita).size() != 0) {
+                throw new ObjetosNegocioException("Se han encontrado citas que interfieren con esta, cambie la fecha");
             }
-            
+
             cita = citasDAO.agregarCita(cita);
             return citaDTO;
         } catch (Exception ex) {
@@ -67,14 +71,12 @@ public class CitaBO implements ICitaBO {
     @Override
     public CitaDTO actualizarCita(CitaDTO citaDTO) throws ObjetosNegocioException {
         Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
-        
-        
 
         try {
-            if (citasDAO.obtenerCitasFecha(cita).size()!=0){
-                throw new ObjetosNegocioException ("Se han encontrado citas que interfieren con esta, cambie la fecha");
+            if (citasDAO.obtenerCitasFecha(cita).size() != 0) {
+                throw new ObjetosNegocioException("Se han encontrado citas que interfieren con esta, cambie la fecha");
             }
-            
+
             cita = citasDAO.actualizarCita(cita);
             citaDTO = ConverterUtil.citaEntidadADTO(cita);
             return citaDTO;
@@ -112,18 +114,18 @@ public class CitaBO implements ICitaBO {
      * @return cita consultada
      */
     @Override
-    public CitaDTO obtenerCita(CitaDTO citaDTO) throws ObjetosNegocioException{
+    public CitaDTO obtenerCita(CitaDTO citaDTO) throws ObjetosNegocioException {
         Cita cita = new Cita();
         cita.setCodigo(citaDTO.getCodigo());
-        
+
         try {
             citaDTO = ConverterUtil.citaEntidadADTO(citasDAO.obtenerCita(cita));
             return citaDTO;
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             throw new ObjetosNegocioException(ex.getMessage());
         }
     }
-    
+
     @Override
     public List<CitaDTO> obtenerCitasPorContrato(ContratoDTO contratoDTO) throws ObjetosNegocioException {
         try {
@@ -140,6 +142,146 @@ public class CitaBO implements ICitaBO {
         } catch (PersistenciaSOFException ex) {
             throw new ObjetosNegocioException(ex.getMessage());
         }
+    }
+
+    @Override
+    public List<String> obtenerHorariosDisponibles(String fechaInicio) throws ObjetosNegocioException {
+        List<Cita> citasOcupadas;
+        try {
+            citasOcupadas = citasDAO.obtenerCitasPorFecha(fechaInicio);
+        } catch (PersistenciaSOFException ex) {
+            Logger.getLogger(CitaBO.class.getName()).log(Level.SEVERE, "Error al obtener citas", ex);
+            throw new ObjetosNegocioException("No se pudieron obtener las citas");
+        }
+
+        List<String> horariosDisponibles = new ArrayList<>();
+        //Esto es como lo vi en ele ejemplo, pero pues se puede a cualquier hora
+        LocalTime inicio = LocalTime.of(02, 0);
+        LocalTime fin = LocalTime.of(23, 0);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        List<LocalTime> todosLosHorarios = new ArrayList<>();
+        while (inicio.isBefore(fin)) {
+            todosLosHorarios.add(inicio);
+            inicio = inicio.plusMinutes(30);
+        }
+
+        // Generamos una lista con los horarios disponibles para la fecha de inicio
+        for (LocalTime horaActual : todosLosHorarios) {
+            boolean ocupado = false;
+
+            // Comprobamos si este horario está ocupado por alguna cita
+            for (Cita cita : citasOcupadas) {
+                LocalTime inicioCita = cita.getFechaHoraInicio().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalTime();
+                LocalTime finCita = cita.getFechaHoraFin().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalTime();
+
+                // Verificamos si la horaActual cae dentro del rango de alguna cita ocupada
+                if (!horaActual.isBefore(inicioCita) && horaActual.isBefore(finCita)) {
+                    ocupado = true;
+                }
+            }
+
+            // Solo añadimos al listado de horarios disponibles si no está ocupado
+            if (!ocupado) {
+                horariosDisponibles.add(horaActual.format(formatter));
+            }
+        }
+
+        return horariosDisponibles;
+    }
+
+    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws ObjetosNegocioException {
+        List<String> horariosDisponiblesFin = new ArrayList<>();
+        LocalTime horaInicio = LocalTime.parse(horaInicioSeleccionada);
+        LocalTime fin = LocalTime.of(20, 0);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        LocalTime horaFinMinima = horaInicio.plusMinutes(30);
+
+        List<LocalTime> todosLosHorarios = new ArrayList<>();
+        while (horaFinMinima.isBefore(fin)) {
+            todosLosHorarios.add(horaFinMinima);
+            horaFinMinima = horaFinMinima.plusMinutes(30);
+        }
+
+        List<Cita> citasOcupadas;
+        try {
+            citasOcupadas = citasDAO.obtenerCitasPorFecha(fechaInicio);
+        } catch (PersistenciaSOFException ex) {
+            Logger.getLogger(CitaBO.class.getName()).log(Level.SEVERE, "Error al obtener citas", ex);
+            throw new ObjetosNegocioException("No se pudieron obtener las citas");
+        }
+
+        for (LocalTime horaActual : todosLosHorarios) {
+            boolean ocupado = false;
+
+            for (Cita cita : citasOcupadas) {
+                LocalTime inicioCita = cita.getFechaHoraInicio().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalTime();
+                LocalTime finCita = cita.getFechaHoraFin().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalTime();
+
+                if (!horaActual.isBefore(inicioCita) && horaActual.isBefore(finCita)) {
+                    ocupado = true;
+                }
+            }
+
+            if (!ocupado) {
+                horariosDisponiblesFin.add(horaActual.format(formatter));
+            }
+        }
+
+        return horariosDisponiblesFin;
+    }
+
+    public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String fechaInicio) throws ObjetosNegocioException {
+        List<String> horariosDisponiblesFin = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        List<LocalTime> todosLosHorariosFin = new ArrayList<>();
+        // Convertir las horas de inicio seleccionadas a LocalTime y calcular los horarios de fin válidos
+        for (String horaInicioStr : horariosInicio) {
+            LocalTime horaInicio = LocalTime.parse(horaInicioStr);
+
+            LocalTime horaFinMinima = horaInicio.plusMinutes(30);
+            LocalTime fin = LocalTime.of(20, 0);  
+
+            while (horaFinMinima.isBefore(fin)) {
+                todosLosHorariosFin.add(horaFinMinima);
+                horaFinMinima = horaFinMinima.plusMinutes(30);
+            }
+        }
+
+        List<Cita> citasOcupadas;
+        try {
+            citasOcupadas = citasDAO.obtenerCitasPorFecha(fechaInicio);
+        } catch (PersistenciaSOFException ex) {
+            Logger.getLogger(CitaBO.class.getName()).log(Level.SEVERE, "Error al obtener citas", ex);
+            throw new ObjetosNegocioException("No se pudieron obtener las citas");
+        }
+
+        for (LocalTime horaActual : todosLosHorariosFin) {
+            boolean ocupado = false;
+
+            for (Cita cita : citasOcupadas) {
+                LocalTime inicioCita = cita.getFechaHoraInicio().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalTime();
+                LocalTime finCita = cita.getFechaHoraFin().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalTime();
+
+                if (!horaActual.isBefore(inicioCita) && horaActual.isBefore(finCita)) {
+                    ocupado = true;
+                }
+            }
+
+            if (!ocupado) {
+                horariosDisponiblesFin.add(horaActual.format(formatter));
+            }
+        }
+
+        return horariosDisponiblesFin;
     }
 
 }

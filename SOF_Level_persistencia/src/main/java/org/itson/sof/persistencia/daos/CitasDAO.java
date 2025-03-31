@@ -301,4 +301,24 @@ public class CitasDAO implements ICitasDAO {
 
     }
 
+    @Override
+    public List<Cita> obtenerCitasPorFecha(String fecha) throws PersistenciaSOFException {
+        EntityManager em = conexion.crearConexion();
+        List<Cita> citas = new ArrayList<>();
+
+        try {
+            String jpql = "SELECT c FROM Cita c WHERE FUNCTION('DATE', c.fechaHoraInicio) = :fecha";
+            TypedQuery<Cita> query = em.createQuery(jpql, Cita.class);
+            query.setParameter("fecha", fecha);
+            citas = query.getResultList();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al obtener citas por fecha", e);
+            throw new PersistenciaSOFException(e);
+        } finally {
+            em.close();
+        }
+
+        return citas;
+    }
+
 }
