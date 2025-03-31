@@ -326,7 +326,6 @@ public class DialogCita extends javax.swing.JDialog {
             //Esto es para agregar los horarios disponibles del día seleccionado, sin contar aquellos horarios ya ocupados
 
             Date fechaDate = jcalendar.getDate();
-            String fechaSeleccionada = "";
 
             if (cita != null) {
                 // Obtener el objeto GregorianCalendar
@@ -337,7 +336,7 @@ public class DialogCita extends javax.swing.JDialog {
 
                 // Formatear la fecha como string con el formato deseado
                 SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-                fechaSeleccionada = formato.format(fechaInicio);
+                String fechaSeleccionada = formato.format(fechaInicio);
 
                 // Preseleccionar el horario de inicio y fin si ya existe una cita
                 String horaInicioSeleccionada = new SimpleDateFormat("HH:mm").format(cita.getFechaHoraInicio().getTime());
@@ -350,6 +349,7 @@ public class DialogCita extends javax.swing.JDialog {
 
                 System.out.println("Fecha seleccionada: " + fechaSeleccionada);
             }
+            String fechaSeleccionada = null;
 // Obtener horarios disponibles de la base de datos
             horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
             for (String horario : horariosDisponibles) {
@@ -378,7 +378,12 @@ public class DialogCita extends javax.swing.JDialog {
                 }
             }
 
-            String fechaSeleccionada2 = fechaSeleccionada;
+            // Convertir a Date utilizando getTime()
+            Date fechaInicio = jcalendar.getDate();
+
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaSeleccionada2 = formato.format(fechaInicio);
+
             // Configurar la acción cuando se seleccione un horario de inicio
             cmbFechaInicio.addActionListener(new ActionListener() {
                 @Override
