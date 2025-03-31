@@ -116,6 +116,21 @@ public class DialogCita extends javax.swing.JDialog {
                     jcalendar.setCalendar(hoy); // Restablecer a la primera fecha válida (mañana)
                     JOptionPane.showMessageDialog(parent, "Solo puedes seleccionar fechas futuras", "Fecha no válida", JOptionPane.WARNING_MESSAGE);
                 }
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String fechaSeleccionada = sdf.format(seleccionado.getTime());
+                // Obtener horarios disponibles de la base de datos
+                List<String> horariosDisponibles = new ArrayList<>();
+                try {
+                    horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
+                } catch (GestorException ex) {
+                    Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                cmbFechaInicio.removeAllItems();
+                for (String horario : horariosDisponibles) {
+                    if (cita == null || !horario.equals(cmbFechaInicio.getSelectedItem())) { // Evitar agregar el horario ya seleccionado
+                        cmbFechaInicio.addItem(horario);
+                    }
+                }
             }
         });
 
@@ -342,8 +357,6 @@ public class DialogCita extends javax.swing.JDialog {
         List<String> horariosDisponibleFechaFin;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            //Esto es para agregar los horarios disponibles del día seleccionado, sin contar aquellos horarios ya ocupados
-            Date fechaDate = jcalendar.getDate();
 
             if (cita != null) {
                 // Obtener el objeto GregorianCalendar
@@ -367,7 +380,8 @@ public class DialogCita extends javax.swing.JDialog {
 
                 System.out.println("Fecha seleccionada: " + fechaSeleccionada);
             }
-            String fechaSeleccionada = null;
+            Calendar calendar = jcalendar.getCalendar();
+            String fechaSeleccionada = sdf.format(calendar.getTime());
             // Obtener horarios disponibles de la base de datos
             horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
             for (String horario : horariosDisponibles) {

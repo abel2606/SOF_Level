@@ -215,7 +215,7 @@ public class CitaBO implements ICitaBO {
     public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws ObjetosNegocioException {
         List<String> horariosDisponiblesFin = new ArrayList<>();
         LocalTime horaInicio = LocalTime.parse(horaInicioSeleccionada);
-        LocalTime fin = LocalTime.of(20, 0);
+        LocalTime fin = LocalTime.of(23, 30);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         LocalTime horaFinMinima = horaInicio.plusMinutes(30);
@@ -251,6 +251,7 @@ public class CitaBO implements ICitaBO {
         return horariosDisponiblesFin;
     }
 
+    @Override
     public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String fechaInicio) throws ObjetosNegocioException {
         List<String> horariosDisponiblesFin = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -261,7 +262,7 @@ public class CitaBO implements ICitaBO {
             LocalTime horaInicio = LocalTime.parse(horaInicioStr);
 
             LocalTime horaFinMinima = horaInicio.plusMinutes(30);
-            LocalTime fin = LocalTime.of(20, 0);
+            LocalTime fin = LocalTime.of(23, 0);
 
             while (horaFinMinima.isBefore(fin)) {
                 todosLosHorariosFin.add(horaFinMinima);
