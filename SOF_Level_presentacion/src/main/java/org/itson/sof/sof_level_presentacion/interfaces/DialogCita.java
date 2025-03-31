@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -112,10 +114,9 @@ public class DialogCita extends javax.swing.JDialog {
             if (cita != null) {
                 gestor.obtenerMaterialesCita(cita).forEach((materialCita) -> {
                     materialesSeleccionados.add(new MaterialDTO(materialCita.getMaterial().getNombre(), materialCita.getCantidad()));
-                    
+
                 });
-                
-                
+
             }
 
             DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0);
@@ -218,7 +219,7 @@ public class DialogCita extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(null, "Material no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 seleccionado.setCantidad(cantidad);
 
                 materialesSeleccionados.add(seleccionado);
@@ -332,6 +333,29 @@ public class DialogCita extends javax.swing.JDialog {
         Date horaActual = new Date();
         sFechaInicio.setValue(horaActual);
         sFechaFin.setValue(horaActual);
+
+        cmbFechaInicio.removeAllItems();
+
+        List<String> horariosDisponibles;
+        List<String> horariosDisponibleFechaFin;
+        try {
+            //Esto es para agregar los horarios disponibles del día seleccionado, sin contar aquellos horarios ya ocupados
+            horariosDisponibles = gestor.obtenerHorariosDisponibles("2025-03-31");
+            for (String horariosDisponible : horariosDisponibles) {
+                cmbFechaInicio.addItem(horariosDisponible);
+
+                //Una vez seleccionada la fecha de inicio, se podra seleccionar una fecha fin contemplando solo aquellas horas disponibles
+            }
+            
+            
+            horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin("2025-03-31", "08:00:00");
+
+            for (String horadisponiblef : horariosDisponibleFechaFin) {
+                cmbFechaFin.addItem(horadisponiblef);
+            }
+        } catch (GestorException ex) {
+            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         AsignarFotografos();
         AsignarCita();
@@ -655,8 +679,8 @@ public class DialogCita extends javax.swing.JDialog {
         lblExtras1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblMaterial = new javax.swing.JTable();
-        cbFechaInicio = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        cmbFechaInicio = new javax.swing.JComboBox<>();
+        cmbFechaFin = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -865,11 +889,16 @@ public class DialogCita extends javax.swing.JDialog {
 
         pnlPrincipal.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 360, -1, 210));
 
-        cbFechaInicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        pnlPrincipal.add(cbFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 440, -1, -1));
+        cmbFechaInicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbFechaInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbFechaInicioActionPerformed(evt);
+            }
+        });
+        pnlPrincipal.add(cmbFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 440, -1, -1));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        pnlPrincipal.add(jComboBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 440, -1, -1));
+        cmbFechaFin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        pnlPrincipal.add(cmbFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 440, -1, -1));
 
         getContentPane().add(pnlPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 880, 640));
 
@@ -914,6 +943,10 @@ public class DialogCita extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAceptarActionPerformed
 
+    private void cmbFechaInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFechaInicioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbFechaInicioActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
@@ -922,9 +955,9 @@ public class DialogCita extends javax.swing.JDialog {
     private javax.swing.JLabel btnCerrar;
     private javax.swing.JLabel btnEditar;
     private javax.swing.JLabel btnEliminar;
-    private javax.swing.JComboBox<String> cbFechaInicio;
     private javax.swing.JComboBox<String> cbFotografo;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JComboBox<String> cmbFechaFin;
+    private javax.swing.JComboBox<String> cmbFechaInicio;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

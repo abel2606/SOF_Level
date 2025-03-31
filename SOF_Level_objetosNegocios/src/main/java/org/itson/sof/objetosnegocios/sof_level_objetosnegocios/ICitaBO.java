@@ -51,5 +51,22 @@ public interface ICitaBO {
      */
     public List<CitaDTO> obtenerCitasPorContrato(ContratoDTO contratoDTO) throws ObjetosNegocioException;
     
+    /**
+     * 
+     * @param fecha
+     * @return
+     * @throws ObjetosNegocioException 
+     */
     public List<String> obtenerHorariosDisponibles(String fecha) throws ObjetosNegocioException;
+    
+    /**
+     * 
+     * @param fechaInicio
+     * @param horaInicioSeleccionada
+     * @return
+     * @throws ObjetosNegocioException 
+     */
+    public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String horaInicioSeleccionada) throws ObjetosNegocioException;
+    
+    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws ObjetosNegocioException;
 }

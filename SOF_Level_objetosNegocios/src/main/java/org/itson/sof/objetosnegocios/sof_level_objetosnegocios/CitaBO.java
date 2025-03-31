@@ -192,6 +192,7 @@ public class CitaBO implements ICitaBO {
         return horariosDisponibles;
     }
 
+    @Override
     public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws ObjetosNegocioException {
         List<String> horariosDisponiblesFin = new ArrayList<>();
         LocalTime horaInicio = LocalTime.parse(horaInicioSeleccionada);
@@ -215,8 +216,6 @@ public class CitaBO implements ICitaBO {
         }
 
         for (LocalTime horaActual : todosLosHorarios) {
-            boolean ocupado = false;
-
             for (Cita cita : citasOcupadas) {
                 LocalTime inicioCita = cita.getFechaHoraInicio().toInstant()
                         .atZone(ZoneId.systemDefault()).toLocalTime();
@@ -224,13 +223,10 @@ public class CitaBO implements ICitaBO {
                         .atZone(ZoneId.systemDefault()).toLocalTime();
 
                 if (!horaActual.isBefore(inicioCita) && horaActual.isBefore(finCita)) {
-                    ocupado = true;
+                    return horariosDisponiblesFin; // Detener búsqueda al encontrar un horario ocupado
                 }
             }
-
-            if (!ocupado) {
-                horariosDisponiblesFin.add(horaActual.format(formatter));
-            }
+            horariosDisponiblesFin.add(horaActual.format(formatter));
         }
 
         return horariosDisponiblesFin;
@@ -246,7 +242,7 @@ public class CitaBO implements ICitaBO {
             LocalTime horaInicio = LocalTime.parse(horaInicioStr);
 
             LocalTime horaFinMinima = horaInicio.plusMinutes(30);
-            LocalTime fin = LocalTime.of(20, 0);  
+            LocalTime fin = LocalTime.of(20, 0);
 
             while (horaFinMinima.isBefore(fin)) {
                 todosLosHorariosFin.add(horaFinMinima);
@@ -278,6 +274,7 @@ public class CitaBO implements ICitaBO {
 
             if (!ocupado) {
                 horariosDisponiblesFin.add(horaActual.format(formatter));
+                break;
             }
         }
 
