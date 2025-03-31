@@ -322,30 +322,64 @@ public class DialogCita extends javax.swing.JDialog {
         List<String> horariosDisponibles;
         List<String> horariosDisponibleFechaFin;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
         try {
             //Esto es para agregar los horarios disponibles del día seleccionado, sin contar aquellos horarios ya ocupados
 
-            Date fechaDate = jcalendar.getCalendar().getTime();
+            Date fechaDate = jcalendar.getDate();
+            String fechaSeleccionada = "";
 
-            if(cita!=null){
-                fechaDate = jcalendar.getDate();
+            if (cita != null) {
+                // Obtener el objeto GregorianCalendar
+                GregorianCalendar fechaHoraInicio = cita.getFechaHoraInicio();
+
+                // Convertir a Date utilizando getTime()
+                Date fechaInicio = fechaHoraInicio.getTime();
+
+                // Formatear la fecha como string con el formato deseado
+                SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+                fechaSeleccionada = formato.format(fechaInicio);
+
+                // Preseleccionar el horario de inicio y fin si ya existe una cita
+                String horaInicioSeleccionada = new SimpleDateFormat("HH:mm").format(cita.getFechaHoraInicio().getTime());
+                cmbFechaInicio.addItem(horaInicioSeleccionada);
+                cmbFechaInicio.setSelectedItem(horaInicioSeleccionada);
+
+                String horaFinSeleccionada = new SimpleDateFormat("HH:mm").format(cita.getFechaHoraFin().getTime());
+                cmbFechaFin.addItem(horaFinSeleccionada);
+                cmbFechaFin.setSelectedItem(horaFinSeleccionada);
+
+                System.out.println("Fecha seleccionada: " + fechaSeleccionada);
             }
-            String fechaStr = sdf.format(fechaDate);
-
-            System.out.println("Fecha seleccionada: " + fechaStr);
-
-            System.out.println(fechaStr);
-
-            // Obtener horarios disponibles de la base de datos
-            horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaStr);
+// Obtener horarios disponibles de la base de datos
+            horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
             for (String horario : horariosDisponibles) {
-                cmbFechaInicio.addItem(horario);
+                // Agregar horarios disponibles al ComboBox de inicio
+                if (cita == null || !horario.equals(cmbFechaInicio.getSelectedItem())) { // Evitar agregar el horario ya seleccionado
+                    cmbFechaInicio.addItem(horario);
+                }
             }
 
             // Deshabilitar el ComboBox de fin al inicio
             cmbFechaFin.setEnabled(false);
 
+            // Si ya existe una cita, seleccionamos los horarios disponibles para el fin basándonos en la hora de inicio
+            if (cita != null) {
+                // Obtener los horarios disponibles para el fin, según la hora de inicio seleccionada
+                String horaInicioSeleccionada = (String) cmbFechaInicio.getSelectedItem();
+
+                try {
+                    horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada, horaInicioSeleccionada);
+                    for (String horarioFin : horariosDisponibleFechaFin) {
+                        cmbFechaFin.addItem(horarioFin);
+                    }
+                    cmbFechaFin.setEnabled(true); // Habilitar el ComboBox de fin
+                } catch (GestorException ex) {
+                    Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            String fechaSeleccionada2 = fechaSeleccionada;
+            // Configurar la acción cuando se seleccione un horario de inicio
             cmbFechaInicio.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -356,8 +390,7 @@ public class DialogCita extends javax.swing.JDialog {
                         cmbFechaFin.removeAllItems();
 
                         try {
-                            List<String> horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaStr, horaInicioSeleccionada);
-
+                            List<String> horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada2, horaInicioSeleccionada);
                             for (String horarioFin : horariosDisponibleFechaFin) {
                                 cmbFechaFin.addItem(horarioFin);
                             }
@@ -758,11 +791,11 @@ public class DialogCita extends javax.swing.JDialog {
 
         lblLugar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblLugar.setText("Lugar:");
-        pnlPrincipal.add(lblLugar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, -1, -1));
+        pnlPrincipal.add(lblLugar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 500, -1, -1));
 
         lblFotografo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblFotografo.setText("Fotografo:");
-        pnlPrincipal.add(lblFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, -1, -1));
+        pnlPrincipal.add(lblFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 460, -1, -1));
 
         lblExtras.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblExtras.setText("Materiales:");
@@ -791,7 +824,7 @@ public class DialogCita extends javax.swing.JDialog {
 
         cbFotografo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ricardo Gutierrez", " ", " ", " ", " " }));
         cbFotografo.setBorder(null);
-        pnlPrincipal.add(cbFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 480, 230, 40));
+        pnlPrincipal.add(cbFotografo, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 450, 230, 40));
 
         btnCancelar.setBackground(new java.awt.Color(160, 36, 38));
         btnCancelar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -841,7 +874,7 @@ public class DialogCita extends javax.swing.JDialog {
         txtaLugar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jScrollPane2.setViewportView(txtaLugar);
 
-        pnlPrincipal.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 550, 350, 90));
+        pnlPrincipal.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 530, 350, 90));
 
         lblEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pencilIcon.png"))); // NOI18N
         lblEdit.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -913,10 +946,10 @@ public class DialogCita extends javax.swing.JDialog {
                 cmbFechaInicioActionPerformed(evt);
             }
         });
-        pnlPrincipal.add(cmbFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 440, -1, -1));
+        pnlPrincipal.add(cmbFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 130, 30));
 
         cmbFechaFin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        pnlPrincipal.add(cmbFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 440, -1, -1));
+        pnlPrincipal.add(cmbFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 390, 130, 30));
 
         getContentPane().add(pnlPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 880, 640));
 
