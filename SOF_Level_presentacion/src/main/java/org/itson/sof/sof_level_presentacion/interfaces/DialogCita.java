@@ -3,9 +3,10 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -28,8 +29,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -65,6 +64,22 @@ public class DialogCita extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.setResizable(false);
+        
+        txtNombreMat.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (txtNombreMat.getText().equals("Ingrese Material")) {
+                    txtNombreMat.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (txtNombreMat.getText().isEmpty()) {
+                    txtNombreMat.setText("Ingrese Material");
+                }
+            }
+        });
 
         if (unicaCita) {
             // Remover el MouseListener
@@ -265,14 +280,14 @@ public class DialogCita extends javax.swing.JDialog {
         int limiteCaracteres = 180;
         int limiteCaracteresPequeño = 4;
 
-// Activar el ajuste de línea para que el texto se recorra a un nuevo renglón
+        // Activar el ajuste de línea para que el texto se recorra a un nuevo renglón
         this.txtaLugar.setLineWrap(true);
         this.txtaLugar.setWrapStyleWord(true);
 
         this.txtaExtras.setLineWrap(true);
         this.txtaExtras.setWrapStyleWord(true);
 
-// Limitar la cantidad de caracteres en txtaLugar
+        // Limitar la cantidad de caracteres en txtaLugar
         this.txtaLugar.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -295,7 +310,7 @@ public class DialogCita extends javax.swing.JDialog {
             }
         });
 
-// Limitar la cantidad de caracteres en txtaExtras
+        // Limitar la cantidad de caracteres en txtaExtras
         this.txtaExtras.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -326,7 +341,6 @@ public class DialogCita extends javax.swing.JDialog {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             //Esto es para agregar los horarios disponibles del día seleccionado, sin contar aquellos horarios ya ocupados
-
             Date fechaDate = jcalendar.getDate();
 
             if (cita != null) {
@@ -352,7 +366,7 @@ public class DialogCita extends javax.swing.JDialog {
                 System.out.println("Fecha seleccionada: " + fechaSeleccionada);
             }
             String fechaSeleccionada = null;
-// Obtener horarios disponibles de la base de datos
+            // Obtener horarios disponibles de la base de datos
             horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
             for (String horario : horariosDisponibles) {
                 // Agregar horarios disponibles al ComboBox de inicio
@@ -380,16 +394,17 @@ public class DialogCita extends javax.swing.JDialog {
                 }
             }
 
-            // Convertir a Date utilizando getTime()
-            Date fechaInicio = jcalendar.getDate();
-
-            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-            String fechaSeleccionada2 = formato.format(fechaInicio);
-
             // Configurar la acción cuando se seleccione un horario de inicio
             cmbFechaInicio.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+
+                    // Convertir a Date utilizando getTime()
+                    Date fechaInicio = jcalendar.getDate();
+
+                    SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+                    String fechaSeleccionada2 = formato.format(fechaInicio);
+
                     String horaInicioSeleccionada = (String) cmbFechaInicio.getSelectedItem();
 
                     if (horaInicioSeleccionada != null) {
@@ -922,7 +937,7 @@ public class DialogCita extends javax.swing.JDialog {
         pnlPrincipal.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 290, 60, 50));
 
         txtNombreMat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtNombreMat.setText("Mazapan");
+        txtNombreMat.setText("Ingrese Material");
         txtNombreMat.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         txtNombreMat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
