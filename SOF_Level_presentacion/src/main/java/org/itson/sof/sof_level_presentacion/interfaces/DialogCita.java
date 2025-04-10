@@ -49,7 +49,7 @@ import org.itson.sof.sof_dtos.MaterialDTO;
 public class DialogCita extends javax.swing.JDialog {
 
     private List<MaterialDTO> materiales = new ArrayList<>();
-    private List<MaterialDTO> materialesSeleccionados = new ArrayList<>();
+    private final List<MaterialDTO> materialesSeleccionados = new ArrayList<>();
     public static CitaDTO citaAgregada;
     GestorCitas gestor;
     CitaDTO cita;
@@ -98,48 +98,37 @@ public class DialogCita extends javax.swing.JDialog {
 
         configurarAutocompletado();
 
-        Calendar hoy = Calendar.getInstance();
-        hoy.set(Calendar.HOUR_OF_DAY, 0);
-        hoy.set(Calendar.MINUTE, 0);
-        hoy.set(Calendar.SECOND, 0);
-        hoy.set(Calendar.MILLISECOND, 0);
-
-        // Avanzar al día siguiente para que hoy no sea seleccionable
-        hoy.add(Calendar.DAY_OF_YEAR, 1);
-        
-        jcalendar.setCalendar(hoy);
-
-        jcalendar.addPropertyChangeListener("calendar", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                Calendar seleccionado = jcalendar.getCalendar();
-                if (seleccionado.before(hoy) && inicializado) { // Si la fecha seleccionada es hoy o pasada
-                    jcalendar.setCalendar(hoy); // Restablecer a la primera fecha válida (mañana)
-                    JOptionPane.showMessageDialog(parent, "Solo puedes seleccionar fechas futuras", "Fecha no válida", JOptionPane.WARNING_MESSAGE);
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                String fechaSeleccionada = sdf.format(seleccionado.getTime());
-                // Obtener horarios disponibles de la base de datos
-                List<String> horariosDisponibles = new ArrayList<>();
-                try {
-                    horariosDisponibles = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
-                } catch (GestorException ex) {
-                    Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                cmbFechaInicio.removeAllItems();
-                for (String horario : horariosDisponibles) {
-                    if (cita == null || !horario.equals(cmbFechaInicio.getSelectedItem())) { // Evitar agregar el horario ya seleccionado
-                        cmbFechaInicio.addItem(horario);
-                    }
-                }
-            }
-        });
-
         inicializar();
         inicializado = true;
     }
 
     private void configurarAutocompletado() {
+        
+        //Validacion txtCantidad
+        this.txtCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                String text = txtCantidad.getText();
+
+                // Solo permitir dígitos o un punto (si no hay otro punto)
+                if (!Character.isDigit(c) && c != '.') {
+                    evt.consume(); // No permitir otros caracteres
+                } else if (c == '.' && text.contains(".")) {
+                    evt.consume(); // No permitir más de un punto
+                }
+            }
+        });
+        this.txtCantidad.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                String text = txtCantidad.getText().trim();
+                if (text.isEmpty() || text.equals("0") || text.equals(".")) {
+                    txtCantidad.setText("1");
+                }
+            }
+        });
+
         listModel = new DefaultListModel<>();
         suggestionList = new JList<>(listModel);
         JScrollPane scrollPane = new JScrollPane(suggestionList);
@@ -152,9 +141,7 @@ public class DialogCita extends javax.swing.JDialog {
             if (cita != null) {
                 gestor.obtenerMaterialesCita(cita).forEach((materialCita) -> {
                     materialesSeleccionados.add(new MaterialDTO(materialCita.getMaterial().getNombre(), materialCita.getCantidad()));
-
                 });
-
             }
 
             DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0);
@@ -192,7 +179,6 @@ public class DialogCita extends javax.swing.JDialog {
                         if (!listModel.isEmpty()) {
                             SwingUtilities.invokeLater(() -> {
                                 if (!jpopmMateriales.isVisible()) {
-                                    Point location = txtNombreMat.getLocationOnScreen();
                                     jpopmMateriales.show(txtNombreMat, 0, txtNombreMat.getHeight());
                                 }
                             });
@@ -294,9 +280,19 @@ public class DialogCita extends javax.swing.JDialog {
 
     private void inicializar() {
 
+        Calendar hoy = Calendar.getInstance();
+        hoy.set(Calendar.HOUR_OF_DAY, 0);
+        hoy.set(Calendar.MINUTE, 0);
+        hoy.set(Calendar.SECOND, 0);
+        hoy.set(Calendar.MILLISECOND, 0);
+
+        // Avanzar al día siguiente para que hoy no sea seleccionable
+        hoy.add(Calendar.DAY_OF_YEAR, 1);
+
+        jcalendar.setCalendar(hoy);
+
         // Limitar los caracteres en el JTextArea
         int limiteCaracteres = 180;
-        int limiteCaracteresPequeño = 4;
 
         // Activar el ajuste de línea para que el texto se recorra a un nuevo renglón
         this.txtaLugar.setLineWrap(true);
@@ -391,7 +387,7 @@ public class DialogCita extends javax.swing.JDialog {
                     cmbFechaInicio.addItem(horario);
                 }
             }
-            
+
             // Si ya existe una cita, seleccionamos los horarios disponibles para el fin basándonos en la hora de inicio
             if (cita != null) {
                 // Obtener los horarios disponibles para el fin, según la hora de inicio seleccionada
@@ -406,52 +402,53 @@ public class DialogCita extends javax.swing.JDialog {
                 } catch (GestorException ex) {
                     Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
                 // Obtener la hora de la cita (en este caso, tomamos la hora de inicio)
-            GregorianCalendar fechaHoraInicio = this.cita.getFechaHoraInicio();
-            GregorianCalendar fechaHoraFin = this.cita.getFechaHoraFin();
-            int horaCita = fechaHoraInicio.get(Calendar.HOUR_OF_DAY);
-            int minutoCita = fechaHoraInicio.get(Calendar.MINUTE);
+                GregorianCalendar fechaHoraInicio = this.cita.getFechaHoraInicio();
+                GregorianCalendar fechaHoraFin = this.cita.getFechaHoraFin();
+                int horaCita = fechaHoraInicio.get(Calendar.HOUR_OF_DAY);
+                int minutoCita = fechaHoraInicio.get(Calendar.MINUTE);
 
-            int horaCitaFin = fechaHoraFin.get(Calendar.HOUR_OF_DAY);
-            int minutoCitaFin = fechaHoraFin.get(Calendar.MINUTE);
+                int horaCitaFin = fechaHoraFin.get(Calendar.HOUR_OF_DAY);
+                int minutoCitaFin = fechaHoraFin.get(Calendar.MINUTE);
 
-            // Convertir a formato "HH:mm"
-            String horaCitaStr = String.format("%02d:%02d", horaCita, minutoCita);
-            String horaCitaStrFin = String.format("%02d:%02d", horaCitaFin, minutoCitaFin);
+                // Convertir a formato "HH:mm"
+                String horaCitaStr = String.format("%02d:%02d", horaCita, minutoCita);
+                String horaCitaStrFin = String.format("%02d:%02d", horaCitaFin, minutoCitaFin);
 
-            // Obtener el modelo del ComboBox
-            ComboBoxModel<String> model = cmbFechaInicio.getModel();
-             ComboBoxModel<String> modelFin = cmbFechaFin.getModel();
-             //TODO: 
-             System.out.println(horaCitaStr);
-             System.out.println(horaCitaStrFin);
+                // Obtener el modelo del ComboBox
+                ComboBoxModel<String> model = cmbFechaInicio.getModel();
+                ComboBoxModel<String> modelFin = cmbFechaFin.getModel();
 
-            // Verificar si el ComboBox está vacío
-            if (model.getSize() == 0) {
-                System.out.println("El ComboBox está vacío.");
-                return;
-            }
+                System.out.println("Hora citas inicio: " + horaCitaStr);
+                System.out.println("Hora citas fin: " + horaCitaStrFin);
 
-            // Recorrer los elementos del ComboBox
-            for (int i = 0; i < model.getSize(); i++) {
-                if (i < model.getSize()) {  // Asegurarse de que no estamos fuera de rango
-                    String horarioComboBox = model.getElementAt(i);
-                    System.out.println("horario combo box"+horarioComboBox);
+                // Verificar si el ComboBox está vacío
+                if (model.getSize() == 0) {
+                    System.out.println("El ComboBox está vacío.");
+                    return;
+                }
 
-                    // Si el horario en el ComboBox coincide con la hora de la cita, seleccionarlo
-                    if (horarioComboBox.equals(horaCitaStr)) {
-                        System.out.println("Cita de inicio encontrada: "+ i);
-                        cmbFechaInicio.setSelectedIndex(i);  // Selecciona el item correspondiente
-                        break;  // No es necesario seguir buscando
+                // Recorrer los elementos del ComboBox
+                for (int i = 0; i < model.getSize(); i++) {
+                    if (i < model.getSize()) {  // Asegurarse de que no estamos fuera de rango
+                        String horarioComboBox = model.getElementAt(i);
+                        System.out.println("horario combo box: " + horarioComboBox);
+
+                        // Si el horario en el ComboBox coincide con la hora de la cita, seleccionarlo
+                        if (horarioComboBox.equals(horaCitaStr)) {
+                            System.out.println("Cita de inicio encontrada: " + i);
+                            cmbFechaInicio.setSelectedIndex(i);  // Selecciona el item correspondiente
+                            break;  // No es necesario seguir buscando
+                        }
                     }
                 }
-            }
 
-            // Recorrer los elementos del ComboBox para la fecha de fin
-            for (int i = 0; i < modelFin.getSize(); i++) {
-                if (i < modelFin.getSize()) {  // Asegurarse de que no estamos fuera de rango
+                // Recorrer los elementos del ComboBox para la fecha de fin
+                for (int i = 0; i < modelFin.getSize(); i++) {
+                    if (i < modelFin.getSize()) {  // Asegurarse de que no estamos fuera de rango
                         String horarioComboBox = modelFin.getElementAt(i);
+                        System.out.println("horario combo box: " + horarioComboBox);
 
                         // Si el horario en el ComboBox coincide con la hora de fin de la cita, seleccionarlo
                         if (horarioComboBox.equals(horaCitaStrFin)) {
@@ -462,42 +459,30 @@ public class DialogCita extends javax.swing.JDialog {
                     }
                 }
             }
-
-            // Deshabilitar el ComboBox de fin al inicio
-            //cmbFechaFin.setEnabled(false);
-
             // Configurar la acción cuando se seleccione un horario de inicio
-            cmbFechaInicio.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                    // Convertir a Date utilizando getTime()
-                    Date fechaInicio = jcalendar.getDate();
-
-                    SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-                    String fechaSeleccionada2 = formato.format(fechaInicio);
-
-                    String horaInicioSeleccionada = (String) cmbFechaInicio.getSelectedItem();
-
-                    if (horaInicioSeleccionada != null) {
-                        cmbFechaFin.setEnabled(true);
-                        cmbFechaFin.removeAllItems();
-
-                        try {
-                            List<String> horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada2, horaInicioSeleccionada);
-                            if (horariosDisponibleFechaFin.isEmpty()) {
-                                cmbFechaFin.addItem("No hay horarios");
-                            } else {
-                                for (String horarioFin : horariosDisponibleFechaFin) {
-                                    cmbFechaFin.addItem(horarioFin);
-                                }
+            cmbFechaInicio.addActionListener((ActionEvent e) -> {
+                // Convertir a Date utilizando getTime()
+                Date fechaInicio = jcalendar.getDate();
+                SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+                String fechaSeleccionada2 = formato.format(fechaInicio);
+                String horaInicioSeleccionada = (String) cmbFechaInicio.getSelectedItem();
+                if (horaInicioSeleccionada != null) {
+                    cmbFechaFin.setEnabled(true);
+                    cmbFechaFin.removeAllItems();
+                    try {
+                        List<String> horariosDisponibleFechaFin1 = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada2, horaInicioSeleccionada);
+                        if (horariosDisponibleFechaFin1.isEmpty()) {
+                            cmbFechaFin.addItem("No hay horarios");
+                        } else {
+                            for (String horarioFin : horariosDisponibleFechaFin1) {
+                                cmbFechaFin.addItem(horarioFin);
                             }
-                        } catch (GestorException ex) {
-                            Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
-                        }   
-                    } else {
-                        cmbFechaFin.setEnabled(false);
+                        }
+                    }catch (GestorException ex) {
+                        Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                } else {
+                    cmbFechaFin.setEnabled(false);
                 }
             });
 
@@ -521,6 +506,29 @@ public class DialogCita extends javax.swing.JDialog {
             //Calendar today = Calendar.getInstance();
             //jcalendar.setCalendar(today);
         }
+
+        jcalendar.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
+            Calendar seleccionado = jcalendar.getCalendar();
+            if (seleccionado.before(hoy) && inicializado) { // Si la fecha seleccionada es hoy o pasada
+                jcalendar.setCalendar(hoy); // Restablecer a la primera fecha válida (mañana)
+                JOptionPane.showMessageDialog(parent, "Solo puedes seleccionar fechas futuras", "Fecha no válida", JOptionPane.WARNING_MESSAGE);
+            }
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaSeleccionada = sdf1.format(seleccionado.getTime());
+            // Obtener horarios disponibles de la base de datos
+            List<String> horariosDisponibles1 = new ArrayList<>();
+            try {
+                horariosDisponibles1 = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
+            }catch (GestorException ex) {
+                Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            cmbFechaInicio.removeAllItems();
+            for (String horario : horariosDisponibles1) {
+                if (cita == null || !horario.equals(cmbFechaInicio.getSelectedItem())) { // Evitar agregar el horario ya seleccionado
+                    cmbFechaInicio.addItem(horario);
+                }
+            }
+        });
         HabilitarEditar();
     }
 
@@ -572,8 +580,8 @@ public class DialogCita extends javax.swing.JDialog {
                 calendarFin.set(Calendar.SECOND, fechaHoraFin.get(Calendar.SECOND));
 
                 // Establecer la nueva fecha con hora en los JSpinners
-                cmbFechaInicio.setSelectedItem(calendarInicio.getTime());
-                cmbFechaFin.setSelectedItem(calendarFin.getTime());
+                //cmbFechaInicio.setSelectedItem(calendarInicio.getTime());
+                //cmbFechaFin.setSelectedItem(calendarFin.getTime());
             }
         }
     }
@@ -600,7 +608,6 @@ public class DialogCita extends javax.swing.JDialog {
     }
 
     public void Aceptar() {
-        boolean citaCompleta = true;
         if (cmbFechaInicio.getSelectedItem() == null || cmbFechaFin.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(parent, "Favor de seleccionar tanto la fecha de inicio como la de fin.");
             return; // Salir si alguna de las fechas no está seleccionada
@@ -614,7 +621,6 @@ public class DialogCita extends javax.swing.JDialog {
         } else {
             if (cita == null) {
                 int respuesta = JOptionPane.showConfirmDialog(parent, "¿Desea agregar la cita?");
-
                 if (respuesta == JOptionPane.OK_OPTION) {
                     AgregarCita();
                 }
@@ -622,7 +628,6 @@ public class DialogCita extends javax.swing.JDialog {
             } else {
                 if (editando) {
                     int respuesta = JOptionPane.showConfirmDialog(parent, "¿Desea actualizar la cita?");
-
                     if (respuesta == JOptionPane.OK_OPTION) {
                         EditarCita();
                     }
@@ -816,12 +821,13 @@ public class DialogCita extends javax.swing.JDialog {
         }
 
         try {
-            CitaDTO citaAgregada = gestor.crearCita(cita);
-            DialogCita.citaAgregada = citaAgregada;
+            CitaDTO citaAgregadaDTO = gestor.crearCita(cita);
+            DialogCita.citaAgregada = citaAgregadaDTO;
             JOptionPane.showMessageDialog(parent, "Cita agregada");
             this.dispose();
-        } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error al crear la cita", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(parent, "No se pudo conectar con el servidor, intentelo más tarde", "Error al crear la cita", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
         }
     }
 
@@ -999,6 +1005,7 @@ public class DialogCita extends javax.swing.JDialog {
         pnlPrincipal.add(lblDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 20, -1, -1));
 
         txtCantidad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtCantidad.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtCantidad.setText("1");
         txtCantidad.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         txtCantidad.addActionListener(new java.awt.event.ActionListener() {

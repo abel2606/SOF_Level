@@ -68,13 +68,13 @@ public class EvaluadorCitasFecha implements IDateEvaluator {
 
         // Determinar el color basado en el número de citas
         if (citaCount == 1) {
-            System.out.println("Verde");
+            //System.out.println("Verde");
             return Color.GREEN;  // 1 cita → Verde
         } else if (citaCount == 2) {
-            System.out.println("Naranja");
+           // System.out.println("Naranja");
             return Color.ORANGE; // 2 citas → Naranja
         } else if (citaCount >= 3) {
-            System.out.println("");
+            //System.out.println("");
             return Color.RED;    // 3 o más citas → Rojo
         }
         return Color.GREEN; // Si no hay citas, no se destaca
