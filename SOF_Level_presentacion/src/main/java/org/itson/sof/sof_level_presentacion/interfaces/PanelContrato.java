@@ -242,6 +242,8 @@ public class PanelContrato extends javax.swing.JPanel {
             if (citas != null) {
                 if (citas.size() == 1) {
                     unicaCita = true;
+                }else{
+                    unicaCita=false;
                 }
             }
             return citas;

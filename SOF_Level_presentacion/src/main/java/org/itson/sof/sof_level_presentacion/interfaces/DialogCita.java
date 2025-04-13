@@ -83,13 +83,17 @@ public class DialogCita extends javax.swing.JDialog {
         });
 
         if (unicaCita) {
-            // Remover el MouseListener
             for (MouseListener listener : lblDelete.getMouseListeners()) {
                 lblDelete.removeMouseListener(listener);
             }
-
-            // Deshabilitar el componente
-            this.lblDelete.setEnabled(false);
+            lblDelete.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    JOptionPane.showMessageDialog(null, "No se puede eliminar la unica cita del contrato", "No se puede eliminar", JOptionPane.INFORMATION_MESSAGE);
+                }
+            });
+        } else {
+            this.lblDelete.setEnabled(true);
         }
 
         gestor = GestorCitas.getInstance();
@@ -503,8 +507,18 @@ public class DialogCita extends javax.swing.JDialog {
             this.lblDelete.setEnabled(false);
             this.lblEdit.setEnabled(false);
             editando = true;
-            //Calendar today = Calendar.getInstance();
-            //jcalendar.setCalendar(today);
+        }else{
+            if (hoy.after(cita.getFechaHoraFin())) {
+                for (MouseListener listener : lblEdit.getMouseListeners()) {
+                    lblEdit.removeMouseListener(listener);
+                }
+                lblEdit.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        JOptionPane.showMessageDialog(null, "No se puede editar una cita que ya sucedio", "No se puede editar", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                });
+            }
         }
 
         jcalendar.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
@@ -673,13 +687,11 @@ public class DialogCita extends javax.swing.JDialog {
         if (respuesta == JOptionPane.OK_OPTION) {
             try {
                 gestor.eliminarCita(cita);
-                //Mostrar mensaje de confirmación
                 JOptionPane.showMessageDialog(parent, "Cita eliminada");
-                this.dispose();
-            } catch (GestorException ex) {
-                JOptionPane.showMessageDialog(parent, ex);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(parent, "No se encontro la cita", "Error al eliminar la cita", JOptionPane.ERROR_MESSAGE);
             }
-
+            this.dispose();
         }
     }
 
@@ -739,10 +751,10 @@ public class DialogCita extends javax.swing.JDialog {
         try {
             gestor.actualizarCita(cita);
             JOptionPane.showMessageDialog(this, "Cita actualizada");
-            this.dispose();
-        } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(parent, "No se encontro la cita", "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
         }
+        this.dispose();
     }
 
     private void AgregarCita() {
@@ -824,11 +836,10 @@ public class DialogCita extends javax.swing.JDialog {
             CitaDTO citaAgregadaDTO = gestor.crearCita(cita);
             DialogCita.citaAgregada = citaAgregadaDTO;
             JOptionPane.showMessageDialog(parent, "Cita agregada");
-            this.dispose();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(parent, "No se pudo conectar con el servidor, intentelo más tarde", "Error al crear la cita", JOptionPane.ERROR_MESSAGE);
-            this.dispose();
         }
+        this.dispose();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
