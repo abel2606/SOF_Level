@@ -64,4 +64,33 @@ public class MaterialesDAO implements IMaterialesDAO {
         }
     }
 
+    @Override
+    public Material obtenerMaterialPorNombre(String nombre) throws PersistenciaSOFException {
+        EntityManager em = conexion.crearConexion();
+        try {
+            String jpql = "SELECT m FROM Material m WHERE LOWER(m.nombre) = :nombre";
+            return em.createQuery(jpql, Material.class)
+                    .setParameter("nombre", nombre.toLowerCase())
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new PersistenciaSOFException("Error al buscar material por nombre", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void actualizarMaterial(Material material) throws PersistenciaSOFException {
+        EntityManager em = conexion.crearConexion();
+        try {
+            em.getTransaction().begin();
+            em.merge(material);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw new PersistenciaSOFException("Error al actualizar el material", e);
+        } finally {
+            em.close();
+        }
+    }
 }

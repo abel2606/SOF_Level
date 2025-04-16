@@ -131,4 +131,6 @@ public interface IGestorCitas {
     public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String horaInicioSeleccionada) throws GestorException;
 
     public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws GestorException;
+    
+    public void actualizarStockMaterial(String nombreMaterial, float nuevoStock) throws GestorException;
 }

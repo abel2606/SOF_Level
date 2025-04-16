@@ -65,7 +65,7 @@ public class DialogCita extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.setResizable(false);
-        
+
         txtNombreMat.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -107,7 +107,7 @@ public class DialogCita extends javax.swing.JDialog {
     }
 
     private void configurarAutocompletado() {
-        
+
         //Validacion txtCantidad
         this.txtCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
@@ -144,12 +144,62 @@ public class DialogCita extends javax.swing.JDialog {
             materiales = gestor.obtenerMateriales();
             if (cita != null) {
                 gestor.obtenerMaterialesCita(cita).forEach((materialCita) -> {
-                    materialesSeleccionados.add(new MaterialDTO(materialCita.getMaterial().getNombre(), materialCita.getCantidad()));
+                    MaterialDTO matBD = materialCita.getMaterial();
+                    MaterialDTO copia = new MaterialDTO();
+                    copia.setId(matBD.getId());
+                    copia.setNombre(matBD.getNombre());
+                    copia.setCantidad(materialCita.getCantidad());
+                    materialesSeleccionados.add(copia);
                 });
             }
 
-            DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0);
+            DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre", "Cantidad"}, 0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return column == 1; 
+                }
+            };
             tblMaterial.setModel(tableModel);
+
+            tableModel.addTableModelListener(e -> {
+                int fila = e.getFirstRow();
+                int columna = e.getColumn();
+
+                if (columna == 1) { 
+                    String nombre = (String) tableModel.getValueAt(fila, 0);
+                    Object cantidadObj = tableModel.getValueAt(fila, 1);
+
+                    try {
+                        float nuevaCantidad = Float.parseFloat(cantidadObj.toString());
+
+                        MaterialDTO stockReal = materiales.stream()
+                                .filter(mat -> mat.getNombre().equalsIgnoreCase(nombre))
+                                .findFirst()
+                                .orElse(null);
+
+                        if (stockReal == null) {
+                            return;
+                        }
+
+                        if (nuevaCantidad > stockReal.getCantidad()) {
+                            JOptionPane.showMessageDialog(tblMaterial, "No hay suficiente stock. Disponible: " + stockReal.getCantidad(), "Stock insuficiente", JOptionPane.ERROR_MESSAGE);
+                            tableModel.setValueAt(stockReal.getCantidad(), fila, 1);
+                            nuevaCantidad = stockReal.getCantidad();
+                        }
+
+                        for (MaterialDTO mat : materialesSeleccionados) {
+                            if (mat.getNombre().equalsIgnoreCase(nombre)) {
+                                mat.setCantidad(nuevaCantidad);
+                                break;
+                            }
+                        }
+
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(tblMaterial, "Cantidad inválida.", "Error", JOptionPane.ERROR_MESSAGE);
+                        tableModel.setValueAt(1.0f, fila, 1);
+                    }
+                }
+            });
 
             cargarMaterialesEnTabla(tableModel);
 
@@ -248,25 +298,79 @@ public class DialogCita extends javax.swing.JDialog {
                     return;
                 }
 
-                seleccionado.setCantidad(cantidad);
+                float cantidadActual = materialesSeleccionados.stream()
+                        .filter(mat -> mat.getNombre().equalsIgnoreCase(nombre))
+                        .map(MaterialDTO::getCantidad)
+                        .findFirst()
+                        .orElse(0f);
 
-                materialesSeleccionados.add(seleccionado);
+                float cantidadTotal = cantidadActual + cantidad;
 
-                tableModel.addRow(new Object[]{nombre, cantidad});
+                if (cantidadTotal > seleccionado.getCantidad()) {
+                    JOptionPane.showMessageDialog(null, "No hay suficiente stock.\nDisponible: " + seleccionado.getCantidad(), "Stock insuficiente", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                boolean yaExiste = false;
+                for (int i = 0; i < materialesSeleccionados.size(); i++) {
+                    MaterialDTO existente = materialesSeleccionados.get(i);
+                    if (existente.getNombre().equalsIgnoreCase(nombre)) {
+                        existente.setCantidad(existente.getCantidad() + cantidad);
+                        yaExiste = true;
+
+                        DefaultTableModel model = (DefaultTableModel) tblMaterial.getModel();
+                        for (int j = 0; j < model.getRowCount(); j++) {
+                            if (model.getValueAt(j, 0).toString().equalsIgnoreCase(nombre)) {
+                                model.setValueAt(existente.getCantidad(), j, 1); // Actualizar cantidad
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                if (!yaExiste) {
+                    MaterialDTO copia = new MaterialDTO();
+                    copia.setId(seleccionado.getId());
+                    copia.setNombre(seleccionado.getNombre());
+                    copia.setCantidad(cantidad);
+
+                    materialesSeleccionados.add(copia);
+                    ((DefaultTableModel) tblMaterial.getModel()).addRow(new Object[]{nombre, cantidad});
+                }
 
                 txtNombreMat.setText("");
                 txtCantidad.setText("");
             });
 
-            // Eliminar material de la lista y la tabla con clic
             tblMaterial.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     int filaSeleccionada = tblMaterial.getSelectedRow();
-                    if (filaSeleccionada != -1) {
-                        String nombre = (String) tableModel.getValueAt(filaSeleccionada, 0);
-                        materialesSeleccionados.removeIf(mat -> mat.getNombre().equalsIgnoreCase(nombre));
-                        tableModel.removeRow(filaSeleccionada);
+                    int columnaSeleccionada = tblMaterial.getSelectedColumn();
+
+                    if (tblMaterial.isEditing()) {
+                        return; 
+                    }
+
+                    if (filaSeleccionada != -1 && columnaSeleccionada == 0) {
+                        String nombre = (String) tblMaterial.getValueAt(filaSeleccionada, 0);
+
+                        for (int i = 0; i < materialesSeleccionados.size(); i++) {
+                            MaterialDTO material = materialesSeleccionados.get(i);
+                            if (material.getNombre().equalsIgnoreCase(nombre)) {
+                                float nuevaCantidad = material.getCantidad() - 1;
+
+                                if (nuevaCantidad <= 0) {
+                                    materialesSeleccionados.remove(i);
+                                    ((DefaultTableModel) tblMaterial.getModel()).removeRow(filaSeleccionada);
+                                } else {
+                                    material.setCantidad(nuevaCantidad);
+                                    tblMaterial.setValueAt(nuevaCantidad, filaSeleccionada, 1);
+                                }
+                                break;
+                            }
+                        }
                     }
                 }
             });
@@ -754,6 +858,7 @@ public class DialogCita extends javax.swing.JDialog {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(parent, "No se encontro la cita", "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
         }
+
         this.dispose();
     }
 
@@ -836,11 +941,31 @@ public class DialogCita extends javax.swing.JDialog {
             CitaDTO citaAgregadaDTO = gestor.crearCita(cita);
             DialogCita.citaAgregada = citaAgregadaDTO;
             JOptionPane.showMessageDialog(parent, "Cita agregada");
+
+            // Aquin se actualiza stock
+            for (MaterialDTO matUsado : materialesSeleccionados) {
+                MaterialDTO stockOriginal = materiales.stream()
+                        .filter(m -> m.getNombre().equalsIgnoreCase(matUsado.getNombre()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (stockOriginal != null) {
+                    float stockRestante = stockOriginal.getCantidad() - matUsado.getCantidad();
+                    if (stockRestante < 0) {
+                        stockRestante = 0;
+                    }
+
+                    gestor.actualizarStockMaterial(matUsado.getNombre(), stockRestante);
+                }
+            }
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(parent, "No se pudo conectar con el servidor, intentelo más tarde", "Error al crear la cita", JOptionPane.ERROR_MESSAGE);
         }
+
         this.dispose();
     }
+
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1043,6 +1168,11 @@ public class DialogCita extends javax.swing.JDialog {
                 btnAgregarMouseClicked(evt);
             }
         });
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
         pnlPrincipal.add(btnAgregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 290, -1, -1));
 
         lblExtras1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -1059,7 +1189,15 @@ public class DialogCita extends javax.swing.JDialog {
             new String [] {
                 "Cantidad", "Material", ""
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane3.setViewportView(tblMaterial);
 
         pnlPrincipal.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 360, -1, 210));
@@ -1121,6 +1259,10 @@ public class DialogCita extends javax.swing.JDialog {
     private void cmbFechaInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFechaInicioActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbFechaInicioActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAgregarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

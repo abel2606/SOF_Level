@@ -159,8 +159,8 @@ public class GestorCitas implements IGestorCitas {
     @Override
     public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String horaInicioSeleccionada) throws GestorException {
         try {
-            System.out.println("Horario inicio: "+horariosInicio);
-            System.out.println("Hora inicio seleccionada: "+horaInicioSeleccionada);
+            System.out.println("Horario inicio: " + horariosInicio);
+            System.out.println("Hora inicio seleccionada: " + horaInicioSeleccionada);
             return citaBO.obtenerHorariosDisponiblesFin(horariosInicio, horaInicioSeleccionada);
         } catch (ObjetosNegocioException ex) {
             throw new GestorException(ex.getMessage());
@@ -169,13 +169,28 @@ public class GestorCitas implements IGestorCitas {
 
     @Override
     public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws GestorException {
-       
+
         try {
-            System.out.println("Fecha inicio: "+fechaInicio);
-            System.out.println("Hora inicio seleccionada: "+horaInicioSeleccionada);
+            System.out.println("Fecha inicio: " + fechaInicio);
+            System.out.println("Hora inicio seleccionada: " + horaInicioSeleccionada);
             return citaBO.obtenerHorariosDisponiblesFin(fechaInicio, horaInicioSeleccionada);
         } catch (ObjetosNegocioException ex) {
             throw new GestorException(ex.getMessage());
         }
     }
+
+    @Override
+    public void actualizarStockMaterial(String nombreMaterial, float nuevoStock) throws GestorException {
+        try {
+            MaterialDTO material = materialBO.obtenerMaterialPorNombre(nombreMaterial);
+            if (material == null) {
+                throw new GestorException("Material no encontrado: " + nombreMaterial);
+            }
+            material.setCantidad(nuevoStock);
+            materialBO.actualizarMaterial(material);
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorException("Error al actualizar stock: " + ex.getMessage());
+        }
+    }
+
 }

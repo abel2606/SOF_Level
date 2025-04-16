@@ -72,4 +72,24 @@ public class MaterialBO implements IMaterialBO {
         }
     }
 
+    @Override
+    public MaterialDTO obtenerMaterialPorNombre(String nombre) throws ObjetosNegocioException {
+        try {
+            Material entidad = materialesDAO.obtenerMaterialPorNombre(nombre);
+            return ConverterUtil.materialEntidadADTO(entidad);
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException("No se pudo obtener el material: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void actualizarMaterial(MaterialDTO materialDTO) throws ObjetosNegocioException {
+        try {
+            Material entidad = ConverterUtil.materialDTOAEntidad(materialDTO);
+            materialesDAO.actualizarMaterial(entidad);
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException("No se pudo actualizar el material: " + ex.getMessage());
+        }
+    }
+
 }

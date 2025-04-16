@@ -17,8 +17,12 @@ import org.itson.sof.sof_dtos.MaterialDTO;
  * @author haesp
  */
 public interface IMaterialBO {
-    
+
     public List<MaterialDTO> obtenerMateriales() throws ObjetosNegocioException;
-    
+
     public List<CitaMaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws ObjetosNegocioException;
+
+    public MaterialDTO obtenerMaterialPorNombre(String nombre) throws ObjetosNegocioException;
+
+    public void actualizarMaterial(MaterialDTO materialDTO) throws ObjetosNegocioException;
 }

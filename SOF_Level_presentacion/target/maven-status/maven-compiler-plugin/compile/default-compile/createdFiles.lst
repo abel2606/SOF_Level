@@ -1,5 +1,6 @@
 Deprecated\PantallaCita$2.class
 Deprecated\PantallaContratos$3.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCita$22.class
 Deprecated\PantallaContrato.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$12.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$1.class
@@ -38,6 +39,7 @@ org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$4.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$2.class
 org\itson\sof\sof_level_presentacion\interfaces\ItemScrollCitas$2.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$13.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCita$23.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$9.class
 org\itson\sof\sof_level_presentacion\interfaces\ItemScrollCitas.class
 Deprecated\PantallaContratos.class
@@ -50,6 +52,7 @@ org\itson\sof\sof_level_presentacion\interfaces\PanelContratos.class
 Deprecated\PantallaContratos$4.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$16.class
 Deprecated\PantallaCita.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCita$24.class
 org\itson\sof\sof_level_presentacion\interfaces\ItemScrollCitas$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$2.class

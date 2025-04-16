@@ -142,11 +142,8 @@ public class CitasDAO implements ICitasDAO {
             transaction.begin();
 
             Cita citaExistente = obtenerCita(cita);
-
             if (citaExistente == null) {
                 throw new RuntimeException("Cita no encontrada");
-            } else {
-                System.out.println("Se obtuvo cita para actualizar");
             }
 
             if (cita.getFechaHoraInicio() != null) {
@@ -167,42 +164,52 @@ public class CitasDAO implements ICitasDAO {
             if (cita.getFotografo() != null) {
                 citaExistente.setFotografo(cita.getFotografo());
             }
+
             if (cita.getCitaMateriales() != null) {
-                // Limpiar las relaciones previas
+                TypedQuery<CitaMaterial> queryCM = em.createQuery(
+                        "SELECT cm FROM CitaMaterial cm WHERE cm.cita.id = :citaId", CitaMaterial.class);
+                queryCM.setParameter("citaId", citaExistente.getId());
+                List<CitaMaterial> anteriores = queryCM.getResultList();
+
+                for (CitaMaterial cm : anteriores) {
+                    Material matBD = em.find(Material.class, cm.getMaterial().getId());
+                    if (matBD != null) {
+                        matBD.setCantidad(matBD.getCantidad() + cm.getCantidad());
+                        em.merge(matBD); 
+                    }
+                    em.remove(cm);
+                }
+
                 citaExistente.getCitaMateriales().clear();
 
                 for (CitaMaterial citaMaterial : cita.getCitaMateriales()) {
-                    // Buscar el material por nombre en la base de datos
                     TypedQuery<Material> query = em.createQuery(
-                            "SELECT m FROM Material m WHERE m.nombre = :nombre", Material.class
-                    );
+                            "SELECT m FROM Material m WHERE m.nombre = :nombre", Material.class);
                     query.setParameter("nombre", citaMaterial.getMaterial().getNombre());
 
-                    List<Material> materialesEncontrados = query.getResultList();
-
-                    if (materialesEncontrados.isEmpty()) {
-                        throw new RuntimeException("Material no encontrado con nombre: " + citaMaterial.getMaterial().getNombre());
+                    List<Material> encontrados = query.getResultList();
+                    if (encontrados.isEmpty()) {
+                        throw new RuntimeException("Material no encontrado: " + citaMaterial.getMaterial().getNombre());
                     }
 
-                    Material material = materialesEncontrados.get(0); // Debe haber solo uno porque los nombres son únicos
+                    Material material = encontrados.get(0);
 
-                    // Verificar disponibilidad de material antes de asignarlo
                     if (material.getCantidad() < citaMaterial.getCantidad()) {
-                        throw new RuntimeException("No hay suficiente material disponible.");
+                        throw new RuntimeException("Stock insuficiente para: " + material.getNombre());
                     }
 
-                    // Descontar la cantidad en el material
                     material.setCantidad(material.getCantidad() - citaMaterial.getCantidad());
+                    em.merge(material); 
 
-                    // Agregar la relación
                     citaMaterial.setCita(citaExistente);
                     citaMaterial.setMaterial(material);
+
+                    em.persist(citaMaterial);
                     citaExistente.getCitaMateriales().add(citaMaterial);
                 }
             }
 
             Cita resultado = em.merge(citaExistente);
-
             transaction.commit();
             logger.info("Cita actualizada correctamente: ID(" + resultado.getId() + ")");
             return resultado;
