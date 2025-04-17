@@ -3,9 +3,11 @@ package org.itson.sof.objetosnegocios.gestorcitas;
 import java.util.List;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaMaterialBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ContratoBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.FotografoBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ICitaBO;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ICitaMaterialBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.IContratoBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.IFotografoBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.IMaterialBO;
@@ -28,12 +30,14 @@ public class GestorCitas implements IGestorCitas {
     private final IContratoBO contratoBO;
     private final IMaterialBO materialBO;
     private final IFotografoBO fotografoBO;
+    private final ICitaMaterialBO citaMaterialBO;
 
     private GestorCitas() {
         this.citaBO = new CitaBO();
         this.contratoBO = new ContratoBO();
         this.materialBO = new MaterialBO();
         this.fotografoBO = new FotografoBO();
+        this.citaMaterialBO = new CitaMaterialBO();
     }
 
     public static GestorCitas getInstance() {

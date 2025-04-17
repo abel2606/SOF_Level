@@ -175,7 +175,7 @@ public class CitasDAO implements ICitasDAO {
                     Material matBD = em.find(Material.class, cm.getMaterial().getId());
                     if (matBD != null) {
                         matBD.setCantidad(matBD.getCantidad() + cm.getCantidad());
-                        em.merge(matBD); 
+                        em.merge(matBD);
                     }
                     em.remove(cm);
                 }
@@ -199,7 +199,7 @@ public class CitasDAO implements ICitasDAO {
                     }
 
                     material.setCantidad(material.getCantidad() - citaMaterial.getCantidad());
-                    em.merge(material); 
+                    em.merge(material);
 
                     citaMaterial.setCita(citaExistente);
                     citaMaterial.setMaterial(material);
@@ -243,11 +243,32 @@ public class CitasDAO implements ICitasDAO {
                 throw new RuntimeException("Cita no encontrada con código: " + cita.getCodigo());
             }
 
-            // Se elimina la entidad administrada por el EntityManager
+            // Recuperar los CitaMaterial relacionados a esa cita
+            List<CitaMaterial> materialesAsociados = em.createQuery(
+                    "SELECT cm FROM CitaMaterial cm WHERE cm.cita = :cita", CitaMaterial.class)
+                    .setParameter("cita", citaExistente)
+                    .getResultList();
+
+            // Restablecer el stock de cada material
+            for (CitaMaterial cm : materialesAsociados) {
+                Material material = cm.getMaterial();
+                float cantidadUsada = cm.getCantidad();
+
+                // Sumar la cantidad al stock actual
+                material.setCantidad(material.getCantidad() + cantidadUsada);
+
+                // Persistir el cambio
+                em.merge(material);
+
+                // Eliminar la relación cita-material
+                em.remove(cm);
+            }
+
+            // Eliminar la cita
             em.remove(citaExistente);
 
             transaction.commit();
-            logger.info("Cita eliminada correctamente: Código(" + cita.getCodigo() + ")");
+            logger.info("Cita eliminada y materiales reabastecidos: Código(" + cita.getCodigo() + ")");
             return citaExistente;
 
         } catch (NoResultException e) {

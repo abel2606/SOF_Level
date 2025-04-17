@@ -942,7 +942,7 @@ public class DialogCita extends javax.swing.JDialog {
             DialogCita.citaAgregada = citaAgregadaDTO;
             JOptionPane.showMessageDialog(parent, "Cita agregada");
 
-            // Aquin se actualiza stock
+            // Aqui se actualiza stock
             for (MaterialDTO matUsado : materialesSeleccionados) {
                 MaterialDTO stockOriginal = materiales.stream()
                         .filter(m -> m.getNombre().equalsIgnoreCase(matUsado.getNombre()))
