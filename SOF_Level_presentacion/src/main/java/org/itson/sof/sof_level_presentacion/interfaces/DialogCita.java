@@ -2,6 +2,7 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -869,6 +870,8 @@ public class DialogCita extends javax.swing.JDialog {
         List<CitaMaterialDTO> citaMateriales = materialesSeleccionados.stream()
                 .map(material -> new CitaMaterialDTO(material, material.getCantidad()))
                 .collect(Collectors.toList());
+        
+        System.out.println(citaMateriales);
 
         cita.setCitaMateriales(citaMateriales);
 
@@ -959,8 +962,10 @@ public class DialogCita extends javax.swing.JDialog {
                 }
             }
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(parent, "No se pudo conectar con el servidor, intentelo más tarde", "Error al crear la cita", JOptionPane.ERROR_MESSAGE);
+        } catch (GestorException ex) {
+            JOptionPane.showMessageDialog(parent, "Hubo un error en la base de datos, intentelo de nuevo más tarde","Error de conexión", JOptionPane.ERROR_MESSAGE);
+        } catch (HeadlessException ex) {
+            JOptionPane.showMessageDialog(parent, "La fecha seleccionada esta ocupada por otra cita", "Erorr de validación", JOptionPane.ERROR_MESSAGE);
         }
 
         this.dispose();

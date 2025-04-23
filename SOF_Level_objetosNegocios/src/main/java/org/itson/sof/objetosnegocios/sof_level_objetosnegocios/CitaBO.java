@@ -49,7 +49,7 @@ public class CitaBO implements ICitaBO {
         Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
 
         try {
-            if (citasDAO.obtenerCitasFecha(cita).size() != 0) {
+            if (!citasDAO.obtenerCitasFecha(cita).isEmpty()) {
                 throw new ObjetosNegocioException("Se han encontrado citas que interfieren con esta, cambie la fecha");
             }
 
@@ -73,7 +73,7 @@ public class CitaBO implements ICitaBO {
         Cita cita = ConverterUtil.citaDTOAEntidad(citaDTO);
 
         try {
-            if (citasDAO.obtenerCitasFecha(cita).size() != 0) {
+            if (!citasDAO.obtenerCitasFecha(cita).isEmpty()) {
                 throw new ObjetosNegocioException("Se han encontrado citas que interfieren con esta, cambie la fecha");
             }
 

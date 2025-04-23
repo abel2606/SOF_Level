@@ -24,39 +24,42 @@ public class ContratosDAO implements IContratosDAO {
 
     @Override
     public List<Contrato> obtenerTotalContratos() throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             String jpql = "SELECT c FROM Contrato c";
             List<Contrato> contratos = em.createQuery(jpql, Contrato.class).getResultList();
             return contratos;
-        } catch (Exception e) {
+        } catch (PersistenciaSOFException e) {
             logger.log(Level.SEVERE, "Error al obtener contratos", e);
             throw new PersistenciaSOFException("Error al obtener contratos de persistencia: " + e.getMessage());
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
     public Contrato obtenerContratoFolio(String folio) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
-    try {
-        String jpql = "SELECT c FROM Contrato c WHERE c.folio = :folio";
-        return em.createQuery(jpql, Contrato.class)
-                .setParameter("folio", folio)
-                .getSingleResult();
-    } catch (NoResultException e) {
-        logger.log(Level.WARNING, "No se encontró el contrato con folio: " + folio, e);
-        throw new PersistenciaSOFException("No se encontro el folio del contrato");
-    } catch (Exception e) {
-        logger.log(Level.SEVERE, "Error al obtener contrato por folio", e);
-        throw new PersistenciaSOFException("Error al obtener contrato");
-    } finally {
-        em.close();
+        EntityManager em = null;
+        try {
+            em = conexion.crearConexion();
+            String jpql = "SELECT c FROM Contrato c WHERE c.folio = :folio";
+            return em.createQuery(jpql, Contrato.class)
+                    .setParameter("folio", folio)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            logger.log(Level.WARNING, "No se encontró el contrato con folio: " + folio, e);
+            throw new PersistenciaSOFException("No se encontro el folio del contrato");
+        } catch (PersistenciaSOFException e) {
+            logger.log(Level.SEVERE, "Error al obtener contrato por folio", e);
+            throw new PersistenciaSOFException("Error al obtener contrato de persistencia: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
     }
-    }
-    
-    
-    
 
 }

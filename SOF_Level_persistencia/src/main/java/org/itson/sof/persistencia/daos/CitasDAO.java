@@ -35,9 +35,11 @@ public class CitasDAO implements ICitasDAO {
 
     @Override
     public Cita obtenerCitaCodigo(String codigo) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
-        EntityTransaction transaction = em.getTransaction();
+        EntityManager em = null;
+        EntityTransaction transaction = null;
         try {
+            em = conexion.crearConexion();
+            transaction = em.getTransaction();
             transaction.begin();
 
             String jpql = "SELECT c FROM Cita c WHERE c.codigo = :codigoCita";
@@ -45,27 +47,32 @@ public class CitasDAO implements ICitasDAO {
                     .setParameter("codigoCita", codigo).getSingleResult();
 
             transaction.commit();
-            logger.info("Cita obtenida: ID(" + citaDeCodigo.getId() + ")");
+            logger.log(Level.INFO, "Cita obtenida: ID({0})", citaDeCodigo.getId());
             return citaDeCodigo;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
+        } catch (PersistenciaSOFException e) {
+            if (transaction!= null && transaction.isActive()) {
                 transaction.rollback();
             }
             logger.log(Level.SEVERE, "Error al obtener las citas del contrato", e);
             throw new PersistenciaSOFException("Error al obtener las citas de los contratos");
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
 
     }
 
     @Override
     public List<Cita> obtenerCitasContratos(long contratoId) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
-        EntityTransaction transaction = em.getTransaction();
+        EntityManager em = null;
+        EntityTransaction transaction = null;
+        
         try {
+            em = conexion.crearConexion();
+            transaction = em.getTransaction();
             transaction.begin();
-
+            
             String jpql = "SELECT c FROM Cita c WHERE c.contrato.id = :contratoId";
             List<Cita> citasDeContrato = em.createQuery(jpql, Cita.class)
                     .setParameter("contratoId", contratoId)
@@ -74,74 +81,102 @@ public class CitasDAO implements ICitasDAO {
             transaction.commit();
 
             return citasDeContrato;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
+        } catch (PersistenciaSOFException e) {
+            if (transaction!= null && transaction.isActive()) {
                 transaction.rollback();
             }
             logger.log(Level.SEVERE, "Error al obtener las citas del contrato", e);
             throw new PersistenciaSOFException("Error al obtener las citas de los contratos");
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
-    public Cita obtenerCita(Cita cita) {
-        EntityManager em = conexion.crearConexion();
+    public Cita obtenerCita(Cita cita) throws PersistenciaSOFException{
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             String jpql = "SELECT c FROM Cita c WHERE c.codigo = :codigo";
             return em.createQuery(jpql, Cita.class)
-                    .setParameter("codigo", cita.getCodigo()) // Extrae el código del objeto
+                    .setParameter("codigo", cita.getCodigo())
                     .getSingleResult();
+
+        } catch (PersistenciaSOFException e) {
+            logger.log(Level.SEVERE, "Error de conexión a la base de datos", e);
+            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+
         } catch (NoResultException e) {
             logger.log(Level.WARNING, "No se encontró la cita con código: " + cita.getCodigo(), e);
-            return null;  // Puedes lanzar una excepción si prefieres
+            throw new PersistenciaSOFException("No se encontró la cita con código:" + e.getMessage());
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error al obtener la cita por código", e);
-            return null;
+            throw new PersistenciaSOFException("Error al obtener la cita por código: " + e.getMessage());
+
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
-    public Cita agregarCita(Cita cita) {
-        EntityManager em = conexion.crearConexion();
-        EntityTransaction transaction = em.getTransaction();
-
-        if (cita.getLugar() == null || cita.getLugar() == "") {
-            cita.setLugar("PENDIENTE");
-        }
+    public Cita agregarCita(Cita cita) throws PersistenciaSOFException {
+        logger.log(Level.INFO, cita.getCitaMateriales().toString());
+        
+        EntityManager em = null;
+        EntityTransaction transaction = null;
 
         try {
+            em = conexion.crearConexion();
+            transaction = em.getTransaction();
+
+            if (cita.getLugar() == null || cita.getLugar().isEmpty()) {
+                cita.setLugar("PENDIENTE");
+            }
+
+            // Relacionar cada CitaMaterial con la cita
+            for (CitaMaterial cm : cita.getCitaMateriales()) {
+                cm.setCita(cita);
+            }
+
             transaction.begin();
-
             em.persist(cita);
-
             transaction.commit();
-            logger.info("Cita agregada correctamente: ID(" + cita.getId() + ")");
 
+            logger.log(Level.INFO, "Cita agregada correctamente: ID({0})", cita.getId());
             return cita;
 
-        } catch (Exception e) {
+        } catch (PersistenciaSOFException e) {
+            logger.log(Level.SEVERE, "Error de conexión al agregar cita", e);
+            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
 
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "Error al agregar la cita", e);
-            return null;
+            throw new PersistenciaSOFException("Error al agregar la cita: " + e.getMessage());
+
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
-    public Cita actualizarCita(Cita cita) {
-        EntityManager em = conexion.crearConexion();
-        EntityTransaction transaction = em.getTransaction();
+    public Cita actualizarCita(Cita cita)throws PersistenciaSOFException {
+        EntityManager em = null;
+        EntityTransaction transaction = null;
 
         try {
+            em = conexion.crearConexion(); 
+            transaction = em.getTransaction();
+
             transaction.begin();
 
-            Cita citaExistente = obtenerCita(cita);
+            Cita citaExistente = obtenerCita(cita); 
             if (citaExistente == null) {
                 throw new RuntimeException("Cita no encontrada");
             }
@@ -211,29 +246,37 @@ public class CitasDAO implements ICitasDAO {
 
             Cita resultado = em.merge(citaExistente);
             transaction.commit();
-            logger.info("Cita actualizada correctamente: ID(" + resultado.getId() + ")");
+
+            logger.log(Level.INFO, "Cita actualizada correctamente: ID({0})", resultado.getId());
             return resultado;
 
-        } catch (Exception e) {
-            if (transaction.isActive()) {
+        } catch (PersistenciaSOFException e) {
+            logger.log(Level.SEVERE, "Error de conexión al actualizar la cita", e);
+            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+
+        } catch (RuntimeException e) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             logger.log(Level.SEVERE, "Error al actualizar la cita", e);
-            return null;
+            throw new PersistenciaSOFException("Error al actualizar la cita: " + e.getMessage());
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
-    public Cita eliminarcita(Cita cita) {
-        EntityManager em = conexion.crearConexion();
-        EntityTransaction transaction = em.getTransaction();
+    public Cita eliminarcita(Cita cita)throws PersistenciaSOFException {
+        EntityManager em = null;
+        EntityTransaction transaction = null;
 
         try {
+            em = conexion.crearConexion(); // puede lanzar ConexionBDException
+            transaction = em.getTransaction();
             transaction.begin();
 
-            // Buscar la cita por código
             String jpql = "SELECT c FROM Cita c WHERE c.codigo = :codigo";
             Cita citaExistente = em.createQuery(jpql, Cita.class)
                     .setParameter("codigo", cita.getCodigo())
@@ -243,109 +286,106 @@ public class CitasDAO implements ICitasDAO {
                 throw new RuntimeException("Cita no encontrada con código: " + cita.getCodigo());
             }
 
-            // Recuperar los CitaMaterial relacionados a esa cita
             List<CitaMaterial> materialesAsociados = em.createQuery(
                     "SELECT cm FROM CitaMaterial cm WHERE cm.cita = :cita", CitaMaterial.class)
                     .setParameter("cita", citaExistente)
                     .getResultList();
 
-            // Restablecer el stock de cada material
             for (CitaMaterial cm : materialesAsociados) {
                 Material material = cm.getMaterial();
                 float cantidadUsada = cm.getCantidad();
 
-                // Sumar la cantidad al stock actual
                 material.setCantidad(material.getCantidad() + cantidadUsada);
-
-                // Persistir el cambio
                 em.merge(material);
-
-                // Eliminar la relación cita-material
                 em.remove(cm);
             }
 
-            // Eliminar la cita
             em.remove(citaExistente);
-
             transaction.commit();
-            logger.info("Cita eliminada y materiales reabastecidos: Código(" + cita.getCodigo() + ")");
+
+            logger.log(Level.INFO, "Cita eliminada y materiales reabastecidos: C\u00f3digo({0})", cita.getCodigo());
             return citaExistente;
+
+        } catch (PersistenciaSOFException e) {
+            logger.log(Level.SEVERE, "Error de conexión al eliminar la cita", e);
+            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
 
         } catch (NoResultException e) {
             logger.log(Level.WARNING, "No se encontró una cita con código: " + cita.getCodigo(), e);
-            return null;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
+            throw new PersistenciaSOFException("No se encontró una cita con código: " + e.getMessage());
+
+        } catch (RuntimeException e) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             logger.log(Level.SEVERE, "Error al eliminar la cita", e);
-            return null;
+            throw new PersistenciaSOFException("Error al eliminar la cita: " + e.getMessage());
+
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
-    public List<Cita> obtenerCitasFecha(Cita cita) {
-
-        EntityManager em = conexion.crearConexion();
+    public List<Cita> obtenerCitasFecha(Cita cita) throws PersistenciaSOFException {
+        EntityManager em = null;
         List<Cita> citas = new ArrayList<>();
 
         try {
+            em = conexion.crearConexion();
+
             GregorianCalendar fechaInicio = cita.getFechaHoraInicio();
             GregorianCalendar fechaFin = cita.getFechaHoraFin();
 
-            GregorianCalendar unaHoraAntes = (GregorianCalendar) fechaInicio.clone();
-            unaHoraAntes.add(Calendar.MINUTE, -29);
-
-            GregorianCalendar unaHoraDespues = (GregorianCalendar) fechaFin.clone();
-            unaHoraDespues.add(Calendar.MINUTE, 30);
-
             TypedQuery<Cita> query = em.createQuery(
                     "SELECT c FROM Cita c WHERE "
-                    + "c.codigo <> :codigo AND ("
-                    + "(c.fechaHoraInicio BETWEEN :inicio AND :fin "
-                    + "OR c.fechaHoraFin BETWEEN :inicio AND :fin "
-                    + "OR (:inicio BETWEEN c.fechaHoraInicio AND c.fechaHoraFin) "
-                    + "OR (:fin BETWEEN c.fechaHoraInicio AND c.fechaHoraFin)) "
-                    + "OR (c.fechaHoraFin BETWEEN :antes AND :inicio) "
-                    + "OR (c.fechaHoraInicio BETWEEN :fin AND :despues))", Cita.class
+                    + "c.codigo <> :codigo AND "
+                    + "(:inicio < c.fechaHoraFin AND :fin > c.fechaHoraInicio)", Cita.class
             );
 
-            query.setParameter("codigo", cita.getCodigo());  // Excluir la cita con el mismo código
+            query.setParameter("codigo", cita.getCodigo());
             query.setParameter("inicio", fechaInicio);
             query.setParameter("fin", fechaFin);
-            query.setParameter("antes", unaHoraAntes);
-            query.setParameter("despues", unaHoraDespues);
 
             citas = query.getResultList();
+
+        } catch (PersistenciaSOFException e) {
+            logger.log(Level.SEVERE, "Error de conexión al obtener citas por fecha", e);
+            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error al obtener citas por fecha", e);
+            throw new PersistenciaSOFException("Error: " + e.getMessage());
+
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
 
         return citas;
-
     }
 
     @Override
     public List<Cita> obtenerCitasPorFecha(String fecha) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
         List<Cita> citas = new ArrayList<>();
-
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             String jpql = "SELECT c FROM Cita c WHERE FUNCTION('DATE', c.fechaHoraInicio) = :fecha";
             TypedQuery<Cita> query = em.createQuery(jpql, Cita.class);
             query.setParameter("fecha", fecha);
             citas = query.getResultList();
-        } catch (Exception e) {
+        } catch (PersistenciaSOFException e) {
             logger.log(Level.SEVERE, "Error al obtener citas por fecha", e);
             throw new PersistenciaSOFException(e);
         } finally {
-            em.close();
+           if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-
         return citas;
     }
 

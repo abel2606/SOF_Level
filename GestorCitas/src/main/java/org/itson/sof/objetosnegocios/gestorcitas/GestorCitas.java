@@ -1,6 +1,8 @@
 package org.itson.sof.objetosnegocios.gestorcitas;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.CitaMaterialBO;
@@ -120,7 +122,11 @@ public class GestorCitas implements IGestorCitas {
 
     @Override
     public List<ContratoDTO> obtenerContratos() throws GestorException {
-        return contratoBO.obtenerTotalContratos();
+        try {
+            return contratoBO.obtenerTotalContratos();
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorException(ex.getMessage());
+        }
     }
 
     @Override

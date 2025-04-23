@@ -30,9 +30,12 @@ public class FotografoDAO implements IFotografoDAO {
     
     @Override
     public List<Fotografo> obtenerTodosFotografos() throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
-        EntityTransaction transaction = em.getTransaction();
+        EntityManager em = null;
+        EntityTransaction transaction = null;
         try {
+            em = conexion.crearConexion();
+            transaction = em.getTransaction();
+            
             transaction.begin();
 
             String jpql = "SELECT f FROM Fotografo f";
@@ -41,19 +44,22 @@ public class FotografoDAO implements IFotografoDAO {
 
             transaction.commit();
             return fotografos;
-        } catch (Exception e) {
+        } catch (PersistenciaSOFException e) {
             logger.log(Level.SEVERE, "Error al obtener fotógrafos", e);
             throw new PersistenciaSOFException("Error al obtener fotógrafos de persistencia");
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
         
     }
 
     @Override
     public Fotografo obtenerFotografoNombreUsuario(String nombreUsuario) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
+        EntityManager em = null;
         try {
+             em = conexion.crearConexion();
             String jpql = "SELECT f FROM Fotografo f WHERE f.nombreUsuario = :nombreUsuario";
             return em.createQuery(jpql, Fotografo.class)
                     .setParameter("nombreUsuario", nombreUsuario)
@@ -61,11 +67,13 @@ public class FotografoDAO implements IFotografoDAO {
         } catch (NoResultException e) {
             logger.log(Level.WARNING, "No se encontró el fotógrafo con usuario: " + nombreUsuario, e);
             throw new PersistenciaSOFException ("No se encontró el fotógrafo");
-        } catch (Exception e) {
+        } catch (PersistenciaSOFException e) {
             logger.log(Level.SEVERE, "Error al obtener fotógrafo por nombre de usuario", e);
             throw new PersistenciaSOFException("Error al obtener fotógrafo");
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
     

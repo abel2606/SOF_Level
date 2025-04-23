@@ -60,7 +60,7 @@ public class ContratoBO implements IContratoBO{
     }
 
     @Override
-    public List<ContratoDTO> obtenerTotalContratos() {
+    public List<ContratoDTO> obtenerTotalContratos() throws ObjetosNegocioException{
         try {
             // Obtienes las entidades de contratos desde el DAO
             List<Contrato> contratos = this.contratosDAO.obtenerTotalContratos();
@@ -78,7 +78,7 @@ public class ContratoBO implements IContratoBO{
 
         } catch (PersistenciaSOFException ex) {
             Logger.getLogger(ContratoBO.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            throw new ObjetosNegocioException (ex.getMessage());
         }
     }
 }

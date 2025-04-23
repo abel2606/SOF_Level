@@ -19,18 +19,30 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Main {
     public static void main(String[] args) {
         // Verificar si ya está en ejecución
-        if (isAlreadyRunning()) {
-            System.out.println("El programa ya está en ejecución.");
-            return;  // Terminar ejecución si ya hay una instancia corriendo
-        }
+    if (isAlreadyRunning()) {
+        System.out.println("El programa ya está en ejecución.");
+        return;
+    }
 
-        // Llamamos a la pantalla principal para iniciar la aplicación
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                PantallaPrincipal.getInstance().setVisible(true);
+    // Establecer estilo visual
+    try {
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            if ("Motif".equals(info.getName())) {
+                UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        });
+        }
+    } catch (Exception e) {
+        System.out.println("No se pudo aplicar el estilo Nimbus.");
+    }
+
+    // Iniciar GUI
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+            PantallaPrincipal.getInstance().setVisible(true);
+        }
+    });
     }
 
     private static boolean isAlreadyRunning() {

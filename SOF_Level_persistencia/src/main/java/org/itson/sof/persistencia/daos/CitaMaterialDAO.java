@@ -20,21 +20,18 @@ import org.itson.sof.persistencia.exception.PersistenciaSOFException;
  */
 public class CitaMaterialDAO implements ICitaMaterialDAO {
 
-    private IConexion conexion;
+    private final IConexion conexion;
     static final Logger logger = Logger.getLogger(CitaMaterialDAO.class.getName());
 
     public CitaMaterialDAO(IConexion conexion) {
         this.conexion = conexion;
     }
     
-    
-
     @Override
     public void agregarCitaMaterial(Cita cita, Material material) throws PersistenciaSOFException {
-
-        EntityManager em = conexion.crearConexion();
-
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             EntityTransaction tx = em.getTransaction();
             tx.begin();
 
@@ -58,13 +55,13 @@ public class CitaMaterialDAO implements ICitaMaterialDAO {
                 em.getTransaction().rollback();
             }
             throw new PersistenciaSOFException("Material no encontrado: " + material.getNombre(), e);
-        } catch (Exception e) {
+        } catch (PersistenciaSOFException e) {
             if (em != null && em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             throw new PersistenciaSOFException("Error al agregar cita-material", e);
         } finally {
-            if (em != null) {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }

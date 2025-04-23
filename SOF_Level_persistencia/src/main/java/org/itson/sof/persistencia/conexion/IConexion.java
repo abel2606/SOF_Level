@@ -5,6 +5,7 @@
 package org.itson.sof.persistencia.conexion;
 
 import javax.persistence.EntityManager;
+import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
 /**
  *
@@ -14,6 +15,7 @@ public interface IConexion {
     /**
      * Esté metodo crea la conexionde un EntityManager a la base de datos
      * @return entitymanager con conexión a la bd
+     * @throws org.itson.sof.persistencia.exception.PersistenciaSOFException
      */
-    public EntityManager crearConexion();
+    public EntityManager crearConexion()throws PersistenciaSOFException ;
 }

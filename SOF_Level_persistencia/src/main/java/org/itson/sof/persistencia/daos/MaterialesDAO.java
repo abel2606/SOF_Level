@@ -24,8 +24,9 @@ public class MaterialesDAO implements IMaterialesDAO {
 
     @Override
     public List<Material> obtenerTodosMateriales() throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             String jpql = "SELECT m FROM Material m";
             List<Material> contratos = em.createQuery(jpql, Material.class).getResultList();
             return contratos;
@@ -33,14 +34,17 @@ public class MaterialesDAO implements IMaterialesDAO {
             logger.log(Level.SEVERE, "Error al obtener contratos", e);
             throw new PersistenciaSOFException("Error al obtener contratos de persistencia: " + e.getMessage());
         } finally {
-            em.close();
+           if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
     public List<CitaMaterial> obtenerMaterialesCita(String codigo) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             // Paso 1: Obtener el id de la cita usando el código
             String jpqlCita = "SELECT c.id FROM Cita c WHERE c.codigo = :codigo";
             Long citaId = em.createQuery(jpqlCita, Long.class)
@@ -53,44 +57,51 @@ public class MaterialesDAO implements IMaterialesDAO {
                     .setParameter("id", citaId)
                     .getResultList();
 
-            // Retornar la lista de CitaMaterial
             return citaMateriales;
-
-        } catch (Exception e) {
-            // Manejar cualquier error relacionado con la persistencia
+        } catch (PersistenciaSOFException e) {
             throw new PersistenciaSOFException("Error al obtener los materiales de la cita", e);
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
     public Material obtenerMaterialPorNombre(String nombre) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             String jpql = "SELECT m FROM Material m WHERE LOWER(m.nombre) = :nombre";
             return em.createQuery(jpql, Material.class)
                     .setParameter("nombre", nombre.toLowerCase())
                     .getSingleResult();
-        } catch (Exception e) {
+        } catch (PersistenciaSOFException e) {
             throw new PersistenciaSOFException("Error al buscar material por nombre", e);
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
     @Override
     public void actualizarMaterial(Material material) throws PersistenciaSOFException {
-        EntityManager em = conexion.crearConexion();
+        EntityManager em = null;
         try {
+            em = conexion.crearConexion();
             em.getTransaction().begin();
             em.merge(material);
             em.getTransaction().commit();
-        } catch (Exception e) {
-            em.getTransaction().rollback();
+        } catch (PersistenciaSOFException e) {
+            if(em!=null && em.getTransaction()!=null){
+                em.getTransaction().rollback();
+            }
             throw new PersistenciaSOFException("Error al actualizar el material", e);
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 }

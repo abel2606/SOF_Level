@@ -2,6 +2,7 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import javax.swing.JOptionPane;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
@@ -69,7 +70,17 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     /**
      * Cierra sesion
      */
-    private void CerrarSesion(){
+    private void CerrarSesion(boolean mostrarDialogo, String mensaje) {
+        if (mostrarDialogo) {
+            JOptionPane.showMessageDialog(this, mensaje);
+        }
+        System.exit(0);  // Finaliza el programa
+    }
+
+    /**
+     * Detiene el programa
+     */
+    private void CerrarPrograma(){
         
     }
 
@@ -339,15 +350,15 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_lblImgContratosMouseClicked
 
     private void lblImgCerrarSesionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImgCerrarSesionMouseClicked
-        CerrarSesion();
+        CerrarSesion(false,"");
     }//GEN-LAST:event_lblImgCerrarSesionMouseClicked
 
     private void lblCerrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCerrarMouseClicked
-        CerrarSesion();
+        CerrarSesion(false,"");
     }//GEN-LAST:event_lblCerrarMouseClicked
 
     private void lblSesionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblSesionMouseClicked
-        CerrarSesion();
+        CerrarSesion(false,"");
     }//GEN-LAST:event_lblSesionMouseClicked
 
     private void btnMenuDesplegableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMenuDesplegableMouseClicked
@@ -355,7 +366,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnMenuDesplegableMouseClicked
 
     
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMenuDesplegable;
     private javax.swing.JLabel lblCerrar;

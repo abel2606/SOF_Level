@@ -6,11 +6,14 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.ContratoBO;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
 import org.itson.sof.sof_level_presentacion.componentes.ItemContrato;
@@ -76,7 +79,12 @@ public class PantallaContratos extends javax.swing.JFrame {
      * @return Lista de ContratoDTO
      */
     private List<ContratoDTO> ConsultarContratos() {
-        return contratoBO.obtenerTotalContratos();
+        try {
+            return contratoBO.obtenerTotalContratos();
+        } catch (ObjetosNegocioException ex) {
+            Logger.getLogger(PantallaContratos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     /**

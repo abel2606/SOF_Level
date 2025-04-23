@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -83,11 +84,13 @@ public class PanelContratos extends javax.swing.JPanel {
      */
     private List<ContratoDTO> ConsultarContratos() {
         try {
-            return gestor.obtenerContratos();
+            List<ContratoDTO> contratos = gestor.obtenerContratos();
+            return contratos != null ? contratos : new ArrayList<>();
         } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(this, ex);
+            JOptionPane.showMessageDialog(this, "No se pudo conectar a la base de datos, asegurese de que el servidor este corriendo y vuelvalo a intentar");
+            
         }
-        return null;
+        return new ArrayList<>();
     }
 
     /**
