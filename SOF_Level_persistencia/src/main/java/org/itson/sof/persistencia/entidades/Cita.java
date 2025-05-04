@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -130,8 +131,26 @@ public class Cita implements Serializable {
         return "Cita{" + "id=" + id + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", lugar=" + lugar + ", extras=" + extras + ", codigo=" + codigo + ", contrato=" + contrato + ", fotografo=" + fotografo + ", citaMateriales=" + citaMateriales + '}';
     }
 
-    
-    
-    
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 79 * hash + Objects.hashCode(this.codigo);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Cita other = (Cita) obj;
+        return Objects.equals(this.codigo, other.codigo);
+    }
 
 }

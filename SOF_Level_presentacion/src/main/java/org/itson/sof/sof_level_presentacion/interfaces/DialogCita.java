@@ -503,7 +503,7 @@ public class DialogCita extends javax.swing.JDialog {
                 String horaInicioSeleccionada = (String) cmbFechaInicio.getSelectedItem();
 
                 try {
-                    horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada, horaInicioSeleccionada);
+                    horariosDisponibleFechaFin = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada, horaInicioSeleccionada,cita);
                     for (String horarioFin : horariosDisponibleFechaFin) {
                         cmbFechaFin.addItem(horarioFin);
                     }
@@ -529,9 +529,6 @@ public class DialogCita extends javax.swing.JDialog {
                 ComboBoxModel<String> model = cmbFechaInicio.getModel();
                 ComboBoxModel<String> modelFin = cmbFechaFin.getModel();
 
-                System.out.println("Hora citas inicio: " + horaCitaStr);
-                System.out.println("Hora citas fin: " + horaCitaStrFin);
-
                 // Verificar si el ComboBox está vacío
                 if (model.getSize() == 0) {
                     System.out.println("El ComboBox está vacío.");
@@ -542,11 +539,9 @@ public class DialogCita extends javax.swing.JDialog {
                 for (int i = 0; i < model.getSize(); i++) {
                     if (i < model.getSize()) {  // Asegurarse de que no estamos fuera de rango
                         String horarioComboBox = model.getElementAt(i);
-                        System.out.println("horario combo box: " + horarioComboBox);
 
                         // Si el horario en el ComboBox coincide con la hora de la cita, seleccionarlo
                         if (horarioComboBox.equals(horaCitaStr)) {
-                            System.out.println("Cita de inicio encontrada: " + i);
                             cmbFechaInicio.setSelectedIndex(i);  // Selecciona el item correspondiente
                             break;  // No es necesario seguir buscando
                         }
@@ -557,11 +552,9 @@ public class DialogCita extends javax.swing.JDialog {
                 for (int i = 0; i < modelFin.getSize(); i++) {
                     if (i < modelFin.getSize()) {  // Asegurarse de que no estamos fuera de rango
                         String horarioComboBox = modelFin.getElementAt(i);
-                        System.out.println("horario combo box: " + horarioComboBox);
 
                         // Si el horario en el ComboBox coincide con la hora de fin de la cita, seleccionarlo
                         if (horarioComboBox.equals(horaCitaStrFin)) {
-                            System.out.println("Cita de fin encontrada: " + i);
                             cmbFechaFin.setSelectedIndex(i);  // Selecciona el item correspondiente
                             break;  // No es necesario seguir buscando
                         }
@@ -579,7 +572,8 @@ public class DialogCita extends javax.swing.JDialog {
                     cmbFechaFin.setEnabled(true);
                     cmbFechaFin.removeAllItems();
                     try {
-                        List<String> horariosDisponibleFechaFin1 = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada2, horaInicioSeleccionada);
+                        List<String> horariosDisponibleFechaFin1 = gestor.obtenerHorariosDisponiblesFin(fechaSeleccionada2, horaInicioSeleccionada,cita);
+
                         if (horariosDisponibleFechaFin1.isEmpty()) {
                             cmbFechaFin.addItem("No hay horarios");
                         } else {
@@ -794,7 +788,7 @@ public class DialogCita extends javax.swing.JDialog {
                 gestor.eliminarCita(cita);
                 JOptionPane.showMessageDialog(parent, "Cita eliminada");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(parent, "No se encontro la cita", "Error al eliminar la cita", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error al eliminar la cita", JOptionPane.ERROR_MESSAGE);
             }
             this.dispose();
         }
@@ -856,8 +850,10 @@ public class DialogCita extends javax.swing.JDialog {
         try {
             gestor.actualizarCita(cita);
             JOptionPane.showMessageDialog(this, "Cita actualizada");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(parent, "No se encontro la cita", "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
+        } catch (GestorException ex) {
+            JOptionPane.showMessageDialog(parent, "No se pudo contectar a la base de datos", "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
+        }catch (HeadlessException ex){
+            JOptionPane.showMessageDialog(parent, "El entorno grafico esta mal configurado", "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
         }
 
         this.dispose();
@@ -963,9 +959,9 @@ public class DialogCita extends javax.swing.JDialog {
             }
 
         } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(parent, "Hubo un error en la base de datos, intentelo de nuevo más tarde","Error de conexión", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parent, ex.getMessage(),"Error de conexión", JOptionPane.ERROR_MESSAGE);
         } catch (HeadlessException ex) {
-            JOptionPane.showMessageDialog(parent, "La fecha seleccionada esta ocupada por otra cita", "Erorr de validación", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parent, ex.getMessage(), "Erorr de validación", JOptionPane.ERROR_MESSAGE);
         }
 
         this.dispose();

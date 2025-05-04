@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -212,7 +213,7 @@ public class CitaBO implements ICitaBO {
     }
 
     @Override
-    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws ObjetosNegocioException {
+    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada, CitaDTO citaDTO) throws ObjetosNegocioException {
         List<String> horariosDisponiblesFin = new ArrayList<>();
         LocalTime horaInicio = LocalTime.parse(horaInicioSeleccionada);
         LocalTime fin = LocalTime.of(23, 30);
@@ -232,6 +233,11 @@ public class CitaBO implements ICitaBO {
         } catch (PersistenciaSOFException ex) {
             Logger.getLogger(CitaBO.class.getName()).log(Level.SEVERE, "Error al obtener citas", ex);
             throw new ObjetosNegocioException("No se pudieron obtener las citas");
+        }
+
+        if (citaDTO != null) {
+            Cita citaARemover = ConverterUtil.citaDTOAEntidad(citaDTO);
+            citasOcupadas.remove(citaARemover);
         }
 
         for (LocalTime horaActual : todosLosHorarios) {

@@ -105,16 +105,13 @@ public class CitasDAO implements ICitasDAO {
                     .getSingleResult();
 
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error de conexión a la base de datos", e);
-            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
 
         } catch (NoResultException e) {
-            logger.log(Level.WARNING, "No se encontró la cita con código: " + cita.getCodigo(), e);
-            throw new PersistenciaSOFException("No se encontró la cita con código:" + e.getMessage());
+            throw new PersistenciaSOFException("No se encontró la cita que se buscaba");
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error al obtener la cita por código", e);
-            throw new PersistenciaSOFException("Error al obtener la cita por código: " + e.getMessage());
+            throw new PersistenciaSOFException("Error desconocido");
 
         } finally {
             if (em != null && em.isOpen()) {
@@ -125,7 +122,6 @@ public class CitasDAO implements ICitasDAO {
 
     @Override
     public Cita agregarCita(Cita cita) throws PersistenciaSOFException {
-        logger.log(Level.INFO, cita.getCitaMateriales().toString());
         
         EntityManager em = null;
         EntityTransaction transaction = null;
@@ -147,16 +143,13 @@ public class CitasDAO implements ICitasDAO {
             em.persist(cita);
             transaction.commit();
 
-            logger.log(Level.INFO, "Cita agregada correctamente: ID({0})", cita.getId());
             return cita;
 
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error de conexión al agregar cita", e);
-            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error al agregar la cita", e);
-            throw new PersistenciaSOFException("Error al agregar la cita: " + e.getMessage());
+            throw new PersistenciaSOFException("Error al agregar la cita");
 
         } finally {
             if (em != null && em.isOpen()) {
@@ -246,20 +239,16 @@ public class CitasDAO implements ICitasDAO {
 
             Cita resultado = em.merge(citaExistente);
             transaction.commit();
-
-            logger.log(Level.INFO, "Cita actualizada correctamente: ID({0})", resultado.getId());
             return resultado;
 
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error de conexión al actualizar la cita", e);
-            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
 
         } catch (RuntimeException e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            logger.log(Level.SEVERE, "Error al actualizar la cita", e);
-            throw new PersistenciaSOFException("Error al actualizar la cita: " + e.getMessage());
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -307,19 +296,16 @@ public class CitasDAO implements ICitasDAO {
             return citaExistente;
 
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error de conexión al eliminar la cita", e);
-            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
 
         } catch (NoResultException e) {
-            logger.log(Level.WARNING, "No se encontró una cita con código: " + cita.getCodigo(), e);
-            throw new PersistenciaSOFException("No se encontró una cita con código: " + e.getMessage());
+            throw new PersistenciaSOFException("No se encontró la cita que se buscaba");
 
         } catch (RuntimeException e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            logger.log(Level.SEVERE, "Error al eliminar la cita", e);
-            throw new PersistenciaSOFException("Error al eliminar la cita: " + e.getMessage());
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
 
         } finally {
             if (em != null && em.isOpen()) {
@@ -352,12 +338,10 @@ public class CitasDAO implements ICitasDAO {
             citas = query.getResultList();
 
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error de conexión al obtener citas por fecha", e);
-            throw new PersistenciaSOFException("Error de conexión a la base de datos: " + e.getMessage());
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error al obtener citas por fecha", e);
-            throw new PersistenciaSOFException("Error: " + e.getMessage());
+            throw new PersistenciaSOFException("Error desocnocido");
 
         } finally {
             if (em != null && em.isOpen()) {
@@ -379,7 +363,6 @@ public class CitasDAO implements ICitasDAO {
             query.setParameter("fecha", fecha);
             citas = query.getResultList();
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error al obtener citas por fecha", e);
             throw new PersistenciaSOFException(e);
         } finally {
            if (em != null && em.isOpen()) {

@@ -169,12 +169,12 @@ public class PanelContrato extends javax.swing.JPanel {
             scrollCitas.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
-                    System.out.println("El diálogo de citas se ha cerrado.");
+                    //System.out.println("El diálogo de citas se ha cerrado.");
                     puedeAbrir=false;
                     fechaAnterior.set(Calendar.DAY_OF_MONTH, 1); // Establecer el día a 1
                     jCalendarCitas.setCalendar(fechaAnterior);
                     agregarCitas();
-                    System.out.println("Citas agregadas");
+                    //System.out.println("Citas agregadas");
                     puedeAbrir=true;
                 }
             });
@@ -194,20 +194,20 @@ public class PanelContrato extends javax.swing.JPanel {
 
     private void agregarCitas() {
         List<CitaDTO> citas = ConsultarCitas();
-        decorarCalendario(citas);
 
         // Crear un panel de contenedor para los contratos
         panelContenedor = new JPanel();
         panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
         panelContenedor.setBackground(new Color(220, 240, 255));
 
-        if (citas.isEmpty()) {
+        if (citas==null || citas.isEmpty()) {
             //Poner un mensaje si no hay contratos
             JLabel mensaje = new JLabel("Aun no hay citas");
             mensaje.setSize(100, 100);
             mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 15));
             panelContenedor.add(mensaje);
         } else {
+            decorarCalendario(citas);
             for (CitaDTO cita : citas) {
                 ItemCita panel = new ItemCita(
                         cita.getFechaHoraInicio());
@@ -248,7 +248,7 @@ public class PanelContrato extends javax.swing.JPanel {
             }
             return citas;
         } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(principal, ex);
+            JOptionPane.showMessageDialog(principal, ex.getMessage());
         }
         return null;
     }
@@ -264,9 +264,9 @@ public class PanelContrato extends javax.swing.JPanel {
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                System.out.println("El diálogo de cita se ha cerrado.");
+                //System.out.println("El diálogo de cita se ha cerrado.");
                 agregarCitas();
-                System.out.println("Citas agregadas");
+                //System.out.println("Citas agregadas");
             }
         });
     }
@@ -276,12 +276,12 @@ public class PanelContrato extends javax.swing.JPanel {
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                System.out.println("El diálogo de cita se ha cerrado.");
+                //System.out.println("El diálogo de cita se ha cerrado.");
                 if (dlgCita.citaAgregada != null) {
                     agregarCitas();
                     dlgCita.citaAgregada = null;
                 } else {
-                    System.out.println("El dialogo fue cerrado sin cambios");
+                   // System.out.println("El dialogo fue cerrado sin cambios");
                 }
             }
         });

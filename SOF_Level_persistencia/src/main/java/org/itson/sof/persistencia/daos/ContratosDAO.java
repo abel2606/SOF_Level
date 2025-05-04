@@ -31,8 +31,7 @@ public class ContratosDAO implements IContratosDAO {
             List<Contrato> contratos = em.createQuery(jpql, Contrato.class).getResultList();
             return contratos;
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error al obtener contratos", e);
-            throw new PersistenciaSOFException("Error al obtener contratos de persistencia: " + e.getMessage());
+            throw new PersistenciaSOFException("Error al obtener contratos de persistencia");
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -50,11 +49,11 @@ public class ContratosDAO implements IContratosDAO {
                     .setParameter("folio", folio)
                     .getSingleResult();
         } catch (NoResultException e) {
-            logger.log(Level.WARNING, "No se encontró el contrato con folio: " + folio, e);
             throw new PersistenciaSOFException("No se encontro el folio del contrato");
         } catch (PersistenciaSOFException e) {
-            logger.log(Level.SEVERE, "Error al obtener contrato por folio", e);
-            throw new PersistenciaSOFException("Error al obtener contrato de persistencia: " + e.getMessage());
+            throw new PersistenciaSOFException("Error al obtener contrato de persistencia");
+        } catch (Exception e) {
+        throw new PersistenciaSOFException("No se pudo conector a la base de datos");
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();

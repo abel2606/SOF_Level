@@ -87,7 +87,7 @@ public class PanelContratos extends javax.swing.JPanel {
             List<ContratoDTO> contratos = gestor.obtenerContratos();
             return contratos != null ? contratos : new ArrayList<>();
         } catch (GestorException ex) {
-            JOptionPane.showMessageDialog(this, "No se pudo conectar a la base de datos, asegurese de que el servidor este corriendo y vuelvalo a intentar");
+            JOptionPane.showMessageDialog(this, ex.getMessage());
             
         }
         return new ArrayList<>();

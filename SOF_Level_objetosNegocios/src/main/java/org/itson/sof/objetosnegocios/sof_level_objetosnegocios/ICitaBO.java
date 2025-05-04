@@ -68,5 +68,5 @@ public interface ICitaBO {
      */
     public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String horaInicioSeleccionada) throws ObjetosNegocioException;
     
-    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada) throws ObjetosNegocioException;
+    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada, CitaDTO citaDTO) throws ObjetosNegocioException;
 }
