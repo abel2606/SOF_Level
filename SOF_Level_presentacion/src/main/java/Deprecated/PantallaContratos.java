@@ -93,8 +93,6 @@ public class PantallaContratos extends javax.swing.JFrame {
      */
     private void manejarClicEnContrato(ContratoDTO contrato) {
         System.out.println("Contrato seleccionado: " + contrato.getCliente().getNombre());
-        PantallaContrato pntContrato=new PantallaContrato(usuario, contrato);
-        pntContrato.setVisible(true);
         this.dispose();
     }
     

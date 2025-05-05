@@ -1,5 +1,6 @@
-package Deprecated;
+package org.itson.sof.sof_level_presentacion.interfaces;
 
+import Deprecated.*;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
 
@@ -7,10 +8,10 @@ import org.itson.sof.sof_dtos.UsuarioDTO;
  *
  * @author renec
  */
-public class PantallaContrato extends javax.swing.JFrame {
+public class PantallaClientes extends javax.swing.JFrame {
 
    
-    public PantallaContrato() {
+    public PantallaClientes() {
         
         initComponents();
     }
@@ -19,6 +20,8 @@ public class PantallaContrato extends javax.swing.JFrame {
     private void initComponents() {
 
         pnlDetalleContrato = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblClientes = new javax.swing.JTable();
         pnlOpciones = new javax.swing.JPanel();
         lblContratos = new javax.swing.JLabel();
         lblImgContrato = new javax.swing.JLabel();
@@ -45,15 +48,34 @@ public class PantallaContrato extends javax.swing.JFrame {
 
         pnlDetalleContrato.setBackground(new java.awt.Color(220, 240, 255));
 
+        tblClientes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {"Abel Eduardo Sánchez Guerrer", "abel.sanchez245473@potros.itson.edu.mx", "6441297653", null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Nombre", "E-Mail", "Teléfono", ""
+            }
+        ));
+        tblClientes.setRowHeight(50);
+        jScrollPane1.setViewportView(tblClientes);
+
         javax.swing.GroupLayout pnlDetalleContratoLayout = new javax.swing.GroupLayout(pnlDetalleContrato);
         pnlDetalleContrato.setLayout(pnlDetalleContratoLayout);
         pnlDetalleContratoLayout.setHorizontalGroup(
             pnlDetalleContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 850, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlDetalleContratoLayout.createSequentialGroup()
+                .addContainerGap(20, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 814, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
         pnlDetalleContratoLayout.setVerticalGroup(
             pnlDetalleContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 550, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlDetalleContratoLayout.createSequentialGroup()
+                .addGap(0, 18, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         getContentPane().add(pnlDetalleContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 120, 850, 550));
@@ -219,6 +241,7 @@ public class PantallaContrato extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMenuDesplegable;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblCerrar;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblContratos;
@@ -237,5 +260,6 @@ public class PantallaContrato extends javax.swing.JFrame {
     private javax.swing.JPanel pnlDetalleContrato;
     private javax.swing.JPanel pnlEncabezado;
     private javax.swing.JPanel pnlOpciones;
+    private javax.swing.JTable tblClientes;
     // End of variables declaration//GEN-END:variables
 }

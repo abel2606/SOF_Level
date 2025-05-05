@@ -2,6 +2,7 @@ Deprecated\PantallaCita$2.class
 Deprecated\PantallaContratos$3.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$22.class
 Deprecated\PantallaContrato.class
+org\itson\sof\sof_level_presentacion\componentes\ActionButton.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$12.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$2.class
@@ -22,8 +23,10 @@ Deprecated\PantallaCita$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$14.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$8.class
 Deprecated\PantallaContratos$5.class
+org\itson\sof\sof_level_presentacion\componentes\PanelAction.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$3.class
+org\itson\sof\sof_level_presentacion\interfaces\PantallaClientes.class
 org\itson\sof\sof_level_presentacion\componentes\BordeRedondo.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$6.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal.class
