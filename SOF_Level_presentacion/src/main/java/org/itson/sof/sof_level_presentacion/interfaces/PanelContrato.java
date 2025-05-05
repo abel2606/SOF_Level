@@ -1,7 +1,5 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
-import com.toedter.calendar.IDateEvaluator;
-import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDayChooser;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,8 +7,8 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +43,6 @@ public class PanelContrato extends javax.swing.JPanel {
     private EvaluadorCitasFecha evaluadorActual;
     private boolean puedeAbrir=true;
 
-
     public JPanel panelContenedor;
 
     /**
@@ -74,7 +71,7 @@ public class PanelContrato extends javax.swing.JPanel {
         if (contrato != null && contrato.getPaquete() != null) {
             cmbPaquete.addItem(contrato.getPaquete().getNombre());
         }
-        cmbPaquete.enable(false);
+        cmbPaquete.setEnabled(false);
     }
 
     private void decorarCalendario(List<CitaDTO> citas) {
@@ -100,15 +97,34 @@ public class PanelContrato extends javax.swing.JPanel {
         evaluadorActual = new EvaluadorCitasFecha(citasPorDia);
         dayChooser.addDateEvaluator(evaluadorActual);
 
-        jCalendarCitas.getDayChooser().revalidate();
-        jCalendarCitas.getDayChooser().repaint();
+        // Guardar fecha del dia 1
+        Calendar temp2 = Calendar.getInstance();
+        temp2.setTime(jCalendarCitas.getDate());
+        temp2.set(Calendar.DAY_OF_MONTH, 1);
+        Date fechaActual = temp2.getTime();
+
+        // Ir a otro mes y volver para forzar repintado completo
+        Calendar temp = Calendar.getInstance();
+        temp.setTime(fechaActual);
+        temp.add(Calendar.MONTH, 1); // Mover un mes adelante
+        jCalendarCitas.setDate(temp.getTime());
+
+        temp.add(Calendar.MONTH, -1); // Volver al mes original
+        jCalendarCitas.setDate(fechaActual);
 
         if (primeraVez) {
             fechaAnterior.set(Calendar.DAY_OF_MONTH, 1); // Establecer el día a 1
             jCalendarCitas.setCalendar(fechaAnterior);
             primeraVez = false;
+            añadirListernerCalendario();
             
-            jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
+        }
+
+    }
+
+    private void añadirListernerCalendario() {
+        jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
+                
                 // Obtener la fecha seleccionada
                 Calendar selectedDate = Calendar.getInstance();
                 selectedDate.setTime(jCalendarCitas.getDate()); // Convertir Date a Calendar
@@ -126,10 +142,7 @@ public class PanelContrato extends javax.swing.JPanel {
                     mostrarCitasDelDia(key);
                 }
                 fechaAnterior.setTime(jCalendarCitas.getDate()); // Actualizamos la fecha anterior
-
             });
-        }
-
     }
 
     private void mostrarCitasDelDia(String key) {
@@ -139,11 +152,9 @@ public class PanelContrato extends javax.swing.JPanel {
         List<CitaDTO> citasDelDia = obtenerCitasDelDia(key);
 
         if (citasDelDia.isEmpty()) {
-            System.out.println("No hay citas en este día.");
         } else {
             if (scrollCitas != null) {
                 if (scrollCitas.isVisible()) {
-                    System.out.println("Ya hay un dialog");
                     return;
                 }
             }
@@ -169,13 +180,23 @@ public class PanelContrato extends javax.swing.JPanel {
             scrollCitas.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
-                    //System.out.println("El diálogo de citas se ha cerrado.");
                     puedeAbrir=false;
-                    fechaAnterior.set(Calendar.DAY_OF_MONTH, 1); // Establecer el día a 1
+                    fechaAnterior.set(Calendar.DAY_OF_MONTH, 1);
                     jCalendarCitas.setCalendar(fechaAnterior);
                     agregarCitas();
-                    //System.out.println("Citas agregadas");
-                    puedeAbrir=true;
+                    puedeAbrir = true;
+                    
+                    // Guardar fecha actual
+                    Date fechaActual = jCalendarCitas.getDate();
+
+                    // Ir a otro mes y volver para forzar repintado completo
+                    Calendar temp = Calendar.getInstance();
+                    temp.setTime(fechaActual);
+                    temp.add(Calendar.MONTH, 1); // Mover un mes adelante
+                    jCalendarCitas.setDate(temp.getTime());
+
+                    temp.add(Calendar.MONTH, -1); // Volver al mes original
+                    jCalendarCitas.setDate(fechaActual);
                 }
             });
         }
@@ -191,7 +212,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 })
                 .toList();
     }
-
+    
     private void agregarCitas() {
         List<CitaDTO> citas = ConsultarCitas();
 
@@ -264,9 +285,8 @@ public class PanelContrato extends javax.swing.JPanel {
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                //System.out.println("El diálogo de cita se ha cerrado.");
                 agregarCitas();
-                //System.out.println("Citas agregadas");
+                inicializar();
             }
         });
     }
@@ -276,13 +296,10 @@ public class PanelContrato extends javax.swing.JPanel {
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                //System.out.println("El diálogo de cita se ha cerrado.");
-                if (dlgCita.citaAgregada != null) {
-                    agregarCitas();
-                    dlgCita.citaAgregada = null;
-                } else {
-                   // System.out.println("El dialogo fue cerrado sin cambios");
-                }
+                if (DialogCita.citaAgregada != null) {
+                    DialogCita.citaAgregada = null;
+                    inicializar();
+                } 
             }
         });
         dlgCita.setVisible(true);
