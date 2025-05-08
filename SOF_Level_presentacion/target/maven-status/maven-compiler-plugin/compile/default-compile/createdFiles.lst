@@ -12,6 +12,8 @@ org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$5.class
 org\itson\sof\sof_level_presentacion\componentes\ItemContrato.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$18.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCliente.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$3.class
 Deprecated\PantallaCita$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$8.class
 org\itson\sof\sof_level_presentacion\componentes\PanelAction.class
@@ -19,6 +21,7 @@ org\itson\sof\sof_level_presentacion\interfaces\PanelContrato.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaClientes.class
 org\itson\sof\sof_level_presentacion\componentes\BordeRedondo.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal.class
+org\itson\sof\sof_level_presentacion\interfaces\PantallaClientes$3.class
 org\itson\sof\sof_level_presentacion\componentes\EvaluadorCitasFecha.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$6.class
 org\itson\sof\sof_level_presentacion\interfaces\PruebaClientes.class
@@ -33,6 +36,7 @@ org\itson\sof\sof_level_presentacion\interfaces\PanelContratos$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContratos.class
 Deprecated\PantallaContratos$4.class
 Deprecated\PantallaCita.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$2.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$24.class
 org\itson\sof\sof_level_presentacion\interfaces\ItemScrollCitas$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$1.class
@@ -42,11 +46,13 @@ org\itson\sof\sof_level_presentacion\interfaces\DialogCita$19.class
 Deprecated\PantallaCita$2.class
 org\itson\sof\sof_level_presentacion\componentes\TableActionCellEditor.class
 Deprecated\PantallaContrato.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$4.class
 org\itson\sof\sof_level_presentacion\componentes\ActionButton.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$1.class
 org\itson\sof\sof_level_presentacion\componentes\PanelAction$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$4.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$7.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$1.class
 org\itson\sof\sof_level_presentacion\componentes\TableActionCellRender.class
 Deprecated\PantallaContratos$2.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$11.class
@@ -72,6 +78,7 @@ org\itson\sof\sof_level_presentacion\interfaces\DialogCita$21.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$16.class
 org\itson\sof\sof_level_presentacion\interfaces\Main$1.class
 org\itson\sof\sof_level_presentacion\componentes\PanelAction$2.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$4$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$2.class
 Deprecated\PantallaContratos$7.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaClientes$1.class

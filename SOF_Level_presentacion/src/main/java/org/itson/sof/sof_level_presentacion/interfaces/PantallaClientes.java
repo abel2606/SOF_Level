@@ -1,7 +1,16 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
 import Deprecated.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.itson.sof.objetosnegocios.gestorcitas.GestorClientes;
+import org.itson.sof.objetosnegocios.gestorcitas.IGestorClientes;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
+import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionCellEditor;
@@ -14,30 +23,111 @@ import org.itson.sof.sof_level_presentacion.componentes.TableActionEvent;
  */
 public class PantallaClientes extends javax.swing.JFrame {
 
-   
-    public PantallaClientes() {
-        
-        initComponents();
-        TableActionEvent event = new TableActionEvent() {
-            @Override
-            public void onEditar(int row) {
-                System.out.println("Editar columna: " + row);
-                
-            }
+    private IGestorClientes gestionarClientes;
 
-            @Override
-            public void onEliminar(int row) {
-                System.out.println("Eliminar columna: " + row);
-                if(tblClientes.isEditing()){
-                    tblClientes.getCellEditor().stopCellEditing();
-                }
-                DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
-                model.removeRow(row);
-            }
-        };
-        tblClientes.getColumnModel().getColumn(3).setCellRenderer(new TableActionCellRender());
-        tblClientes.getColumnModel().getColumn(3).setCellEditor(new TableActionCellEditor(event));
+    public PantallaClientes() {
+
+        initComponents();
+        gestionarClientes = GestorClientes.getInstance();
+
+//        TableActionEvent event = new TableActionEvent() {
+//            @Override
+//            public void onEditar(int row) {
+//                System.out.println("Editar columna: " + row);
+//
+//            }
+//
+//            @Override
+//            public void onEliminar(int row) {
+//                System.out.println("Eliminar columna: " + row);
+//                if (tblClientes.isEditing()) {
+//                    tblClientes.getCellEditor().stopCellEditing();
+//                }
+//                DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
+//                model.removeRow(row);
+//            }
+//        };
+//        tblClientes.getColumnModel().getColumn(3).setCellRenderer(new TableActionCellRender());
+//        tblClientes.getColumnModel().getColumn(3).setCellEditor(new TableActionCellEditor(event));
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[]{"Nombre", "Teléfono", "Correo", "Acciones"}, 0
+        );
+        tblClientes.setModel(model);
+
+        cargarClientesEnTabla(obtenerClientes());
     }
+
+    private List<ClienteDTO> obtenerClientes() {
+        List<ClienteDTO> clientes = new LinkedList<>();
+
+        try {
+            clientes = gestionarClientes.obtenerTodosClientes();
+        } catch (GestorException ex) {
+            Logger.getLogger(PantallaClientes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return clientes;
+    }
+
+    private void cargarClientesEnTabla(List<ClienteDTO> listaClientes) {
+        DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
+        model.setRowCount(0);
+        for (ClienteDTO cliente : listaClientes) {
+            model.addRow(new Object[]{
+                cliente.getNombre(),
+                cliente.getTelefono(),
+                cliente.getCorreo(),});
+            TableActionEvent event = new TableActionEvent() {
+                @Override
+                public void onEditar(int row) {
+                    String correo = (String) tblClientes.getValueAt(row, 2); 
+                    try {
+                        ClienteDTO cliente = GestorClientes.getInstance().obtenerCliente(correo);
+                        DialogCliente dc = new DialogCliente(null, true, cliente);
+                        dc.setVisible(true);
+                    } catch (GestorException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al obtener cliente: " + ex.getMessage());
+                    }
+
+                }
+
+                @Override
+                public void onEliminar(int row) {
+                    System.out.println("Eliminar columna: " + row + cliente.getCorreo());
+                    int opcion = JOptionPane.showConfirmDialog(
+                            null,
+                            "¿Estás seguro de que deseas eliminar este cliente?",
+                            "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE
+                    );
+                    if (opcion == JOptionPane.YES_OPTION) {
+                        if (tblClientes.isEditing()) {
+                            tblClientes.getCellEditor().stopCellEditing();
+                        }
+
+                        DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
+                        String correo = (String) model.getValueAt(row, 2); 
+
+                        try {
+                            boolean eliminado = GestorClientes.getInstance().eliminarCliente(correo);
+                            if (eliminado) {
+                                model.removeRow(row);
+                                JOptionPane.showMessageDialog(null, "Cliente eliminado con éxito.");
+                            }
+                        } catch (GestorException ex) {
+                            JOptionPane.showMessageDialog(null, "Error al eliminar: " + ex.getMessage());
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Eliminación cancelada.");
+                    }
+
+                }
+            };
+            tblClientes.getColumnModel().getColumn(3).setCellRenderer(new TableActionCellRender());
+            tblClientes.getColumnModel().getColumn(3).setCellEditor(new TableActionCellEditor(event));
+        }
+    }
+
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -64,6 +154,7 @@ public class PantallaClientes extends javax.swing.JFrame {
         lblNombreUsuario = new javax.swing.JLabel();
         lblLogo = new javax.swing.JLabel();
         btnMenuDesplegable = new javax.swing.JButton();
+        btnAgregar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -154,14 +245,19 @@ public class PantallaClientes extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlOpcionesLayout.createSequentialGroup()
                 .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlOpcionesLayout.createSequentialGroup()
-                        .addContainerGap(23, Short.MAX_VALUE)
                         .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblImgClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblImgPaquetes, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblImgContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblImgCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblImgCostos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addGroup(pnlOpcionesLayout.createSequentialGroup()
+                                .addContainerGap(15, Short.MAX_VALUE)
+                                .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblImgClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblImgPaquetes, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblImgCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblImgCostos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18))
+                            .addGroup(pnlOpcionesLayout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(lblImgContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblPaquetes, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -169,7 +265,7 @@ public class PantallaClientes extends javax.swing.JFrame {
                             .addComponent(lblCostos, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblSesion, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 8, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlOpcionesLayout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblImgMateriales, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -214,8 +310,8 @@ public class PantallaClientes extends javax.swing.JFrame {
         pnlEncabezado.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 40)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Contratos");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel1.setText("Clientes");
 
         lblNombreUsuario.setFont(new java.awt.Font("Segoe UI", 2, 14)); // NOI18N
         lblNombreUsuario.setText("NombreUsuario");
@@ -225,6 +321,16 @@ public class PantallaClientes extends javax.swing.JFrame {
         btnMenuDesplegable.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/3lineasBoton.png"))); // NOI18N
         btnMenuDesplegable.setBorder(null);
 
+        btnAgregar.setFont(new java.awt.Font("Segoe UI", 1, 40)); // NOI18N
+        btnAgregar.setText("+");
+        btnAgregar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAgregar.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlEncabezadoLayout = new javax.swing.GroupLayout(pnlEncabezado);
         pnlEncabezado.setLayout(pnlEncabezadoLayout);
         pnlEncabezadoLayout.setHorizontalGroup(
@@ -233,11 +339,13 @@ public class PantallaClientes extends javax.swing.JFrame {
                 .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlEncabezadoLayout.createSequentialGroup()
                         .addGap(191, 191, 191)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlEncabezadoLayout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addComponent(btnMenuDesplegable, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 486, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 422, Short.MAX_VALUE)
                 .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEncabezadoLayout.createSequentialGroup()
                         .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -252,10 +360,12 @@ public class PantallaClientes extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(btnMenuDesplegable, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEncabezadoLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblNombreUsuario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -268,8 +378,14 @@ public class PantallaClientes extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        DialogCliente dc = new DialogCliente(null, true);
+        dc.setVisible(true);
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnMenuDesplegable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

@@ -142,15 +142,23 @@
               <Group type="102" alignment="1" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace pref="23" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="lblImgClientes" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
-                              <Component id="lblImgPaquetes" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
-                              <Component id="lblImgContrato" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
-                              <Component id="lblImgCerrarSesion" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
-                              <Component id="lblImgCostos" alignment="1" min="-2" pref="37" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <EmptySpace pref="15" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="lblImgClientes" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
+                                      <Component id="lblImgPaquetes" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
+                                      <Component id="lblImgCerrarSesion" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
+                                      <Component id="lblImgCostos" alignment="1" min="-2" pref="37" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                                  <Component id="lblImgContrato" min="-2" pref="45" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
                           </Group>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lblClientes" alignment="0" min="-2" pref="94" max="-2" attributes="0"/>
                               <Component id="lblPaquetes" alignment="0" min="-2" pref="94" max="-2" attributes="0"/>
@@ -159,7 +167,7 @@
                               <Component id="lblCerrar" alignment="0" min="-2" pref="94" max="-2" attributes="0"/>
                               <Component id="lblSesion" alignment="0" min="-2" pref="94" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="8" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="32767" attributes="0"/>
@@ -337,13 +345,15 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="191" max="-2" attributes="0"/>
                           <Component id="jLabel1" min="-2" pref="189" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="btnAgregar" min="-2" pref="46" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="btnMenuDesplegable" min="-2" pref="44" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="486" max="32767" attributes="0"/>
+                  <EmptySpace pref="422" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="lblLogo" min="-2" pref="157" max="-2" attributes="0"/>
@@ -363,11 +373,14 @@
                   <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                   <Component id="btnMenuDesplegable" min="-2" pref="29" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jLabel1" min="-2" pref="46" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel1" alignment="3" min="-2" pref="46" max="-2" attributes="0"/>
+                      <Component id="btnAgregar" alignment="3" pref="0" max="32767" attributes="0"/>
+                  </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                  <EmptySpace min="15" max="32767" attributes="0"/>
                   <Component id="lblNombreUsuario" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="lblLogo" min="-2" pref="61" max="-2" attributes="0"/>
@@ -382,8 +395,8 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="40" style="1"/>
             </Property>
-            <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="Contratos"/>
+            <Property name="horizontalAlignment" type="int" value="2"/>
+            <Property name="text" type="java.lang.String" value="Clientes"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblNombreUsuario">
@@ -410,6 +423,19 @@
               <Border info="null"/>
             </Property>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnAgregar">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="40" style="1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="+"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalAlignment" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAgregarActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

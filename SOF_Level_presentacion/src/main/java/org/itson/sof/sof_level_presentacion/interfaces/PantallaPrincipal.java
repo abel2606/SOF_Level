@@ -282,7 +282,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         pnlEncabezado.setBackground(new java.awt.Color(255, 255, 255));
 
         lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 40)); // NOI18N
-        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblTitulo.setText("Contratos");
 
         lblNombreUsuario.setFont(new java.awt.Font("Segoe UI", 2, 14)); // NOI18N
