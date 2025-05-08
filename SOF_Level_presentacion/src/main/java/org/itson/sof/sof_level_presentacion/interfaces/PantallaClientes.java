@@ -1,8 +1,12 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
 import Deprecated.*;
+import javax.swing.table.DefaultTableModel;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.UsuarioDTO;
+import org.itson.sof.sof_level_presentacion.componentes.TableActionCellEditor;
+import org.itson.sof.sof_level_presentacion.componentes.TableActionCellRender;
+import org.itson.sof.sof_level_presentacion.componentes.TableActionEvent;
 
 /**
  *
@@ -14,6 +18,25 @@ public class PantallaClientes extends javax.swing.JFrame {
     public PantallaClientes() {
         
         initComponents();
+        TableActionEvent event = new TableActionEvent() {
+            @Override
+            public void onEditar(int row) {
+                System.out.println("Editar columna: " + row);
+                
+            }
+
+            @Override
+            public void onEliminar(int row) {
+                System.out.println("Eliminar columna: " + row);
+                if(tblClientes.isEditing()){
+                    tblClientes.getCellEditor().stopCellEditing();
+                }
+                DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
+                model.removeRow(row);
+            }
+        };
+        tblClientes.getColumnModel().getColumn(3).setCellRenderer(new TableActionCellRender());
+        tblClientes.getColumnModel().getColumn(3).setCellEditor(new TableActionCellEditor(event));
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -58,7 +81,15 @@ public class PantallaClientes extends javax.swing.JFrame {
             new String [] {
                 "Nombre", "E-Mail", "Teléfono", ""
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblClientes.setRowHeight(50);
         jScrollPane1.setViewportView(tblClientes);
 
