@@ -1,7 +1,10 @@
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import org.itson.sof.persistencia.entidades.Cita;
 import org.itson.sof.persistencia.entidades.CitaMaterial;
 import org.itson.sof.persistencia.entidades.Cliente;
@@ -61,7 +64,7 @@ public class ConverterUtil {
         }
         return cita;
     }
-    
+
     /**
      * Convierte un materialDTO a una entidad Material.
      *
@@ -76,8 +79,7 @@ public class ConverterUtil {
         return material;
     }
 
-
-/**
+    /**
      * Convierte un material entidad a un materialDTO.
      *
      * @param material material a convertir.
@@ -91,9 +93,9 @@ public class ConverterUtil {
         return materialDTO;
     }
 
-
     /**
-     * Convierte una lista de CitaMaterial entidad a una lista de CitaMaterialDTO.
+     * Convierte una lista de CitaMaterial entidad a una lista de
+     * CitaMaterialDTO.
      *
      * @param citaMateriales Lista de CitaMaterial entidad.
      * @return Lista de CitaMaterialDTO.
@@ -112,9 +114,9 @@ public class ConverterUtil {
         return citaMaterialDTOs;
     }
 
-
     /**
-     * Convierte una lista de CitaMaterialDTO a una lista de CitaMaterial entidad.
+     * Convierte una lista de CitaMaterialDTO a una lista de CitaMaterial
+     * entidad.
      *
      * @param citaMaterialDTOs Lista de CitaMaterialDTO.
      * @param cita Cita asociada.
@@ -133,8 +135,6 @@ public class ConverterUtil {
 
         return citaMateriales;
     }
-    
- 
 
     /**
      * Convierte una cita entidad a una citaDTO
@@ -325,6 +325,54 @@ public class ConverterUtil {
         materiales.forEach(material -> materialesDTO.add(materialEntidadADTO(material)));
 
         return materialesDTO;
+    }
+
+    /**
+     * Convierte una entidad Cliente a una DTO
+     *
+     * @param cliente Valor del cliente
+     * @return regresa el clienteDTO
+     */
+    public static ClienteDTO clienteEntidadADTO(Cliente cliente) {
+        if (cliente == null) {
+            return null;
+        }
+
+        ClienteDTO clienteDTO = new ClienteDTO();
+        clienteDTO.setNombre(cliente.getNombre());
+        clienteDTO.setCorreo(cliente.getCorreo());
+        clienteDTO.setTelefono(cliente.getTelefono());
+
+        Set<ContratoDTO> contratosDTO = new HashSet<>();
+        if (cliente.getContratos() != null) {
+            for (Contrato contrato : cliente.getContratos()) {
+                contratosDTO.add(contratoEntidadADTO(contrato));
+            }
+        }
+        clienteDTO.setContratos(contratosDTO);
+
+        return clienteDTO;
+    }
+
+    public static Cliente clienteDTOAEntidad(ClienteDTO clienteDTO) {
+        if (clienteDTO == null) {
+            return null;
+        }
+
+        Cliente cliente = new Cliente();
+        cliente.setNombre(clienteDTO.getNombre());
+        cliente.setCorreo(clienteDTO.getCorreo());
+        cliente.setTelefono(clienteDTO.getTelefono());
+
+        Set<Contrato> contratos = new HashSet<>();
+        if (clienteDTO.getContratos() != null) {
+            for (ContratoDTO contratoDTO : clienteDTO.getContratos()) {
+                contratos.add(contratoDTOAEntidad(contratoDTO));
+            }
+        }
+        cliente.setContratos(contratos);
+
+        return cliente;
     }
 
 }

@@ -37,8 +37,6 @@ public class pruebaClientes {
 //        Cliente cliente = clienteDAO.obtenerCliente("juan@example.com");
 //        System.out.println(cliente.toString());
 //        
-
-        
 //        for (Cliente cliente : clientes) {
 //            System.out.println(cliente.toString());
 //            
@@ -46,13 +44,18 @@ public class pruebaClientes {
 //
 //          Cliente cliente = clienteDAO.eliminarCliente("hola@gmail.com");
 //          System.out.println(cliente.toString());
-
-            Cliente clienteActializar = new Cliente();
-            clienteActializar.setNombre("Abel Eduaro Sanchez Guerrero");
-            clienteActializar.setCorreo("abel.san@gmail.com");
-            clienteActializar.setTelefono("6441297653");
-            
-            Cliente clienteActualizado = clienteDAO.editarCliente("abel@gmail.com", clienteActializar);
+//            Cliente clienteActializar = new Cliente();
+//            clienteActializar.setNombre("Abel Eduaro Sanchez Guerrero");
+//            clienteActializar.setCorreo("abel.san@gmail.com");
+//            clienteActializar.setTelefono("6441297653");
+//            
+//            Cliente clienteActualizado = clienteDAO.editarCliente("abel@gmail.com", clienteActializar);
+//            
+        Cliente cliente = new Cliente();
+        cliente.setCorreo("ricardo5@gmail.com");
+        cliente.setNombre("Ricardo Alan Gutierrez Garces");
+        cliente.setTelefono("644129338");
+        Cliente nuevoCliente = clienteDAO.agregarCliente(cliente);
     }
 
 }
