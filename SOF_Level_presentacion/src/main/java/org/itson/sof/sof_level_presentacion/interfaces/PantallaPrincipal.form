@@ -187,6 +187,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Clientes"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="lblClientesMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblImgClientes">
           <Properties>
@@ -194,6 +197,9 @@
               <Image iconType="3" name="/imagenes/clienteIcon.png"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="lblImgClientesMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblImgMateriales">
           <Properties>
@@ -216,6 +222,9 @@
               <Image iconType="3" name="/imagenes/costosIcon.png"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="lblImgCostosMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblCostos">
           <Properties>
@@ -224,6 +233,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Costos"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="lblCostosMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblImgCerrarSesion">
           <Properties>

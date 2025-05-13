@@ -16,6 +16,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private CardLayout cardLayout;
     private PanelContratos pnlContratos;
     private PanelContrato pnlContrato;
+    private PanelCostos pnlCostos;
+    private PantallaClientes pnlClientes;
     private DialogCita dlgCita;
     private boolean menuVisible = true;
     private ContratoDTO contrato;
@@ -34,8 +36,12 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         // Agregar paneles al pnlCentral
         pnlContratos = new PanelContratos(this);
         pnlContrato = new PanelContrato(this);
+        pnlCostos = new PanelCostos(this);
+        pnlClientes = new PantallaClientes(); //TODO: Hacer que reciba this
 
         pnlCentral.add(pnlContratos, "PanelContratos");
+        pnlCentral.add(pnlCostos, "PanelCostos");
+        pnlCentral.add(pnlClientes, "PanelClientes");
         pnlCentral.add(pnlContrato, "PanelContrato");
 
         // Mostrar la pantalla por defecto
@@ -65,6 +71,24 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         this.lblTitulo.setText("Contrato");
         pnlContrato.inicializar();
         cardLayout.show(pnlCentral, "PanelContrato");
+    }
+    
+    /**
+     * Cambia el contenido del frame interior al menu de clientes
+     */
+    public void PanelClientes(){
+        this.lblTitulo.setText("Clientes");
+        //pnlClientes.inicializar(); TODO: Ponerle un inicializar
+        cardLayout.show(pnlClientes, "PanelClientes");
+    }
+    
+    /**
+     * Cambia el contenido del frame interior al menu de costos
+     */
+    public void PanelCostos(){
+        this.lblTitulo.setText("Reportes de venta");
+        pnlCostos.inicializar();
+        cardLayout.show(pnlCentral, "PanelCostos");
     }
     
     /**
@@ -179,8 +203,18 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         lblClientes.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         lblClientes.setText("Clientes");
+        lblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblClientesMouseClicked(evt);
+            }
+        });
 
         lblImgClientes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/clienteIcon.png"))); // NOI18N
+        lblImgClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblImgClientesMouseClicked(evt);
+            }
+        });
 
         lblImgMateriales.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/materialesIcon.png"))); // NOI18N
 
@@ -188,9 +222,19 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         lblMateriales.setText("Materiales");
 
         lblImgCostos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/costosIcon.png"))); // NOI18N
+        lblImgCostos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblImgCostosMouseClicked(evt);
+            }
+        });
 
         lblCostos.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         lblCostos.setText("Costos");
+        lblCostos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblCostosMouseClicked(evt);
+            }
+        });
 
         lblImgCerrarSesion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cerrarSesionIcon.png"))); // NOI18N
         lblImgCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -364,6 +408,22 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private void btnMenuDesplegableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMenuDesplegableMouseClicked
         
     }//GEN-LAST:event_btnMenuDesplegableMouseClicked
+
+    private void lblCostosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCostosMouseClicked
+        PanelCostos();
+    }//GEN-LAST:event_lblCostosMouseClicked
+
+    private void lblImgCostosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImgCostosMouseClicked
+        PanelCostos();
+    }//GEN-LAST:event_lblImgCostosMouseClicked
+
+    private void lblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblClientesMouseClicked
+        PanelClientes();
+    }//GEN-LAST:event_lblClientesMouseClicked
+
+    private void lblImgClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImgClientesMouseClicked
+        PanelClientes();
+    }//GEN-LAST:event_lblImgClientesMouseClicked
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
