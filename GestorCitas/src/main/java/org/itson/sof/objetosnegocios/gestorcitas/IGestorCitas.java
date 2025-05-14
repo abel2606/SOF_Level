@@ -5,7 +5,7 @@
 package org.itson.sof.objetosnegocios.gestorcitas;
 
 import java.util.List;
-import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.CitaMaterialDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
@@ -25,9 +25,9 @@ public interface IGestorCitas {
      * @param folioContrato folio del contrato
      * @param nombreUsuarioFotografo nombre de usuario del fotografo
      * @return cita creada
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public CitaDTO crearCita(CitaDTO cita) throws GestorException;
+    public CitaDTO crearCita(CitaDTO cita) throws GestorCitasException;
 
     /**
      * Método para consultar ua cita
@@ -42,54 +42,54 @@ public interface IGestorCitas {
      *
      * @param cita cita a actualizar
      * @return cita actualizada
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public CitaDTO actualizarCita(CitaDTO cita) throws GestorException;
+    public CitaDTO actualizarCita(CitaDTO cita) throws GestorCitasException;
 
     /**
      * Método para eliminar una cita
      *
      * @param cita cita a eliminar
      * @return cita eliminada
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public CitaDTO eliminarCita(CitaDTO cita) throws GestorException;
+    public CitaDTO eliminarCita(CitaDTO cita) throws GestorCitasException;
 
     /**
      * Método para obtener los fotografos registrados
      *
      * @return lista de fotografos
-     * @throws GestorException
+     * @throws GestorCitasException
      *
      */
-    public List<FotografoDTO> obtenerFotografos() throws GestorException;
+    public List<FotografoDTO> obtenerFotografos() throws GestorCitasException;
 
     /**
      * Obtiene todas las citas de un contrato
      *
      * @param contrato contrato del qyue se dsean obtener las citas
      * @return lsita de citas
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public List<CitaDTO> obtenerCitasContrato(ContratoDTO contrato) throws GestorException;
+    public List<CitaDTO> obtenerCitasContrato(ContratoDTO contrato) throws GestorCitasException;
 
     /**
      * Obtiene todos los contratos tegistrados
      *
      * @return lista de los contratos
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public List<ContratoDTO> obtenerContratos() throws GestorException;
+    public List<ContratoDTO> obtenerContratos() throws GestorCitasException;
 
     /**
      * Obtiene todos los contratos tegistrados
      *
      * @return lista de los contratos
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public List<MaterialDTO> obtenerMateriales() throws GestorException;
+    public List<MaterialDTO> obtenerMateriales() throws GestorCitasException;
 
-    public List<CitaMaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws GestorException;
+    public List<CitaMaterialDTO> obtenerMaterialesCita(CitaDTO cita) throws GestorCitasException;
 
     /**
      * Valida si el código de una cita o contrato ya existe
@@ -97,27 +97,27 @@ public interface IGestorCitas {
      * @param tabla tabla que se consultará
      * @param codigo codigo a consultar
      * @return true si ya existe
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public boolean validarCodigo(String tabla, String codigo) throws GestorException;
+    public boolean validarCodigo(String tabla, String codigo) throws GestorCitasException;
 
     /**
      * Método que obitene un contrato a través de su folio
      *
      * @param folio folio del contrato
      * @return contrato obtenido
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public ContratoDTO obtenerContrato(String folio) throws GestorException;
+    public ContratoDTO obtenerContrato(String folio) throws GestorCitasException;
 
     /**
      * Obtiene los horarios disponibles del día seleccioando
      *
      * @param fechaInicio fecha de inicio selecciondada para la cita
      * @return regresa la lista de los horarios disponibles
-     * @throws GestorException en caso de suceder un error
+     * @throws GestorCitasException en caso de suceder un error
      */
-    public List<String> obtenerHorariosDisponibles(String fechaInicio) throws GestorException;
+    public List<String> obtenerHorariosDisponibles(String fechaInicio) throws GestorCitasException;
 
     /**
      * Obtiene una lista de los horaios disponibles para la fecha fin de la cita
@@ -126,11 +126,11 @@ public interface IGestorCitas {
      * formato(YYYY-MM-DD)
      * @param horaInicioSeleccionada
      * @return
-     * @throws GestorException
+     * @throws GestorCitasException
      */
-    public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String horaInicioSeleccionada) throws GestorException;
+    public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String horaInicioSeleccionada) throws GestorCitasException;
 
-    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada, CitaDTO cita) throws GestorException;
+    public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada, CitaDTO cita) throws GestorCitasException;
     
-    public void actualizarStockMaterial(String nombreMaterial, float nuevoStock) throws GestorException;
+    public void actualizarStockMaterial(String nombreMaterial, float nuevoStock) throws GestorCitasException;
 }

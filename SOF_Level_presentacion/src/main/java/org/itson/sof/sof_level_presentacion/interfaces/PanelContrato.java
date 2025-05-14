@@ -1,5 +1,6 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
+import org.itson.sof.sof_level_presentacion.componentes.ItemScrollCitas;
 import com.toedter.calendar.JDayChooser;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,7 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
-import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_level_presentacion.componentes.EvaluadorCitasFecha;
@@ -268,7 +269,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 }
             }
             return citas;
-        } catch (GestorException ex) {
+        } catch (GestorCitasException ex) {
             JOptionPane.showMessageDialog(principal, ex.getMessage());
         }
         return null;

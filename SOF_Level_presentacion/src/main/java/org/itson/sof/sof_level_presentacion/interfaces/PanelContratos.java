@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
-import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_level_presentacion.componentes.ItemContrato;
 
@@ -86,7 +86,7 @@ public class PanelContratos extends javax.swing.JPanel {
         try {
             List<ContratoDTO> contratos = gestor.obtenerContratos();
             return contratos != null ? contratos : new ArrayList<>();
-        } catch (GestorException ex) {
+        } catch (GestorCitasException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
             
         }

@@ -7,7 +7,7 @@ package org.itson.sof.objetosnegocios.gestorcitas.prueba;
 import java.util.ArrayList;
 import java.util.List;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
-import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.CitaMaterialDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
@@ -57,7 +57,7 @@ public class PruebaGestor {
             } else {
                 System.out.println("Cita no encontrada con el código: " + cita.getCodigo());
             }
-        } catch (GestorException e) {
+        } catch (GestorCitasException e) {
             // Manejo de excepciones en caso de error en el gestor
             System.out.println("Error al obtener la cita o los materiales: " + e.getMessage());
         }
@@ -96,7 +96,7 @@ public class PruebaGestor {
             } else {
                 System.out.println("No se pudo actualizar la cita.");
             }
-        } catch (GestorException e) {
+        } catch (GestorCitasException e) {
             System.out.println("Error al actualizar la cita: " + e.getMessage());
         }
 

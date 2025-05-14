@@ -3,9 +3,7 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -14,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +33,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
-import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.DiferenciadorUtils;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.CitaMaterialDTO;
@@ -376,7 +373,7 @@ public class DialogCita extends javax.swing.JDialog {
                 }
             });
 
-        } catch (GestorException e) {
+        } catch (GestorCitasException e) {
             e.printStackTrace();
         }
     }
@@ -508,7 +505,7 @@ public class DialogCita extends javax.swing.JDialog {
                         cmbFechaFin.addItem(horarioFin);
                     }
                     cmbFechaFin.setEnabled(true); // Habilitar el ComboBox de fin
-                } catch (GestorException ex) {
+                } catch (GestorCitasException ex) {
                     Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
@@ -581,7 +578,7 @@ public class DialogCita extends javax.swing.JDialog {
                                 cmbFechaFin.addItem(horarioFin);
                             }
                         }
-                    }catch (GestorException ex) {
+                    }catch (GestorCitasException ex) {
                         Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
@@ -589,7 +586,7 @@ public class DialogCita extends javax.swing.JDialog {
                 }
             });
 
-        } catch (GestorException ex) {
+        } catch (GestorCitasException ex) {
             Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -632,7 +629,7 @@ public class DialogCita extends javax.swing.JDialog {
             List<String> horariosDisponibles1 = new ArrayList<>();
             try {
                 horariosDisponibles1 = gestor.obtenerHorariosDisponibles(fechaSeleccionada);
-            }catch (GestorException ex) {
+            }catch (GestorCitasException ex) {
                 Logger.getLogger(DialogCita.class.getName()).log(Level.SEVERE, null, ex);
             }
             cmbFechaInicio.removeAllItems();
@@ -711,7 +708,7 @@ public class DialogCita extends javax.swing.JDialog {
             for (FotografoDTO fotografo : fotografos) {
                 cbFotografo.addItem(fotografo.getNombrePersona());
             }
-        } catch (GestorException ex) {
+        } catch (GestorCitasException ex) {
             JOptionPane.showMessageDialog(parent, ex);
         }
     }
@@ -850,7 +847,7 @@ public class DialogCita extends javax.swing.JDialog {
         try {
             gestor.actualizarCita(cita);
             JOptionPane.showMessageDialog(this, "Cita actualizada");
-        } catch (GestorException ex) {
+        } catch (GestorCitasException ex) {
             JOptionPane.showMessageDialog(parent, "No se pudo contectar a la base de datos", "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
         }catch (HeadlessException ex){
             JOptionPane.showMessageDialog(parent, "El entorno grafico esta mal configurado", "Error al editar la cita", JOptionPane.ERROR_MESSAGE);
@@ -958,7 +955,7 @@ public class DialogCita extends javax.swing.JDialog {
                 }
             }
 
-        } catch (GestorException ex) {
+        } catch (GestorCitasException ex) {
             JOptionPane.showMessageDialog(parent, ex.getMessage(),"Error de conexión", JOptionPane.ERROR_MESSAGE);
         } catch (HeadlessException ex) {
             JOptionPane.showMessageDialog(parent, ex.getMessage(), "Erorr de validación", JOptionPane.ERROR_MESSAGE);

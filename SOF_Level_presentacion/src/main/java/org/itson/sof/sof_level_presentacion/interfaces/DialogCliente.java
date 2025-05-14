@@ -6,9 +6,9 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.itson.sof.objetosnegocios.gestorcitas.GestorClientes;
-import org.itson.sof.objetosnegocios.gestorcitas.IGestorClientes;
-import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorException;
+import org.itson.sof.objetosnegocios.gestorclientes.IGestorClientes;
+import org.itson.sof.objetosnegocios.gestorclientes.gestorexception.GestorClientesException;
+import org.itson.sof.objetosnegocios.gestorclientes.GestorClientes;
 import org.itson.sof.sof_dtos.ClienteDTO;
 
 /**
@@ -201,13 +201,13 @@ public class DialogCliente extends javax.swing.JDialog {
         if (editando == true) {
             try {
                 cliente = gestionarClientes.editarCliente(clienteDTO.getCorreo(), cliente);
-            } catch (GestorException ex) {
+            } catch (GestorClientesException ex) {
                 Logger.getLogger(DialogCliente.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
                 cliente = gestionarClientes.agregarCliente(cliente);
-            } catch (GestorException ex) {
+            } catch (GestorClientesException ex) {
                 Logger.getLogger(DialogCliente.class.getName()).log(Level.SEVERE, null, ex);
             }
 
