@@ -18,7 +18,7 @@ public class ItemReporte extends javax.swing.JPanel {
      */
     public ItemReporte(String nombreReporte) {
         initComponents();
-        lblNombreReporte.setText("Cliente: " + nombreReporte);
+        lblNombreReporte.setText(nombreReporte);
 
         int radius = 50;
         setBorder(BorderFactory.createCompoundBorder(

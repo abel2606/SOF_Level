@@ -8,6 +8,7 @@ import java.util.List;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.CitaMaterialDTO;
+import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
@@ -80,6 +81,8 @@ public interface IGestorCitas {
      * @throws GestorCitasException
      */
     public List<ContratoDTO> obtenerContratos() throws GestorCitasException;
+    
+    public List<ContratoDTO> obtenerContratosPorCliente(ClienteDTO clienteDTO) throws GestorCitasException;
 
     /**
      * Obtiene todos los contratos tegistrados

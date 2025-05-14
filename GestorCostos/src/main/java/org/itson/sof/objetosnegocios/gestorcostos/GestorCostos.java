@@ -38,11 +38,10 @@ public class GestorCostos implements IGestorCostos {
     @Override
     public List<ReporteVenta> obtenerReportesVenta(String ruta) throws GestorCostosException {
         try {
-            costosBO.obtenerReportesVenta(ruta);
+           return costosBO.obtenerReportesVenta(ruta);
         } catch (ObjetosNegocioException ex) {
             throw new GestorCostosException(ex.getMessage());
         }
-        return null;
     }
     
     @Override

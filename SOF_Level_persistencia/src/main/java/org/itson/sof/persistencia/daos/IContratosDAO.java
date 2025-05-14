@@ -5,6 +5,7 @@
 package org.itson.sof.persistencia.daos;
 
 import java.util.List;
+import org.itson.sof.persistencia.entidades.Cliente;
 import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
@@ -15,6 +16,8 @@ import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 public interface IContratosDAO {
     
     public List<Contrato> obtenerTotalContratos() throws PersistenciaSOFException;
+    
+    public List<Contrato> obtenerContratosPorCliente(Cliente cliente) throws PersistenciaSOFException;
     
     public Contrato obtenerContratoFolio (String folio)throws PersistenciaSOFException;
     

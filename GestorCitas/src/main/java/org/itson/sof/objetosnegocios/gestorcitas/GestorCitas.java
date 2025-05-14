@@ -17,6 +17,7 @@ import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.MaterialBO;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.CitaMaterialDTO;
+import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.FotografoDTO;
 import org.itson.sof.sof_dtos.MaterialDTO;
@@ -198,5 +199,16 @@ public class GestorCitas implements IGestorCitas {
             throw new GestorCitasException("Error al actualizar stock: " + ex.getMessage());
         }
     }
+
+    @Override
+    public List<ContratoDTO> obtenerContratosPorCliente(ClienteDTO clienteDTO) throws GestorCitasException {
+        try {
+            return contratoBO.obtenerContratosPorCliente(clienteDTO);
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorCitasException(ex.getMessage());
+        }
+    }
+    
+    
 
 }

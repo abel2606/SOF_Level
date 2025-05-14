@@ -11,6 +11,7 @@ import org.itson.sof.persistencia.conexion.Conexion;
 import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.daos.ContratosDAO;
 import org.itson.sof.persistencia.daos.IContratosDAO;
+import org.itson.sof.persistencia.entidades.Cliente;
 import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 import org.itson.sof.sof_dtos.ClienteDTO;
@@ -73,6 +74,30 @@ public class ContratoBO implements IContratoBO{
                 return contratosDTO;
             } else {
                 System.out.println("No se encontraron contratos.");
+                return new ArrayList<>();
+            }
+
+        } catch (PersistenciaSOFException ex) {
+            Logger.getLogger(ContratoBO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ObjetosNegocioException (ex.getMessage());
+        }
+    }
+
+    @Override
+    public List<ContratoDTO> obtenerContratosPorCliente(ClienteDTO clienteDTO) throws ObjetosNegocioException {
+        try {
+            Cliente cliente=ConverterUtil.clienteDTOAEntidad(clienteDTO);
+            // Obtienes las entidades de contratos desde el DAO
+            List<Contrato> contratos = this.contratosDAO.obtenerContratosPorCliente(cliente);
+
+            // Si la lista no está vacía, conviértela
+            if (contratos != null && !contratos.isEmpty()) {
+                List<ContratoDTO> contratosDTO = contratos.stream()
+                        .map(entidad -> ConverterUtil.contratoEntidadADTO(entidad)) // Conversión de entidad a DTO
+                        .collect(Collectors.toList());
+                return contratosDTO;
+            } else {
+                System.out.println("No se encontraron contratos del cliente.");
                 return new ArrayList<>();
             }
 

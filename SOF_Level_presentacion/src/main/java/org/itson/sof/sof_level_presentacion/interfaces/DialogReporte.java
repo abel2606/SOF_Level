@@ -7,9 +7,17 @@ import javax.swing.JOptionPane;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import java.io.*;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.swing.JFileChooser;
+import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.IGestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.objetosnegocios.gestorcostos.GestorCostos;
+import org.itson.sof.objetosnegocios.gestorcostos.IGestorCostos;
 import org.itson.sof.objetosnegocios.gestorcostos.gestorexception.GestorCostosException;
 import reportes.ReporteVenta;
 
@@ -19,13 +27,22 @@ import reportes.ReporteVenta;
  */
 public class DialogReporte extends javax.swing.JDialog {
     Frame parent;
-    GestorCostos gestor;
+    IGestorCostos gestorCostos;
+    IGestorCitas gestorCitas;
+    List<ClienteDTO> clientesTabla;
+    String ruta;
 
-    public DialogReporte(java.awt.Frame parent, boolean modal) {
+    public DialogReporte(java.awt.Frame parent, boolean modal, String ruta) {
         super(parent, modal);
         initComponents();
         this.parent = parent;
-        gestor = GestorCostos.getInstance();
+        this.ruta=ruta;
+        gestorCostos = GestorCostos.getInstance();
+        gestorCitas = GestorCitas.getInstance();
+        this.txtaUbicacion.setText(ruta);
+        this.txtaNombre.setText("Reporte de ventas");
+        Date hoy = new Date();
+        this.cmbFechaFin.setDate(hoy);
     }
     
     private void SeleccionarRuta() {
@@ -63,10 +80,28 @@ public class DialogReporte extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(parent, "Ya existe un elemento con ese nombre en la ubicación indicada.");
             return;
         }
-        
+
         //Validar fechas validas (Primero la de inicio luego la de despues, formato correcto, ambas fechas no vacias,
         // ambas fechas ya hayan ocurrido)
-        
+        Date fechaInicio = cmbFechaInicio.getDate();
+        Date fechaFin = cmbFechaFin.getDate();
+        Date hoy = new Date();
+
+        if (fechaInicio == null || fechaFin == null) {
+            JOptionPane.showMessageDialog(null, "Ambas fechas deben estar seleccionadas.");
+            return;
+        }
+
+        if (fechaInicio.after(hoy) || fechaFin.after(hoy)) {
+            JOptionPane.showMessageDialog(null, "Las fechas no pueden ser futuras.");
+            return;
+        }
+
+        if (!fechaInicio.before(fechaFin)) {
+            JOptionPane.showMessageDialog(null, "La fecha de inicio debe ser anterior a la fecha final.");
+            return;
+        }
+
         //Al menos un cliente ingresado o hecho click en seleccionar todos los clientes
         if (tblCliente.getRowCount() > 0 || this.boxCilientes.isSelected()) {
         } else {
@@ -83,24 +118,55 @@ public class DialogReporte extends javax.swing.JDialog {
     private void GenerarReporte() {
         String nombre = txtaNombre.getText().trim();
         String ubicacion = txtaUbicacion.getText().trim();
-        ReporteVenta reporteVenta=new ReporteVenta(nombre, ubicacion);
-        
-        GregorianCalendar fechaInicio=null;
-        GregorianCalendar fechaFinal=null;
-        
-        boolean terminados = this.boxTerminados.isSelected();
-        boolean todosClientes = this.boxCilientes.isSelected();
-        
-        List<ClienteDTO> clientes = new ArrayList<>();
-        if (todosClientes) {
-            //Añadir todos los clientes
-        } else {
-            //Añadir solo los clientes de la tabla
-        }
-        List<ContratoDTO> contratos = new ArrayList<>();
+        ReporteVenta reporteVenta = new ReporteVenta(nombre, ubicacion);
 
+        Date fechaInicioDate = cmbFechaInicio.getDate();
+        Date fechaFinDate = cmbFechaFin.getDate();
+
+        GregorianCalendar fechaInicio = null;
+        GregorianCalendar fechaFin = null;
+
+        if (fechaInicioDate != null) {
+            fechaInicio = new GregorianCalendar();
+            fechaInicio.setTime(fechaInicioDate);
+        }
+
+        if (fechaFinDate != null) {
+            fechaFin = new GregorianCalendar();
+            fechaFin.setTime(fechaFinDate);
+        }
+
+        boolean todosClientes = this.boxCilientes.isSelected();
+        List<ContratoDTO> contratos = new ArrayList<>();
+        
+        if (todosClientes) {
+            try {
+                contratos = gestorCitas.obtenerContratos();
+            } catch (GestorCitasException ex) {
+                JOptionPane.showMessageDialog(parent, ex);
+            return;
+            }
+        } else {
+            for (ClienteDTO cliente : clientesTabla) {//Obtener todos los contratos de cada cliente
+                try {
+                    List<ContratoDTO> contratosCliente = gestorCitas.obtenerContratosPorCliente(cliente);
+                    contratos.addAll(contratosCliente);
+                } catch (GestorCitasException ex) {
+                    Logger.getLogger(DialogReporte.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        boolean terminados = this.boxTerminados.isSelected();
+
+        if (terminados) {
+            contratos = contratos.stream()
+                    .filter(c -> c.getEstado() != null && c.getEstado().equalsIgnoreCase("Terminado"))
+                    .collect(Collectors.toList());
+        }
+        
         try {
-            gestor.generarReporte(fechaInicio, fechaFinal, reporteVenta, contratos);
+            gestorCostos.generarReporte(fechaInicio, fechaFin, reporteVenta, contratos);
         } catch (GestorCostosException ex) {
             JOptionPane.showMessageDialog(parent, "No se pudo generar el reporte");
         }
@@ -118,8 +184,6 @@ public class DialogReporte extends javax.swing.JDialog {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtaNombre = new javax.swing.JTextArea();
         lblUbicacion = new javax.swing.JLabel();
-        cmbFechaInicio = new javax.swing.JComboBox<>();
-        cmbFechaFin = new javax.swing.JComboBox<>();
         txtNombreCliente = new javax.swing.JTextField();
         btnAgregar = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -132,6 +196,8 @@ public class DialogReporte extends javax.swing.JDialog {
         btnCancelar = new javax.swing.JButton();
         lblClientes = new javax.swing.JLabel();
         btnRuta = new javax.swing.JButton();
+        cmbFechaInicio = new com.toedter.calendar.JDateChooser();
+        cmbFechaFin = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -164,15 +230,6 @@ public class DialogReporte extends javax.swing.JDialog {
 
         lblUbicacion.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblUbicacion.setText("Ruta:");
-
-        cmbFechaInicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbFechaInicio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbFechaInicioActionPerformed(evt);
-            }
-        });
-
-        cmbFechaFin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         txtNombreCliente.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         txtNombreCliente.setText("Ingrese Cliente");
@@ -284,18 +341,6 @@ public class DialogReporte extends javax.swing.JDialog {
                     .addGroup(pnlPrincipalLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(pnlPrincipalLayout.createSequentialGroup()
-                                .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(pnlPrincipalLayout.createSequentialGroup()
-                                        .addComponent(cmbFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(34, 34, 34)
-                                        .addComponent(cmbFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(pnlPrincipalLayout.createSequentialGroup()
-                                        .addComponent(lblTerminados)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(boxTerminados, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlPrincipalLayout.createSequentialGroup()
                                 .addComponent(lblPeriodo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -324,7 +369,20 @@ public class DialogReporte extends javax.swing.JDialog {
                         .addComponent(lblTodosClientes)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(boxCilientes, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(123, 123, 123)))
+                        .addGap(123, 123, 123))
+                    .addGroup(pnlPrincipalLayout.createSequentialGroup()
+                        .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(pnlPrincipalLayout.createSequentialGroup()
+                                .addComponent(lblTerminados)
+                                .addGap(18, 18, 18)
+                                .addComponent(boxTerminados, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(82, 82, 82))
+                            .addGroup(pnlPrincipalLayout.createSequentialGroup()
+                                .addComponent(cmbFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(cmbFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(37, 37, 37)))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
         pnlPrincipalLayout.setVerticalGroup(
@@ -349,14 +407,15 @@ public class DialogReporte extends javax.swing.JDialog {
                         .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(pnlPrincipalLayout.createSequentialGroup()
                                 .addComponent(lblPeriodo)
-                                .addGap(28, 28, 28)
-                                .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(cmbFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cmbFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(50, 50, 50)
+                                .addGap(18, 18, 18)
                                 .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(boxTerminados, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblTerminados)))
+                                    .addGroup(pnlPrincipalLayout.createSequentialGroup()
+                                        .addComponent(cmbFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(50, 50, 50)
+                                        .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(boxTerminados, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblTerminados)))
+                                    .addComponent(cmbFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(pnlPrincipalLayout.createSequentialGroup()
                                 .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -371,7 +430,7 @@ public class DialogReporte extends javax.swing.JDialog {
                             .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(boxCilientes, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -382,15 +441,14 @@ public class DialogReporte extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(pnlPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void cmbFechaInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFechaInicioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbFechaInicioActionPerformed
 
     private void txtNombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreClienteActionPerformed
         // TODO add your handling code here:
@@ -424,49 +482,6 @@ public class DialogReporte extends javax.swing.JDialog {
         SeleccionarRuta();
     }//GEN-LAST:event_btnRutaActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DialogReporte.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DialogReporte.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DialogReporte.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DialogReporte.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DialogReporte dialog = new DialogReporte(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox boxCilientes;
     private javax.swing.JCheckBox boxTerminados;
@@ -474,8 +489,8 @@ public class DialogReporte extends javax.swing.JDialog {
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGenerar;
     private javax.swing.JButton btnRuta;
-    private javax.swing.JComboBox<String> cmbFechaFin;
-    private javax.swing.JComboBox<String> cmbFechaInicio;
+    private com.toedter.calendar.JDateChooser cmbFechaFin;
+    private com.toedter.calendar.JDateChooser cmbFechaInicio;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

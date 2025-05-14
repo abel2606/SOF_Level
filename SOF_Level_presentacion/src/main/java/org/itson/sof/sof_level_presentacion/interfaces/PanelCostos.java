@@ -170,11 +170,12 @@ public class PanelCostos extends javax.swing.JPanel {
             File carpeta = chooser.getSelectedFile();
             txtaRuta.setText(carpeta.getAbsolutePath());
             escribirRuta(carpeta.getAbsolutePath());
+            DecorarTabla();
         }
     }
     
     private void GenerarReporte(){
-        dlgReporte = new DialogReporte(principal, true);
+        dlgReporte = new DialogReporte(principal, true,ruta);
         dlgReporte.setVisible(true);
         dlgReporte.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override

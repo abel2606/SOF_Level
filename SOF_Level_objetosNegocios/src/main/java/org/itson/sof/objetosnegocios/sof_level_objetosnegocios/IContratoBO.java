@@ -20,6 +20,9 @@ public interface IContratoBO {
      * @throws org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException
      */
     public List<ContratoDTO> obtenerTotalContratos() throws ObjetosNegocioException;
+    
+    public List<ContratoDTO> obtenerContratosPorCliente(ClienteDTO cliente) throws ObjetosNegocioException;
+    
     /**
      * Método para crear un contrato y asignarle un cliente 
      * @param contrato contrato que se desea guardar

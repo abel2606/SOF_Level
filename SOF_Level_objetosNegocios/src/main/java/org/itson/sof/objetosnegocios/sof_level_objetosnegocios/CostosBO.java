@@ -38,7 +38,6 @@ public class CostosBO implements ICostosBO {
         if (!carpeta.exists() || !carpeta.isDirectory()) {
             throw new ObjetosNegocioException("Ruta inválida: " + ruta);
         }
-
         File[] archivos = carpeta.listFiles();
         if (archivos != null) {
             for (File archivo : archivos) {
@@ -47,7 +46,6 @@ public class CostosBO implements ICostosBO {
                 }
             }
         }
-
         return reportes;
     }
 
