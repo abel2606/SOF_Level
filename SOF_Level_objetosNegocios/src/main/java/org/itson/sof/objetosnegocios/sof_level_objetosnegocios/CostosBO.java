@@ -5,6 +5,7 @@
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
@@ -14,6 +15,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -67,9 +69,15 @@ public class CostosBO implements ICostosBO {
     public void generarReporte(GregorianCalendar fechaInicio, GregorianCalendar fechaFinal, ReporteVenta reporte, List<ContratoDTO> contratos) throws ObjetosNegocioException {
         Document documento = new Document();
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-
+        String nombreArchivo = reporte.getNombre() + ".pdf";
+        File archivoPDF = new File(reporte.getRuta(), nombreArchivo);
+        // Verificar si el archivo ya existe
+        if (archivoPDF.exists()) {
+            throw new ObjetosNegocioException("Ya existe un archivo con ese nombre en la ruta.");
+        }
         try {
-            PdfWriter.getInstance(documento, new FileOutputStream(reporte.getRuta()));
+
+            PdfWriter.getInstance(documento, new FileOutputStream(archivoPDF));
             documento.open();
 
             // Encabezado
@@ -95,7 +103,7 @@ public class CostosBO implements ICostosBO {
 
             double total = 0.0;
             for (ContratoDTO contrato : contratos) {
-                tabla.addCell(contrato.getCliente().getNombre());                    // Cliente
+                tabla.addCell(contrato.getCliente().getNombre());        // Cliente
                 tabla.addCell(contrato.getFolio());                      // Folio
                 tabla.addCell(contrato.getTematica());                   // Temática
                 tabla.addCell(contrato.getEstado());                     // Estado
@@ -112,9 +120,8 @@ public class CostosBO implements ICostosBO {
             totalTexto.setAlignment(Element.ALIGN_RIGHT);
             documento.add(totalTexto);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ObjetosNegocioException("Error al generar el reporte: " + e.getMessage());
+        } catch (DocumentException | FileNotFoundException e) {
+            throw new ObjetosNegocioException("No se pudo generar el reporte: " + e.getMessage());
         } finally {
             documento.close();
         }

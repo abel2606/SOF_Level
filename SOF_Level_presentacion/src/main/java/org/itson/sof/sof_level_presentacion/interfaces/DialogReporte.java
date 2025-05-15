@@ -1,21 +1,37 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
+import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import java.io.*;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.IGestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
+import org.itson.sof.objetosnegocios.gestorclientes.GestorClientes;
+import org.itson.sof.objetosnegocios.gestorclientes.IGestorClientes;
+import org.itson.sof.objetosnegocios.gestorclientes.gestorexception.GestorClientesException;
 import org.itson.sof.objetosnegocios.gestorcostos.GestorCostos;
 import org.itson.sof.objetosnegocios.gestorcostos.IGestorCostos;
 import org.itson.sof.objetosnegocios.gestorcostos.gestorexception.GestorCostosException;
@@ -29,20 +45,29 @@ public class DialogReporte extends javax.swing.JDialog {
     Frame parent;
     IGestorCostos gestorCostos;
     IGestorCitas gestorCitas;
-    List<ClienteDTO> clientesTabla;
-    String ruta;
+    IGestorClientes gestorClientes;
+    List<ClienteDTO> clientesSeleccionados= new ArrayList<>();
+    private DefaultListModel<String> listModel;
+    private JList<String> suggestionList;
+    private List<ClienteDTO> clientes = new ArrayList<>();
 
     public DialogReporte(java.awt.Frame parent, boolean modal, String ruta) {
         super(parent, modal);
         initComponents();
         this.parent = parent;
-        this.ruta=ruta;
         gestorCostos = GestorCostos.getInstance();
         gestorCitas = GestorCitas.getInstance();
+        gestorClientes = GestorClientes.getInstance();
         this.txtaUbicacion.setText(ruta);
         this.txtaNombre.setText("Reporte de ventas");
         Date hoy = new Date();
         this.cmbFechaFin.setDate(hoy);
+        Calendar inicio = Calendar.getInstance();
+        inicio.set(Calendar.MONTH, Calendar.JANUARY);
+        inicio.set(Calendar.DAY_OF_MONTH, 1);
+        this.cmbFechaInicio.setDate(inicio.getTime());
+        
+        configurarAutocompletado();
     }
     
     private void SeleccionarRuta() {
@@ -53,8 +78,8 @@ public class DialogReporte extends javax.swing.JDialog {
         if (opcion == JFileChooser.APPROVE_OPTION) {
             File carpeta = chooser.getSelectedFile();
             txtaUbicacion.setText(carpeta.getAbsolutePath());
+            escribirRuta(carpeta.getAbsolutePath());
         }
-
     }
 
     private void Aceptar() {
@@ -66,7 +91,13 @@ public class DialogReporte extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(parent, "Favor de llenar todos los campos.");
             return;
         }
-        
+
+        // Verificar caracteres inválidos para nombres de archivos en Windows
+        if (!nombre.matches("^[^\\\\/:*?\"<>|]+$")) {
+            JOptionPane.showMessageDialog(parent, "El nombre no debe contener caracteres inválidos: \\ / : * ? \" < > |");
+            return;
+        }
+
         // Validar ubicación válida
         File archivo = new File(ubicacion);
         if (!archivo.exists() || !archivo.isDirectory()) {
@@ -147,7 +178,7 @@ public class DialogReporte extends javax.swing.JDialog {
             return;
             }
         } else {
-            for (ClienteDTO cliente : clientesTabla) {//Obtener todos los contratos de cada cliente
+            for (ClienteDTO cliente : clientesSeleccionados) {//Obtener todos los contratos de cada cliente
                 try {
                     List<ContratoDTO> contratosCliente = gestorCitas.obtenerContratosPorCliente(cliente);
                     contratos.addAll(contratosCliente);
@@ -164,17 +195,190 @@ public class DialogReporte extends javax.swing.JDialog {
                     .filter(c -> c.getEstado() != null && c.getEstado().equalsIgnoreCase("Terminado"))
                     .collect(Collectors.toList());
         }
-        
+
         try {
             gestorCostos.generarReporte(fechaInicio, fechaFin, reporteVenta, contratos);
+            gestorCostos.abrirReporte(ubicacion);
+            this.dispose();
         } catch (GestorCostosException ex) {
-            JOptionPane.showMessageDialog(parent, "No se pudo generar el reporte");
+            JOptionPane.showMessageDialog(parent, ex.getMessage());
+        }
+    }
+    
+    private void configurarAutocompletado() {
+        listModel = new DefaultListModel<>();
+        suggestionList = new JList<>(listModel);
+        JScrollPane scrollPane = new JScrollPane(suggestionList);
+        scrollPane.setPreferredSize(new Dimension(180, 100));
+        this.popMenu.add(scrollPane);
+
+        try {
+            clientes = gestorClientes.obtenerTodosClientes();
+        } catch (GestorClientesException ex) {
+            JOptionPane.showMessageDialog(parent, ex.getMessage());
+            return;
+        }
+        
+        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 1;
+            }
+        };
+        this.tblCliente.setModel(tableModel);
+        cargarClientesEnTabla(tableModel);
+        
+        txtNombreCliente.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (txtNombreCliente.getText().equals("Ingrese el Cliente")) {
+                    txtNombreCliente.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (txtNombreCliente.getText().isEmpty()) {
+                    txtNombreCliente.setText("Ingrese el Cliente");
+                }
+            }
+        });
+        this.txtNombreCliente.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                actualizarLista();
+            }
+            
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                actualizarLista();
+            }
+            
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                actualizarLista();
+            }
+            
+            private void actualizarLista() {
+                String input = txtNombreCliente.getText().trim().toLowerCase();
+                listModel.clear();
+                if (!input.isEmpty()) {
+                    for (ClienteDTO item : clientes) {
+                        if (item.getNombre().toLowerCase().contains(input)) {
+                            listModel.addElement(item.getNombre());
+                        }
+                    }
+                    
+                    if (!listModel.isEmpty()) {
+                        SwingUtilities.invokeLater(() -> {
+                            if (!popMenu.isVisible()) {
+                                popMenu.show(txtNombreCliente, 0, txtNombreCliente.getHeight());
+                            }
+                        });
+                    } else {
+                        popMenu.setVisible(false);
+                    }
+                } else {
+                    popMenu.setVisible(false);
+                }
+            }
+        });
+        // Selección de clientes desde la lista de autocompletar
+        suggestionList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1 && suggestionList.getSelectedValue() != null) {
+                    txtNombreCliente.setText(suggestionList.getSelectedValue());
+                    popMenu.setVisible(false);
+                }
+            }
+        });
+        // Evento de tecla ENTER para selección
+        suggestionList.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && suggestionList.getSelectedValue() != null) {
+                    txtNombreCliente.setText(suggestionList.getSelectedValue());
+                    popMenu.setVisible(false);
+                }
+            }
+        });
+        // Botón para agregar Cliente a la tabla y a la lista de la cita
+        this.btnAgregar.addActionListener(e -> {
+            String nombre = txtNombreCliente.getText().trim();
+            
+            if (nombre.isEmpty() ) {
+                JOptionPane.showMessageDialog(null, "Debe ingresar el nombre", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            ClienteDTO seleccionado = clientes.stream()
+                    .filter(mat -> mat.getNombre().equalsIgnoreCase(nombre))
+                    .findFirst()
+                    .orElse(null);
+            
+            if (seleccionado == null) {
+                JOptionPane.showMessageDialog(null, "Cliente no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            boolean yaExiste = false;
+            for (int i = 0; i < clientesSeleccionados.size(); i++) {
+                ClienteDTO existente = clientesSeleccionados.get(i);
+                if (existente.getNombre().equalsIgnoreCase(nombre)) {
+                    yaExiste = true;
+                    break;
+                }
+            }
+            
+            if (!yaExiste) {
+                ClienteDTO copia = new ClienteDTO();
+                copia.setNombre(seleccionado.getNombre());
+                
+                clientesSeleccionados.add(copia);
+                ((DefaultTableModel) this.tblCliente.getModel()).addRow(new Object[]{nombre});
+            }
+
+            this.txtNombreCliente.setText("");
+        });
+        tblCliente.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int filaSeleccionada = tblCliente.getSelectedRow();
+
+                if (filaSeleccionada >= 0) {
+                    String nombre = (String) tblCliente.getValueAt(filaSeleccionada, 0);
+
+                    // Eliminar de la lista clientesSeleccionados
+                    clientesSeleccionados.removeIf(c -> c.getNombre().equalsIgnoreCase(nombre));
+
+                    // Eliminar fila de la tabla
+                    ((DefaultTableModel) tblCliente.getModel()).removeRow(filaSeleccionada);
+                }
+            }
+        });
+    }
+    
+    private void cargarClientesEnTabla(DefaultTableModel tableModel) {
+        for (ClienteDTO cliente : clientesSeleccionados) {
+            tableModel.addRow(new Object[]{cliente.getNombre()});
+        }
+    }
+    
+    private String escribirRuta(String nuevaRuta) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("ruta.txt"))) {
+            bw.write(nuevaRuta);
+            return "Ruta escrita correctamente";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error al escribir la ruta";
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popMenu = new javax.swing.JPopupMenu();
         pnlPrincipal = new javax.swing.JPanel();
         txtTitulo = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
@@ -195,7 +399,6 @@ public class DialogReporte extends javax.swing.JDialog {
         boxCilientes = new javax.swing.JCheckBox();
         btnCancelar = new javax.swing.JButton();
         lblClientes = new javax.swing.JLabel();
-        btnRuta = new javax.swing.JButton();
         cmbFechaInicio = new com.toedter.calendar.JDateChooser();
         cmbFechaFin = new com.toedter.calendar.JDateChooser();
 
@@ -218,6 +421,11 @@ public class DialogReporte extends javax.swing.JDialog {
         txtaUbicacion.setColumns(20);
         txtaUbicacion.setRows(5);
         txtaUbicacion.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        txtaUbicacion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtaUbicacionMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(txtaUbicacion);
 
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -323,13 +531,6 @@ public class DialogReporte extends javax.swing.JDialog {
         lblClientes.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblClientes.setText("Clientes:");
 
-        btnRuta.setText("Colocar Ruta");
-        btnRuta.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRutaActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout pnlPrincipalLayout = new javax.swing.GroupLayout(pnlPrincipal);
         pnlPrincipal.setLayout(pnlPrincipalLayout);
         pnlPrincipalLayout.setHorizontalGroup(
@@ -355,12 +556,10 @@ public class DialogReporte extends javax.swing.JDialog {
                                     .addComponent(lblUbicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnRuta)
-                                    .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(pnlPrincipalLayout.createSequentialGroup()
-                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE))
-                                        .addComponent(jScrollPane1))))))
+                                    .addGroup(pnlPrincipalLayout.createSequentialGroup()
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE))
+                                    .addComponent(jScrollPane1)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlPrincipalLayout.createSequentialGroup()
                         .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(41, 41, 41)
@@ -399,9 +598,7 @@ public class DialogReporte extends javax.swing.JDialog {
                         .addGap(32, 32, 32)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblUbicacion))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnRuta)
-                .addGap(5, 5, 5)
+                .addGap(40, 40, 40)
                 .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnlPrincipalLayout.createSequentialGroup()
                         .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -478,9 +675,9 @@ public class DialogReporte extends javax.swing.JDialog {
         Cancelar();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
-    private void btnRutaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRutaActionPerformed
-        SeleccionarRuta();
-    }//GEN-LAST:event_btnRutaActionPerformed
+    private void txtaUbicacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtaUbicacionMouseClicked
+       SeleccionarRuta();
+    }//GEN-LAST:event_txtaUbicacionMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox boxCilientes;
@@ -488,7 +685,6 @@ public class DialogReporte extends javax.swing.JDialog {
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGenerar;
-    private javax.swing.JButton btnRuta;
     private com.toedter.calendar.JDateChooser cmbFechaFin;
     private com.toedter.calendar.JDateChooser cmbFechaInicio;
     private javax.swing.JScrollPane jScrollPane1;
@@ -501,6 +697,7 @@ public class DialogReporte extends javax.swing.JDialog {
     private javax.swing.JLabel lblTodosClientes;
     private javax.swing.JLabel lblUbicacion;
     private javax.swing.JPanel pnlPrincipal;
+    private javax.swing.JPopupMenu popMenu;
     private javax.swing.JTable tblCliente;
     private javax.swing.JTextField txtNombreCliente;
     private javax.swing.JLabel txtTitulo;
