@@ -219,7 +219,6 @@ public class ClientesDAO implements IClientesDAO {
             clienteExistente.setNombre(clienteNuevo.getNombre());
             clienteExistente.setTelefono(clienteNuevo.getTelefono());
             clienteExistente.setCorreo(clienteNuevo.getCorreo());
-            clienteExistente.setContratos(clienteNuevo.getContratos());
 
             // Si deseas también editar contratos o hijos relacionados, debes hacerlo explícitamente aquí.
             Cliente clienteActualizado = em.merge(clienteExistente);

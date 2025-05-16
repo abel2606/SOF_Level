@@ -6,6 +6,13 @@ package org.itson.sof.sof_level_presentacion.interfaces;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.JTextField;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import org.itson.sof.objetosnegocios.gestorclientes.IGestorClientes;
 import org.itson.sof.objetosnegocios.gestorclientes.gestorexception.GestorClientesException;
 import org.itson.sof.objetosnegocios.gestorclientes.GestorClientes;
@@ -20,6 +27,7 @@ public class DialogCliente extends javax.swing.JDialog {
     private ClienteDTO clienteDTO;
     private IGestorClientes gestionarClientes;
     private boolean editando;
+    private boolean edicionRealizada = false;
 
     /**
      * Creates new form DialogCliente
@@ -33,6 +41,9 @@ public class DialogCliente extends javax.swing.JDialog {
         txtNombre.setEnabled(true);
         txtCorreo.setEnabled(true);
         txtCelular.setEnabled(true);
+        soloNumeros(txtCelular);
+        soloTexto(txtNombre);
+        soloCorreo(txtCorreo);
     }
 
     public DialogCliente(java.awt.Frame parent, boolean modal, ClienteDTO cliente) {
@@ -51,7 +62,94 @@ public class DialogCliente extends javax.swing.JDialog {
         txtCorreo.setEnabled(false);
         txtCelular.setEnabled(false);
         btnEditar.setVisible(true);
+        soloNumeros(txtCelular);
+        soloTexto(txtNombre);
+        soloCorreo(txtCorreo);
+    }
 
+    public void soloTexto(JTextField campo) {
+        ((AbstractDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
+            Pattern regEx = Pattern.compile("[\\p{L} ]*");
+
+            @Override
+            public void insertString(FilterBypass fb, int offset, String text, AttributeSet attr) throws BadLocationException {
+                if (regEx.matcher(text).matches()) {
+                    super.insertString(fb, offset, text, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (regEx.matcher(text).matches()) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+    }
+
+    public void soloCorreo(JTextField campo) {
+        ((AbstractDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
+            // Permite letras, números, @, punto, guion, guion bajo y más comunes para correos
+            Pattern regEx = Pattern.compile("[a-zA-Z0-9@._-]*");
+
+            @Override
+            public void insertString(FilterBypass fb, int offset, String text, AttributeSet attr) throws BadLocationException {
+                if (regEx.matcher(text).matches()) {
+                    super.insertString(fb, offset, text, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (regEx.matcher(text).matches()) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+    }
+
+    public void soloNumeros(JTextField campo) {
+        ((AbstractDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
+            Pattern regEx = Pattern.compile("\\d*");
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if (!matcher.matches()) {
+                    return;
+                }
+
+                int currentLength = fb.getDocument().getLength();
+                int newLength = currentLength - length + text.length();
+
+                if (newLength <= 10) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+
+            @Override
+            public void insertString(FilterBypass fb, int offset, String text, AttributeSet attr) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if (!matcher.matches()) {
+                    return;
+                }
+
+                int currentLength = fb.getDocument().getLength();
+                int newLength = currentLength + text.length();
+
+                if (newLength <= 10) {
+                    super.insertString(fb, offset, text, attr);
+                }
+            }
+        });
+    }
+
+    public boolean isEdicionRealizada() {
+        return edicionRealizada;
+    }
+
+    public void setEdicionRealizada(boolean edicionRealizada) {
+        this.edicionRealizada = edicionRealizada;
     }
 
     /**
@@ -136,9 +234,9 @@ public class DialogCliente extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnEditar)
-                        .addGap(22, 22, 22))
+                        .addGap(16, 16, 16))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(120, 120, 120))))
@@ -146,10 +244,13 @@ public class DialogCliente extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnEditar)))
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
@@ -171,22 +272,38 @@ public class DialogCliente extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean validarCampos(String nombre, String correo, String celular) {
+        // Validar nombre: solo letras y espacios
+        if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+            javax.swing.JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras y espacios.");
+            return false;
+        }
+
+        // Validar correo con expresión regular simple
+        if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            javax.swing.JOptionPane.showMessageDialog(this, "El correo no es válido.");
+            return false;
+        }
+
+        // Validar celular: exactamente 10 dígitos
+        if (!celular.matches("\\d{10}")) {
+            javax.swing.JOptionPane.showMessageDialog(this, "El número de celular debe contener exactamente 10 dígitos.");
+            return false;
+        }
+
+        return true;
+    }
+
     private void txtCelularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCelularActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCelularActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        txtCelular.setEnabled(true);
-        txtCorreo.setEnabled(true);
-        txtNombre.setEnabled(true);
-
-    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
         String nombre = "";
         String correo = "";
         String celular = "";
+
         if (txtNombre.getText() != null || txtNombre.getText().isEmpty()) {
             nombre = txtNombre.getText();
         }
@@ -197,16 +314,24 @@ public class DialogCliente extends javax.swing.JDialog {
             celular = txtCelular.getText();
         }
 
+        if (!validarCampos(nombre, correo, celular)) {
+            return;
+        }
         ClienteDTO cliente = new ClienteDTO(nombre, celular, correo);
         if (editando == true) {
             try {
                 cliente = gestionarClientes.editarCliente(clienteDTO.getCorreo(), cliente);
+                setEdicionRealizada(true);
+
+                dispose();
             } catch (GestorClientesException ex) {
                 Logger.getLogger(DialogCliente.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
                 cliente = gestionarClientes.agregarCliente(cliente);
+                setEdicionRealizada(true);
+                dispose();
             } catch (GestorClientesException ex) {
                 Logger.getLogger(DialogCliente.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -215,47 +340,12 @@ public class DialogCliente extends javax.swing.JDialog {
 
     }//GEN-LAST:event_btnGuardarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DialogCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DialogCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DialogCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DialogCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        txtCelular.setEnabled(true);
+        txtCorreo.setEnabled(true);
+        txtNombre.setEnabled(true);
+    }//GEN-LAST:event_btnEditarActionPerformed
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DialogCliente dialog = new DialogCliente(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEditar;
