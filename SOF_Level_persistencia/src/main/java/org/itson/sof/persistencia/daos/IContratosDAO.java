@@ -7,6 +7,7 @@ package org.itson.sof.persistencia.daos;
 import java.util.List;
 import org.itson.sof.persistencia.entidades.Cliente;
 import org.itson.sof.persistencia.entidades.Contrato;
+import org.itson.sof.persistencia.entidades.Paquete;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
 /**
@@ -21,4 +22,13 @@ public interface IContratosDAO {
     
     public Contrato obtenerContratoFolio (String folio)throws PersistenciaSOFException;
     
+    public Contrato crearContrato (Contrato contrato, Cliente cliente, Paquete paquete) throws PersistenciaSOFException;
+    
+    public Contrato actualizarContrato(Contrato contrato) throws PersistenciaSOFException;
+    
+    public Contrato cancelarContrato (Contrato contrato) throws PersistenciaSOFException;
+    
+    public Contrato terminarContrato (Contrato contrato) throws PersistenciaSOFException;
+    
+    public Contrato actualizarEstadoContrato (Contrato contrato, String nuevoEstado) throws PersistenciaSOFException;
 }
