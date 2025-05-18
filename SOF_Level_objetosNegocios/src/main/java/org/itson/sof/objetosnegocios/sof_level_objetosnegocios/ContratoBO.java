@@ -16,6 +16,7 @@ import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
+import org.itson.sof.sof_dtos.PaqueteDTO;
 
 /**
  *
@@ -33,22 +34,61 @@ public class ContratoBO implements IContratoBO{
     
    
     @Override
-    public ContratoDTO crearContrato(ContratoDTO contrato, ClienteDTO cliente) throws ObjetosNegocioException {
-        System.out.print("No implementado aun");
-        return null;
+    public ContratoDTO crearContrato(ContratoDTO contrato, ClienteDTO cliente, PaqueteDTO paquete) throws ObjetosNegocioException {
+        
+        try {
+            Contrato contratoCreado = contratosDAO.crearContrato(ConverterUtil.contratoDTOAEntidad(contrato),
+                    ConverterUtil.clienteDTOAEntidad(cliente),
+                    ConverterUtil.paqueteDTOAEntidad(paquete));
+            
+            return ConverterUtil.contratoEntidadADTO(contratoCreado);
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException (ex.getMessage());
+        }
+        
     }
 
     @Override
     public ContratoDTO actualizarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
-        System.out.print("No implementado aun");
-        return null;
+        
+        try {
+            
+            Contrato contratoCreado = contratosDAO.actualizarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
+            return ConverterUtil.contratoEntidadADTO(contratoCreado);
+            
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException (ex.getMessage());
+        }
+        
     }
 
     @Override
-    public boolean eliminarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
-        System.out.print("No implementado aun");
-        return false;
+    public ContratoDTO cancelarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
+        try {
+            
+            Contrato contratoCancelado = contratosDAO.cancelarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
+            return ConverterUtil.contratoEntidadADTO(contratoCancelado);
+            
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException (ex.getMessage());
+        }
     }
+    
+    
+    
+    @Override
+    public ContratoDTO terminarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
+        try {
+            
+            Contrato contratoCancelado = contratosDAO.terminarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
+            return ConverterUtil.contratoEntidadADTO(contratoCancelado);
+            
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException (ex.getMessage());
+        }
+    }
+    
+    
 
     @Override
     public ContratoDTO obtenerContratoFolio(String folio) throws ObjetosNegocioException {

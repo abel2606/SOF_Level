@@ -16,6 +16,7 @@ public class ClienteDTO {
     private String telefono;
     private String correo;
     private Set<ContratoDTO> contratos = new HashSet<>();
+    private Long id;
 
     /**
      * Constructor vacío de ClienteDTO. Se utiliza cuando se necesita crear un
@@ -108,6 +109,16 @@ public class ClienteDTO {
     public void setContratos(Set<ContratoDTO> contratos) {
         this.contratos = contratos;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    
 
     /**
      * Devuelve una representación en cadena del objeto ClienteDTO.

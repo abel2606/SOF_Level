@@ -16,6 +16,7 @@ public class PaqueteDTO {
     private String nombre;
     private Set<PaqueteTipoFotoDTO> tiposDeFoto = new HashSet<>();
     private ContratoDTO contrato;
+    private Long id;
 
     /**
      * Constructor vacío de PaqueteDTO. Se utiliza para crear un objeto sin
@@ -109,6 +110,17 @@ public class PaqueteDTO {
     public void setContrato(ContratoDTO contrato) {
         this.contrato = contrato;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    
+    
 
     /**
      * Devuelve una representación en cadena del objeto PaqueteDTO.

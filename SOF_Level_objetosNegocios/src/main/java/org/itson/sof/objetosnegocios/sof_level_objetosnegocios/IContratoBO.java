@@ -8,6 +8,7 @@ import java.util.List;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
+import org.itson.sof.sof_dtos.PaqueteDTO;
 
 /**
  *
@@ -27,10 +28,11 @@ public interface IContratoBO {
      * Método para crear un contrato y asignarle un cliente 
      * @param contrato contrato que se desea guardar
      * @param cliente cliente que se le asignara al contrato
+     * @param paquete paqiete del contrato
      * @return contrato en caso de que cree el contrato
      * @throws ObjetosNegocioException error en caso que de un error al crear el contrato
      */
-    public ContratoDTO crearContrato (ContratoDTO contrato, ClienteDTO cliente) throws ObjetosNegocioException;
+    public ContratoDTO crearContrato (ContratoDTO contrato, ClienteDTO cliente, PaqueteDTO paquete) throws ObjetosNegocioException;
     
     /**
      * Método para actualizar un contrato que se tiene registrado
@@ -41,12 +43,22 @@ public interface IContratoBO {
     public ContratoDTO actualizarContrato (ContratoDTO contrato) throws ObjetosNegocioException;
     
     /**
-     * Método para eliminar un contrato del registro
+     * Método para cancelar un contrato del registro
      * @param contrato contrato a eliminar
-     * @return true en caso que se elimine el contrato
+     * @return true en caso que se cancele el contrato
      * @throws ObjetosNegocioException en caso que no se elimine retorna error
      */
-    public boolean eliminarContrato (ContratoDTO contrato) throws ObjetosNegocioException;
+    public ContratoDTO cancelarContrato (ContratoDTO contrato) throws ObjetosNegocioException;
+    
+    
+    /**
+     * Método para terminar un contrato del registro
+     * @param contrato contrato a eliminar
+     * @return true en caso que se termine el contrato
+     * @throws ObjetosNegocioException en caso que no se elimine retorna error
+     */
+    public ContratoDTO terminarContrato (ContratoDTO contrato) throws ObjetosNegocioException;
+    
     
     /**
      * Método para obtener un contrato por folio
@@ -54,6 +66,5 @@ public interface IContratoBO {
      * @return contrato que se haya encontrado
      * @throws ObjetosNegocioException en caso que ocurra un error en la consulta del contrato
      */
-    public ContratoDTO obtenerContratoFolio (String folio) throws ObjetosNegocioException;
-    
+    public ContratoDTO obtenerContratoFolio (String folio) throws ObjetosNegocioException;    
 }

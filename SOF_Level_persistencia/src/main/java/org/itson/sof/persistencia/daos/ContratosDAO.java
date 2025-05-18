@@ -84,8 +84,9 @@ public class ContratosDAO implements IContratosDAO {
         }
     }
 
+    
     @Override
-    public Contrato crearContrato(Contrato contrato, Cliente cliente, Paquete paquete) throws PersistenciaSOFException {
+    public Contrato crearContrato(Contrato contrato, Cliente clienteInput, Paquete paqueteInput) throws PersistenciaSOFException {
         EntityManager em = null;
         EntityTransaction tx = null;
 
@@ -94,17 +95,55 @@ public class ContratosDAO implements IContratosDAO {
             tx = em.getTransaction();
             tx.begin();
 
-            contrato.setCliente(cliente);
-            contrato.setPaquete(paquete);
 
-            em.persist(contrato); // Persistir el objeto contrato
+            Cliente managedCliente = null;
+            if (clienteInput != null && clienteInput.getId() != null) {
+                managedCliente = em.find(Cliente.class, clienteInput.getId());
+                if (managedCliente == null) {
+                    if (tx != null && tx.isActive()) {
+                        tx.rollback();
+                    }
+                    throw new PersistenciaSOFException("Cliente no encontrado.");
+                }
+            } else {
+                if (tx != null && tx.isActive()) {
+                    tx.rollback();
+                }
+                throw new PersistenciaSOFException("Datos de Cliente insuficientes.");
+            }
+
+            Paquete managedPaquete = null;
+            if (paqueteInput != null && paqueteInput.getId() != null) {
+                managedPaquete = em.find(Paquete.class, paqueteInput.getId());
+                if (managedPaquete == null) {
+                    if (tx != null && tx.isActive()) {
+                        tx.rollback();
+                    }
+                    throw new PersistenciaSOFException("Paquete encontrado.");
+                }
+            } else {
+                if (tx != null && tx.isActive()) {
+                    tx.rollback();
+                }
+                throw new PersistenciaSOFException("Datos de Paquete insuficientes para crear contrato.");
+            }
+
+            contrato.setCliente(managedCliente);
+            contrato.setPaquete(managedPaquete);
+
+
+            em.persist(contrato); 
 
             tx.commit(); // Confirmar la transacción
             logger.log(Level.INFO, "Contrato creado con folio: {0}", contrato.getFolio());
-            return contrato; // Retornar el contrato persistido (ahora con ID si es autogenerado)
-        } catch (PersistenciaSOFException | IllegalStateException | javax.persistence.PersistenceException e) {
+            return contrato; // Retornar el contrato persistido
+        } catch (PersistenciaSOFException e) { // Capturar primero la excepción específica que lanzamos
+            // No es necesario hacer rollback aquí si ya se hizo antes de lanzar PersistenciaSOFException
+            logger.log(Level.WARNING, "Error de negocio al crear contrato: " + e.getMessage());
+            throw e; // Re-lanzar la excepción
+        } catch (IllegalStateException | javax.persistence.PersistenceException e) { // Otras excepciones de persistencia
             if (tx != null && tx.isActive()) {
-                tx.rollback(); // Revertir la transacción en caso de error
+                tx.rollback();
             }
             String mensajeError = "Error al crear el contrato en persistencia: " + e.getMessage();
             logger.log(Level.SEVERE, mensajeError, e);
@@ -114,7 +153,6 @@ public class ContratosDAO implements IContratosDAO {
                 em.close();
             }
         }
-
     }
 
     @Override
@@ -164,9 +202,9 @@ public class ContratosDAO implements IContratosDAO {
 
     @Override
     public Contrato terminarContrato(Contrato contrato) throws PersistenciaSOFException {
-        
+
         return actualizarEstadoContrato(contrato, "TERMINADO");
-        
+
     }
 
     @Override

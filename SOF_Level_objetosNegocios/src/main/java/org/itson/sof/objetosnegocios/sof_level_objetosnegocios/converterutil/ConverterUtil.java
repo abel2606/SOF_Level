@@ -337,8 +337,14 @@ public class ConverterUtil {
         if (cliente == null) {
             return null;
         }
+        
 
         ClienteDTO clienteDTO = new ClienteDTO();
+        
+        if (cliente.getId() != null) {
+            clienteDTO.setId(cliente.getId());
+        }
+        
         clienteDTO.setNombre(cliente.getNombre());
         clienteDTO.setCorreo(cliente.getCorreo());
         clienteDTO.setTelefono(cliente.getTelefono());
@@ -360,6 +366,11 @@ public class ConverterUtil {
         }
 
         Cliente cliente = new Cliente();
+        
+        if (clienteDTO.getId() != null) {
+            cliente.setId(clienteDTO.getId());
+        }
+        
         cliente.setNombre(clienteDTO.getNombre());
         cliente.setCorreo(clienteDTO.getCorreo());
         cliente.setTelefono(clienteDTO.getTelefono());
@@ -373,6 +384,43 @@ public class ConverterUtil {
         cliente.setContratos(contratos);
 
         return cliente;
+    }
+
+    public static Paquete paqueteDTOAEntidad(PaqueteDTO paquete) {
+        Paquete paqueteEntidad = new Paquete();
+
+        if (paquete.getNombre() != null) {
+            paqueteEntidad.setNombre(paquete.getNombre());
+
+        }
+        if (paquete.getPrecio() != null) {
+            paqueteEntidad.setPrecio(paquete.getPrecio());
+
+        }
+        if (paquete.getId() != null) {
+            paqueteEntidad.setId(paquete.getId());
+        }
+
+        return paqueteEntidad;
+
+    }
+
+    public static PaqueteDTO paqueteEntidadADTO(Paquete paquete) {
+        PaqueteDTO paqueteDTO = new PaqueteDTO();
+
+        if (paquete.getNombre() != null) {
+            paqueteDTO.setNombre(paquete.getNombre());
+        }
+
+        if (paquete.getPrecio() != null) {
+            paqueteDTO.setPrecio(paquete.getPrecio());
+        }
+
+        if (paquete.getId() != null) {
+            paqueteDTO.setId(paquete.getId());
+        }
+
+        return paqueteDTO;
     }
 
 }
