@@ -107,6 +107,7 @@ org\itson\sof\sof_level_presentacion\interfaces\DialogCita$10.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$20.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$5.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$5.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelClientes$5.class
 org\itson\sof\sof_level_presentacion\componentes\BotonIcono.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$21.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$16.class

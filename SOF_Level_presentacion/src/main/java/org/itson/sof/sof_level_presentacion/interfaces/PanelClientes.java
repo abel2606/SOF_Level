@@ -27,118 +27,98 @@ import org.itson.sof.sof_level_presentacion.componentes.TableActionEvent;
  */
 public class PanelClientes extends javax.swing.JPanel {
 
-    IGestorClientes gestor;
+    private static final int COLUMNA_NOMBRE = 0;
+    private static final int COLUMNA_CORREO = 1;
+    private static final int COLUMNA_TELEFONO = 2;
+    private static final int COLUMNA_ACCIONES = 3;
+
+    private IGestorClientes gestor;
     private final PantallaPrincipal principal;
     private boolean inicializado = false;
+    private List<ClienteDTO> clientesTotales = new LinkedList<>();
 
-    public void inicializar() {
-        if (!inicializado) {
-            initComponents();
-            filtroBusquedaGeneral(txtBuscador);
-
-            inicializado = true;
-        }
-        cargarClientesEnTabla(obtenerClientes());
-    }
-
-    
-    /**
-     * Creates new form PanelContratos
-     *
-     * @param principal
-     */
     public PanelClientes(PantallaPrincipal principal) {
         this.principal = principal;
         gestor = GestorClientes.getInstance();
     }
 
-    /**
-     * Metodo que se llama cuando se hace click a un cliente
-     *
-     * @param cliente Cliente al que se le hizo click
-     */
-    private void manejarClicEnCliente(ClienteDTO cliente) {
-        //Notificar el cambio de panel
-        //principal.setCliente(cliente);
-        //principal.PanelCliente();
+    public void inicializar() {
+        if (!inicializado) {
+            initComponents();
+            filtroBusquedaGeneral(txtBuscador);
+            inicializado = true;
+        }
+        clientesTotales = obtenerClientes();
+        cargarClientesEnTabla(clientesTotales);
     }
 
     private List<ClienteDTO> obtenerClientes() {
-        List<ClienteDTO> clientes = new LinkedList<>();
-
         try {
-            clientes = gestor.obtenerTodosClientes();
+            return gestor.obtenerTodosClientes();
         } catch (GestorClientesException ex) {
-            Logger.getLogger(PantallaClientes.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
+            return new LinkedList<>();
         }
-        return clientes;
     }
 
     private void cargarClientesEnTabla(List<ClienteDTO> listaClientes) {
         DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
         model.setRowCount(0);
+
         for (ClienteDTO cliente : listaClientes) {
             model.addRow(new Object[]{
                 cliente.getNombre(),
+                cliente.getCorreo(),
                 cliente.getTelefono(),
-                cliente.getCorreo(),});
-            TableActionEvent event = new TableActionEvent() {
-                @Override
-                public void onEditar(int row) {
-                    String correo = (String) tblClientes.getValueAt(row, 2);
-                    try {
-                        ClienteDTO cliente = GestorClientes.getInstance().obtenerCliente(correo);
-                        DialogCliente dc = new DialogCliente(null, true, cliente);
-                        dc.setVisible(true);
-
-                        if (dc.isEdicionRealizada()) {
-                            List<ClienteDTO> clientesActualizados = GestorClientes.getInstance().obtenerTodosClientes();
-                            cargarClientesEnTabla(clientesActualizados);
-                            JOptionPane.showMessageDialog(null, "Cliente editado con éxito.");
-                        }
-                    } catch (GestorClientesException ex) {
-                        JOptionPane.showMessageDialog(null, "Error al obtener cliente: " + ex.getMessage());
-                    }
-
-                }
-
-                @Override
-                public void onEliminar(int row) {
-                    System.out.println("Eliminar columna: " + row + cliente.getCorreo());
-                    int opcion = JOptionPane.showConfirmDialog(
-                            null,
-                            "¿Estás seguro de que deseas eliminar este cliente?",
-                            "Confirmar eliminación",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE
-                    );
-                    if (opcion == JOptionPane.YES_OPTION) {
-                        if (tblClientes.isEditing()) {
-                            tblClientes.getCellEditor().stopCellEditing();
-                        }
-
-                        DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
-                        String correo = (String) model.getValueAt(row, 2);
-
-                        try {
-                            boolean eliminado = GestorClientes.getInstance().eliminarCliente(correo);
-                            if (eliminado) {
-                                model.removeRow(row);
-                                JOptionPane.showMessageDialog(null, "Cliente eliminado con éxito.");
-                            }
-                        } catch (GestorClientesException ex) {
-                            JOptionPane.showMessageDialog(null, "Error al eliminar: " + ex.getMessage());
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Eliminación cancelada.");
-                    }
-
-                }
-            };
-            tblClientes.getColumnModel().getColumn(3).setCellRenderer(new TableActionCellRender());
-            tblClientes.getColumnModel().getColumn(3).setCellEditor(new TableActionCellEditor(event));
+                null
+            });
         }
 
+        TableActionEvent event = new TableActionEvent() {
+            @Override
+            public void onEditar(int row) {
+                String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
+                try {
+                    ClienteDTO cliente = gestor.obtenerCliente(correo);
+                    DialogCliente dc = new DialogCliente(null, true, cliente);
+                    dc.setVisible(true);
+
+                    if (dc.isEdicionRealizada()) {
+                        clientesTotales = obtenerClientes();
+                        cargarClientesEnTabla(clientesTotales);
+                        JOptionPane.showMessageDialog(null, "Cliente editado con éxito.");
+                    }
+                } catch (GestorClientesException ex) {
+                    JOptionPane.showMessageDialog(null, "Error al obtener cliente: " + ex.getMessage());
+                }
+            }
+
+            @Override
+            public void onEliminar(int row) {
+                String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
+                int opcion = JOptionPane.showConfirmDialog(
+                        null,
+                        "¿Estás seguro de que deseas eliminar este cliente?",
+                        "Confirmar eliminación",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (opcion == JOptionPane.YES_OPTION) {
+                    try {
+                        if (gestor.eliminarCliente(correo)) {
+                            clientesTotales.removeIf(c -> c.getCorreo().equals(correo));
+                            cargarClientesEnTabla(clientesTotales);
+                            JOptionPane.showMessageDialog(null, "Cliente eliminado con éxito.");
+                        }
+                    } catch (GestorClientesException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al eliminar: " + ex.getMessage());
+                    }
+                }
+            }
+        };
+
+        tblClientes.getColumnModel().getColumn(COLUMNA_ACCIONES).setCellRenderer(new TableActionCellRender());
+        tblClientes.getColumnModel().getColumn(COLUMNA_ACCIONES).setCellEditor(new TableActionCellEditor(event));
     }
 
     public void filtroBusquedaGeneral(JTextField campo) {
@@ -264,19 +244,29 @@ public class PanelClientes extends javax.swing.JPanel {
         dc.setVisible(true);
 
         if (dc.isEdicionRealizada()) {
-            List<ClienteDTO> clienteAgregado = new LinkedList<>();
             try {
-                clienteAgregado = GestorClientes.getInstance().obtenerTodosClientes();
+                clientesTotales = GestorClientes.getInstance().obtenerTodosClientes(); 
+                cargarClientesEnTabla(clientesTotales);
+                JOptionPane.showMessageDialog(null, "Cliente agregado con éxito.");
             } catch (GestorClientesException ex) {
                 Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
             }
-            cargarClientesEnTabla(clienteAgregado);
-            JOptionPane.showMessageDialog(null, "Cliente agregado con éxito.");
         }
     }//GEN-LAST:event_btnAgregarClienteActionPerformed
 
     private void txtBuscadorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscadorKeyReleased
-        //Aquí hare el buscador
+        String texto = txtBuscador.getText().toLowerCase();
+        List<ClienteDTO> filtrados = new LinkedList<>();
+
+        for (ClienteDTO cliente : clientesTotales) {
+            if (cliente.getNombre().toLowerCase().contains(texto)
+                    || cliente.getCorreo().toLowerCase().contains(texto)
+                    || cliente.getTelefono().toLowerCase().contains(texto)) {
+                filtrados.add(cliente);
+            }
+        }
+
+        cargarClientesEnTabla(filtrados);
     }//GEN-LAST:event_txtBuscadorKeyReleased
 
 
