@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
@@ -325,7 +326,7 @@ public class DialogCliente extends javax.swing.JDialog {
 
                 dispose();
             } catch (GestorClientesException ex) {
-                Logger.getLogger(DialogCliente.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, "Número de teléfonon o correo existente");
             }
         } else {
             try {
@@ -333,7 +334,7 @@ public class DialogCliente extends javax.swing.JDialog {
                 setEdicionRealizada(true);
                 dispose();
             } catch (GestorClientesException ex) {
-                Logger.getLogger(DialogCliente.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, "Número de teléfonon o correo existente");
             }
 
         }

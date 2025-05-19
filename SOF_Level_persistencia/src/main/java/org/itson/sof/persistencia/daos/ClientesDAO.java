@@ -30,7 +30,7 @@ public class ClientesDAO implements IClientesDAO {
     public ClientesDAO(IConexion conexion) {
         this.conexion = conexion;
     }
-    
+
     /**
      * Obtiene todos los clientes registrados en el sistema.
      *
@@ -56,8 +56,7 @@ public class ClientesDAO implements IClientesDAO {
 
     }
 
-    
-     /**
+    /**
      * Obtiene un cliente a partir de su correo electrónico.
      *
      * @param correo El correo electrónico del cliente a buscar.
@@ -188,7 +187,7 @@ public class ClientesDAO implements IClientesDAO {
         }
     }
 
-     /**
+    /**
      * Edita los datos de un cliente identificado por su correo electrónico.
      *
      * @param correo El correo del cliente a editar.
@@ -207,6 +206,7 @@ public class ClientesDAO implements IClientesDAO {
             transaction = em.getTransaction();
             transaction.begin();
 
+            // Buscar cliente existente por el correo original
             String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
             Cliente clienteExistente = em.createQuery(jpql, Cliente.class)
                     .setParameter("correoCliente", correo)
@@ -216,11 +216,35 @@ public class ClientesDAO implements IClientesDAO {
                 throw new PersistenciaSOFException("No se encontró el cliente con correo: " + correo);
             }
 
+            // Validar si el nuevo correo ya existe en otro cliente
+            if (!clienteExistente.getCorreo().equals(clienteNuevo.getCorreo())) {
+                String correoQuery = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :nuevoCorreo AND c.id <> :idActual";
+                Long conteoCorreo = em.createQuery(correoQuery, Long.class)
+                        .setParameter("nuevoCorreo", clienteNuevo.getCorreo())
+                        .setParameter("idActual", clienteExistente.getId())
+                        .getSingleResult();
+                if (conteoCorreo > 0) {
+                    throw new PersistenciaSOFException("Ya existe un cliente con el correo proporcionado");
+                }
+            }
+
+            // Validar si el nuevo teléfono ya existe en otro cliente
+            if (!clienteExistente.getTelefono().equals(clienteNuevo.getTelefono())) {
+                String telefonoQuery = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :nuevoTelefono AND c.id <> :idActual";
+                Long conteoTelefono = em.createQuery(telefonoQuery, Long.class)
+                        .setParameter("nuevoTelefono", clienteNuevo.getTelefono())
+                        .setParameter("idActual", clienteExistente.getId())
+                        .getSingleResult();
+                if (conteoTelefono > 0) {
+                    throw new PersistenciaSOFException("Ya existe un cliente con el teléfono proporcionado");
+                }
+            }
+
+            // Actualizar datos
             clienteExistente.setNombre(clienteNuevo.getNombre());
             clienteExistente.setTelefono(clienteNuevo.getTelefono());
             clienteExistente.setCorreo(clienteNuevo.getCorreo());
 
-            // Si deseas también editar contratos o hijos relacionados, debes hacerlo explícitamente aquí.
             Cliente clienteActualizado = em.merge(clienteExistente);
             transaction.commit();
 
@@ -229,6 +253,12 @@ public class ClientesDAO implements IClientesDAO {
 
         } catch (NoResultException e) {
             throw new PersistenciaSOFException("No se encontró el cliente con el correo proporcionado");
+
+        } catch (PersistenciaSOFException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
 
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
@@ -260,22 +290,22 @@ public class ClientesDAO implements IClientesDAO {
             em = conexion.crearConexion();
             transaction = em.getTransaction();
             transaction.begin();
-            
+
             String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
             Cliente clienteObtenido = null;
-            try{
-                 clienteObtenido = em.createQuery(jpql, Cliente.class)
-                    .setParameter("correoCliente", cliente.getCorreo()).getSingleResult();
-            }catch(Exception e){
-                
+            try {
+                clienteObtenido = em.createQuery(jpql, Cliente.class)
+                        .setParameter("correoCliente", cliente.getCorreo()).getSingleResult();
+            } catch (Exception e) {
+
             }
-            
-            if(clienteObtenido!=null){
+
+            if (clienteObtenido != null) {
                 logger.log(Level.INFO, "El cliente ya existe", cliente.getCorreo());
                 return null;
             }
             em.persist(cliente);
-            
+
             transaction.commit();
             logger.log(Level.INFO, "Cliente agregado correctamente con ID: {0}", cliente.getId());
             return cliente;
