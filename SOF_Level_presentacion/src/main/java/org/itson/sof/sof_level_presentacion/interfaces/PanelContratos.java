@@ -98,7 +98,6 @@ public class PanelContratos extends javax.swing.JPanel {
      * @param contrato Contrato al que se le hizo click
      */
     private void manejarClicEnContrato(ContratoDTO contrato) {
-        //Notificar el cambio de panel
         principal.setContrato(contrato);
         principal.PanelContrato();
     }

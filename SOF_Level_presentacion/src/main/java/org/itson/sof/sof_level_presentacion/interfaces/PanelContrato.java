@@ -106,6 +106,8 @@ public class PanelContrato extends javax.swing.JPanel {
             inicializarCreacionContrato();
             return;
         }
+        
+        btnCrearContrato.setVisible(false);
 
         this.fechaAnterior = Calendar.getInstance();
         fechaAnterior.setTime(jCalendarCitas.getDate());
@@ -143,6 +145,8 @@ public class PanelContrato extends javax.swing.JPanel {
         lblAgregarCita.setVisible(false);
         lblCitas.setText("Citas (Nuevo Contrato)");
         pnlCitas.setVisible(true);
+        btnCrearContrato.setVisible(true);
+        btnEditarContrato.setVisible(false);
 
         if (panelContenedor != null) {
             panelContenedor.removeAll();
