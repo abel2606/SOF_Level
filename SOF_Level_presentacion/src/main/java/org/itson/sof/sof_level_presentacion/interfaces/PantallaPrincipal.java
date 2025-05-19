@@ -74,6 +74,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void PanelContrato(){
         this.lblTitulo.setText("Contrato");
+        if (this.contrato!=null){
+            pnlContrato.contrato = this.contrato;
+        }
         pnlContrato.inicializar();
         cardLayout.show(pnlCentral, "PanelContrato");
     }

@@ -44,6 +44,8 @@ public class ContratoBO implements IContratoBO {
         } while (existeFolio(folioGenerado));
 
         try {
+            contrato.setFolio(folioGenerado);
+            
             Contrato contratoCreado = contratosDAO.crearContrato(ConverterUtil.contratoDTOAEntidad(contrato),
                     ConverterUtil.clienteDTOAEntidad(cliente),
                     ConverterUtil.paqueteDTOAEntidad(paquete));
