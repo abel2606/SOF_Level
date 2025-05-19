@@ -29,11 +29,11 @@ public class PruebaContratos {
         
         ClienteDTO cliente = new ClienteDTO();
         
-        cliente.setId(new Long(2));
+        cliente.setId(2L);
         
         PaqueteDTO paquete = new PaqueteDTO();
         
-        paquete.setId(new Long(2));
+        paquete.setId(2L);
         
         ContratoDTO contrato = new ContratoDTO();
         

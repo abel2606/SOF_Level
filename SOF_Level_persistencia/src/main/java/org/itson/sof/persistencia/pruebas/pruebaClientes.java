@@ -52,10 +52,12 @@ public class pruebaClientes {
 //            Cliente clienteActualizado = clienteDAO.editarCliente("abel@gmail.com", clienteActializar);
 //            
         Cliente cliente = new Cliente();
-        cliente.setCorreo("ricardo5@gmail.com");
+        cliente.setCorreo("ricardo2606@example.com");
         cliente.setNombre("Ricardo Alan Gutierrez Garces");
         cliente.setTelefono("644129338");
-        Cliente nuevoCliente = clienteDAO.agregarCliente(cliente);
+        //Cliente nuevoCliente = clienteDAO.agregarCliente(cliente);
+        
+       Cliente clienteActualizado = clienteDAO.editarCliente("ricardo5@gmail.com", cliente);
     }
 
 }
