@@ -41,6 +41,7 @@ org\itson\sof\sof_level_presentacion\interfaces\DialogCita$13.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$23.class
 Deprecated\PantallaContratos.class
 org\itson\sof\sof_level_presentacion\componentes\PanelAction$4.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$7.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContratos$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelClientes$2.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContratos.class
@@ -50,6 +51,7 @@ Deprecated\PantallaCita.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$2.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelClientes$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$24.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$8.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$1.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$5.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelCostos$3.class

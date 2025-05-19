@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.ConverterUtil;
+import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.converterutil.DiferenciadorUtils;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.persistencia.conexion.Conexion;
 import org.itson.sof.persistencia.conexion.IConexion;
@@ -22,8 +23,8 @@ import org.itson.sof.sof_dtos.PaqueteDTO;
  *
  * @author haesp
  */
-public class ContratoBO implements IContratoBO{
-    
+public class ContratoBO implements IContratoBO {
+
     IContratosDAO contratosDAO;
     private static final Logger LOG = Logger.getLogger(ContratoBO.class.getName());
 
@@ -31,77 +32,92 @@ public class ContratoBO implements IContratoBO{
         IConexion conexion = new Conexion();
         this.contratosDAO = new ContratosDAO(conexion);
     }
-    
-   
+
     @Override
     public ContratoDTO crearContrato(ContratoDTO contrato, ClienteDTO cliente, PaqueteDTO paquete) throws ObjetosNegocioException {
-        
+
+        String folioGenerado;
+        do {
+
+            folioGenerado = DiferenciadorUtils.generarCodigo();
+
+        } while (existeFolio(folioGenerado));
+
         try {
             Contrato contratoCreado = contratosDAO.crearContrato(ConverterUtil.contratoDTOAEntidad(contrato),
                     ConverterUtil.clienteDTOAEntidad(cliente),
                     ConverterUtil.paqueteDTOAEntidad(paquete));
-            
+
             return ConverterUtil.contratoEntidadADTO(contratoCreado);
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException (ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
-        
+
+    }
+    
+    
+    private boolean existeFolio(String folio) throws ObjetosNegocioException {
+        try {
+            contratosDAO.obtenerContratoFolio(folio);
+            return true;
+        } catch (PersistenciaSOFException ex) {
+            if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("no se encontro el folio")) {
+                return false; 
+            }
+            return false;
+        }
     }
 
     @Override
     public ContratoDTO actualizarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
-        
+
         try {
-            
+
             Contrato contratoCreado = contratosDAO.actualizarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
             return ConverterUtil.contratoEntidadADTO(contratoCreado);
-            
+
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException (ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
-        
+
     }
 
     @Override
     public ContratoDTO cancelarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
         try {
-            
+
             Contrato contratoCancelado = contratosDAO.cancelarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
             return ConverterUtil.contratoEntidadADTO(contratoCancelado);
-            
+
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException (ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
-    
-    
-    
+
     @Override
     public ContratoDTO terminarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
         try {
-            
+
             Contrato contratoCancelado = contratosDAO.terminarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
             return ConverterUtil.contratoEntidadADTO(contratoCancelado);
-            
+
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException (ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
-    
-    
 
     @Override
     public ContratoDTO obtenerContratoFolio(String folio) throws ObjetosNegocioException {
-        
+
         try {
             return ConverterUtil.contratoEntidadADTO(contratosDAO.obtenerContratoFolio(folio));
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException (ex.getMessage());
-        }     
+            throw new ObjetosNegocioException(ex.getMessage());
+        }
     }
 
     @Override
-    public List<ContratoDTO> obtenerTotalContratos() throws ObjetosNegocioException{
+    public List<ContratoDTO> obtenerTotalContratos() throws ObjetosNegocioException {
         try {
             // Obtienes las entidades de contratos desde el DAO
             List<Contrato> contratos = this.contratosDAO.obtenerTotalContratos();
@@ -119,14 +135,14 @@ public class ContratoBO implements IContratoBO{
 
         } catch (PersistenciaSOFException ex) {
             Logger.getLogger(ContratoBO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ObjetosNegocioException (ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 
     @Override
     public List<ContratoDTO> obtenerContratosPorCliente(ClienteDTO clienteDTO) throws ObjetosNegocioException {
         try {
-            Cliente cliente=ConverterUtil.clienteDTOAEntidad(clienteDTO);
+            Cliente cliente = ConverterUtil.clienteDTOAEntidad(clienteDTO);
             // Obtienes las entidades de contratos desde el DAO
             List<Contrato> contratos = this.contratosDAO.obtenerContratosPorCliente(cliente);
 
@@ -143,7 +159,7 @@ public class ContratoBO implements IContratoBO{
 
         } catch (PersistenciaSOFException ex) {
             Logger.getLogger(ContratoBO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ObjetosNegocioException (ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 }

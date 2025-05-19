@@ -51,6 +51,16 @@
             <artifactId>flatlaf</artifactId>
             <version>3.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.itson.sof.objetosnegocios</groupId>
+            <artifactId>GestorContratos</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.itson.sof.objetosnegocios.gestorpaquetes</groupId>
+            <artifactId>GestorPaquetes</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     
     <properties>

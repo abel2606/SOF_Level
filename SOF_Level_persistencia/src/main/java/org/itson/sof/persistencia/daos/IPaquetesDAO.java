@@ -4,6 +4,7 @@
  */
 package org.itson.sof.persistencia.daos;
 
+import java.util.List;
 import org.itson.sof.persistencia.entidades.Paquete;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
@@ -14,5 +15,7 @@ import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 public interface IPaquetesDAO {
     
     public Paquete obtenerPaquete (Paquete paquete) throws PersistenciaSOFException;
+    
+    public List <Paquete> obtenerPaquetes() throws PersistenciaSOFException;
     
 }

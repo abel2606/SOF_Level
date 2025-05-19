@@ -4,6 +4,7 @@
  */
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
+import java.util.List;
 import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.ObjetosNegocioException;
 import org.itson.sof.sof_dtos.PaqueteDTO;
 
@@ -15,5 +16,7 @@ public interface IPaqueteBO {
     
     
     public PaqueteDTO obtenerPaquete (PaqueteDTO paquete) throws ObjetosNegocioException;
+    
+    public List<PaqueteDTO> obtenerPaquete () throws ObjetosNegocioException;
     
 }

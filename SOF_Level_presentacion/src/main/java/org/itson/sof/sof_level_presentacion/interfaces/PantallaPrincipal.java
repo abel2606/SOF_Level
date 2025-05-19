@@ -62,6 +62,13 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         cardLayout.show(pnlCentral, "PanelContratos");
     }
     
+    public void pnlContrato() {
+        this.lblTitulo.setText("Crear contrato");
+        this.contrato = null;
+        pnlContrato.inicializar();
+        cardLayout.show(pnlCentral, "PanelContrato");
+    }
+    
     /**
      * Cambia el contenido del frame interior al menu de contratos
      */
@@ -382,7 +389,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lblContratosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblContratosMouseClicked
-        PanelContratos();
+        pnlContrato();
     }//GEN-LAST:event_lblContratosMouseClicked
 
     private void lblImgContratosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImgContratosMouseClicked

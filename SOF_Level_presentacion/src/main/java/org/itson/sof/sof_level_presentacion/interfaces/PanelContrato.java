@@ -5,24 +5,37 @@ import com.toedter.calendar.JDayChooser;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.IGestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
+import org.itson.sof.objetosnegocios.gestorcontratos.GestorContratos;
+import org.itson.sof.objetosnegocios.gestorcontratos.IGestorContratos;
+import org.itson.sof.objetosnegocios.gestorcontratos.gestorpaquetesexception.GestorPaqueteException;
+import org.itson.sof.objetosnegocios.gestorpaquetes.gestorpaquetes.GestorPaquetes;
+import org.itson.sof.objetosnegocios.gestorpaquetes.gestorpaquetes.IGestorPaquetes;
 import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
+import org.itson.sof.sof_dtos.PaqueteDTO;
 import org.itson.sof.sof_level_presentacion.componentes.EvaluadorCitasFecha;
 import org.itson.sof.sof_level_presentacion.componentes.ItemCita;
 
@@ -32,7 +45,9 @@ import org.itson.sof.sof_level_presentacion.componentes.ItemCita;
  */
 public class PanelContrato extends javax.swing.JPanel {
 
-    GestorCitas gestor;
+    IGestorCitas gestor;
+    IGestorContratos gestorContrato;
+    IGestorPaquetes gestorPaquete;
     ContratoDTO contrato;
     private final PantallaPrincipal principal;
     DialogCita dlgCita;
@@ -42,7 +57,7 @@ public class PanelContrato extends javax.swing.JPanel {
     private Calendar fechaAnterior;
     boolean primeraVez = true;
     private EvaluadorCitasFecha evaluadorActual;
-    private boolean puedeAbrir=true;
+    private boolean puedeAbrir = true;
 
     public JPanel panelContenedor;
 
@@ -55,6 +70,8 @@ public class PanelContrato extends javax.swing.JPanel {
         this.principal = principal;
 
         gestor = GestorCitas.getInstance();
+        gestorPaquete = new GestorPaquetes();
+        gestorContrato = new GestorContratos();
     }
 
     public void inicializar() {
@@ -62,6 +79,12 @@ public class PanelContrato extends javax.swing.JPanel {
             initComponents();
             inicializado = true;
         }
+
+        if (contrato == null) {
+            inicializarCreacionContrato();
+            return;
+        }
+
         this.fechaAnterior = Calendar.getInstance();
         fechaAnterior.setTime(jCalendarCitas.getDate());
         contrato = principal.getContrato();
@@ -73,6 +96,85 @@ public class PanelContrato extends javax.swing.JPanel {
             cmbPaquete.addItem(contrato.getPaquete().getNombre());
         }
         cmbPaquete.setEnabled(false);
+    }
+
+    private void inicializarCreacionContrato() {
+        txtCliente.setText("");
+        cmbPaquete.removeAllItems();
+        txtTematica.setText("");
+        txtPrecio.setText("");
+
+        txtCliente.setEnabled(true); // O el JComboBox de clientes
+        txtCliente.setEditable(true);
+        cmbPaquete.setEnabled(true); // O el JComboBox de paquetes
+        txtTematica.setEnabled(true);
+
+        btnEditar.setText("Guardar Contrato");
+
+        btnAgregarCita.setVisible(false); // No se pueden agregar citas a un contrato que aún no existe
+        lblAgregarCita.setVisible(false);
+        lblCitas.setText("Citas (Nuevo Contrato)");
+        pnlCitas.setVisible(true);
+
+        if (panelContenedor != null) {
+            panelContenedor.removeAll();
+            JLabel mensajeModoCreacion = new JLabel("No hay citas para este nuevo contrato aún.");
+            mensajeModoCreacion.setFont(new Font("Sego Ui", Font.PLAIN, 15));
+            panelContenedor.add(mensajeModoCreacion);
+            panelContenedor.revalidate();
+            panelContenedor.repaint();
+        } else {
+            // Si panelContenedor es null, inicializarlo para mostrar el mensaje
+            panelContenedor = new JPanel();
+            panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
+            panelContenedor.setBackground(new Color(220, 240, 255));
+            JLabel mensajeModoCreacion = new JLabel("No hay citas para este nuevo contrato aún.");
+            mensajeModoCreacion.setFont(new Font("Sego Ui", Font.PLAIN, 15));
+            panelContenedor.add(mensajeModoCreacion);
+        }
+        scrollPaneCitas.setViewportView(panelContenedor);
+        
+        llenarCmbPaquetes();
+        cmbPaquete.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    String nombrePaqueteSeleccionado = (String) e.getItem();
+                    PaqueteDTO paqueteSeleccionado = new PaqueteDTO();
+                    paqueteSeleccionado.setNombre(nombrePaqueteSeleccionado);
+                    try {
+                        paqueteSeleccionado = gestorPaquete.obtenerPaquete(paqueteSeleccionado);
+                        
+                        Float precio = paqueteSeleccionado.getPrecio();
+                        
+                        String precioString = new String("$ "+ precio.toString()+".00");
+                        
+                        txtPrecio.setText(precioString);
+                    } catch (GestorPaqueteException ex) {
+                        JOptionPane.showMessageDialog(principal, ex.getMessage());
+                    }
+                    
+                }
+            }
+        });
+        cmbPaquete.setSelectedIndex(-1);
+        txtPrecio.setText("$ 0.0");
+
+    }
+
+    private void llenarCmbPaquetes() {
+
+        try {
+            List<PaqueteDTO> paquetes = gestorPaquete.obtenerPaquetes();
+            cmbPaquete.removeAllItems();
+            for (PaqueteDTO paquete : paquetes) {
+                cmbPaquete.addItem(paquete.getNombre());
+            }
+
+        } catch (GestorPaqueteException ex) {
+            JOptionPane.showMessageDialog(principal, "No hay paquetes registrados");
+        }
+
     }
 
     private void decorarCalendario(List<CitaDTO> citas) {
@@ -118,36 +220,36 @@ public class PanelContrato extends javax.swing.JPanel {
             jCalendarCitas.setCalendar(fechaAnterior);
             primeraVez = false;
             añadirListernerCalendario();
-            
+
         }
 
     }
 
     private void añadirListernerCalendario() {
         jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
-                
-                // Obtener la fecha seleccionada
-                Calendar selectedDate = Calendar.getInstance();
-                selectedDate.setTime(jCalendarCitas.getDate()); // Convertir Date a Calendar
 
-                //Comprobar si solo el día ha cambiado
-                if ((fechaAnterior.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR)
-                        && fechaAnterior.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH)
-                        && fechaAnterior.get(Calendar.DAY_OF_MONTH) != selectedDate.get(Calendar.DAY_OF_MONTH))) {
-                    // Si el día cambió, ejecutamos la lógica
-                    String key = selectedDate.get(Calendar.YEAR) + "-"
-                            + selectedDate.get(Calendar.MONTH) + "-"
-                            + selectedDate.get(Calendar.DAY_OF_MONTH);
+            // Obtener la fecha seleccionada
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.setTime(jCalendarCitas.getDate()); // Convertir Date a Calendar
 
-                    // Mostrar las citas para el día seleccionado
-                    mostrarCitasDelDia(key);
-                }
-                fechaAnterior.setTime(jCalendarCitas.getDate()); // Actualizamos la fecha anterior
-            });
+            //Comprobar si solo el día ha cambiado
+            if ((fechaAnterior.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR)
+                    && fechaAnterior.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH)
+                    && fechaAnterior.get(Calendar.DAY_OF_MONTH) != selectedDate.get(Calendar.DAY_OF_MONTH))) {
+                // Si el día cambió, ejecutamos la lógica
+                String key = selectedDate.get(Calendar.YEAR) + "-"
+                        + selectedDate.get(Calendar.MONTH) + "-"
+                        + selectedDate.get(Calendar.DAY_OF_MONTH);
+
+                // Mostrar las citas para el día seleccionado
+                mostrarCitasDelDia(key);
+            }
+            fechaAnterior.setTime(jCalendarCitas.getDate()); // Actualizamos la fecha anterior
+        });
     }
 
     private void mostrarCitasDelDia(String key) {
-        if(!puedeAbrir){
+        if (!puedeAbrir) {
             return;
         }
         List<CitaDTO> citasDelDia = obtenerCitasDelDia(key);
@@ -168,7 +270,7 @@ public class PanelContrato extends javax.swing.JPanel {
 
             // Crear un objeto Calendar para la fecha seleccionada
             Calendar selectedCalendar = new GregorianCalendar(year, month, day);
-            
+
             // Obtener el día, mes y año
             String dia = String.format("%02d", selectedCalendar.get(Calendar.DAY_OF_MONTH));  // Día con dos dígitos
             String mes = String.format("%02d", selectedCalendar.get(Calendar.MONTH) + 1);     // Mes con dos dígitos (sumamos 1 porque el mes comienza desde 0)
@@ -181,12 +283,12 @@ public class PanelContrato extends javax.swing.JPanel {
             scrollCitas.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
-                    puedeAbrir=false;
+                    puedeAbrir = false;
                     fechaAnterior.set(Calendar.DAY_OF_MONTH, 1);
                     jCalendarCitas.setCalendar(fechaAnterior);
                     agregarCitas();
                     puedeAbrir = true;
-                    
+
                     // Guardar fecha actual
                     Date fechaActual = jCalendarCitas.getDate();
 
@@ -213,7 +315,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 })
                 .toList();
     }
-    
+
     private void agregarCitas() {
         List<CitaDTO> citas = ConsultarCitas();
 
@@ -222,7 +324,7 @@ public class PanelContrato extends javax.swing.JPanel {
         panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
         panelContenedor.setBackground(new Color(220, 240, 255));
 
-        if (citas==null || citas.isEmpty()) {
+        if (citas == null || citas.isEmpty()) {
             //Poner un mensaje si no hay contratos
             JLabel mensaje = new JLabel("Aun no hay citas");
             mensaje.setSize(100, 100);
@@ -264,8 +366,8 @@ public class PanelContrato extends javax.swing.JPanel {
             if (citas != null) {
                 if (citas.size() == 1) {
                     unicaCita = true;
-                }else{
-                    unicaCita=false;
+                } else {
+                    unicaCita = false;
                 }
             }
             return citas;
@@ -300,12 +402,26 @@ public class PanelContrato extends javax.swing.JPanel {
                 if (DialogCita.citaAgregada != null) {
                     DialogCita.citaAgregada = null;
                     inicializar();
-                } 
+                }
             }
         });
         dlgCita.setVisible(true);
     }
 
+    
+    private void crearContrato(){
+        
+        if(txtCliente.getText().isEmpty()){
+            JOptionPane.showMessageDialog(principal, "Por favor ingrese el correo de un cliente", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }if (cmbPaquete.getSelectedItem()==null || cmbPaquete.getSelectedItem().toString().isEmpty()){
+            JOptionPane.showMessageDialog(principal, "Por favor seleccione un paquete", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+        }if (txtPrecio.getText().isEmpty()){
+            JOptionPane.showMessageDialog(principal, "El precio no puede ser de $0.0", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+        }
+        
+    }
+    
     private void llenarCamposContrato() {
         txtCliente.setText(contrato.getCliente().getNombre());
         txtTematica.setText(contrato.getTematica());
@@ -353,6 +469,11 @@ public class PanelContrato extends javax.swing.JPanel {
         add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 170, -1));
 
         btnEditar.setText("Editar");
+        btnEditar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEditarMouseClicked(evt);
+            }
+        });
         add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 90, 110, -1));
 
         lblTematica.setText("Tematica:");
@@ -420,6 +541,14 @@ public class PanelContrato extends javax.swing.JPanel {
     private void btnAgregarCitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarCitaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAgregarCitaActionPerformed
+
+    private void btnEditarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarMouseClicked
+        
+        if (contrato==null){
+            crearContrato();
+        }
+        
+    }//GEN-LAST:event_btnEditarMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
