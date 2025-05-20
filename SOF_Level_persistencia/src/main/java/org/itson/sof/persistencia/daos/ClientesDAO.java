@@ -78,14 +78,13 @@ public class ClientesDAO implements IClientesDAO {
                     .setParameter("correoCliente", correo).getSingleResult();
 
             transaction.commit();
-            logger.log(Level.INFO.INFO, "Cita obtenida: ID({0})", clienteObtenido.getId());
+            logger.log(Level.INFO, "Cita obtenida: ID({0})", clienteObtenido.getId());
             return clienteObtenido;
-        } catch (PersistenciaSOFException e) {
+        } catch (NoResultException e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            logger.log(Level.SEVERE, "Error al obtener las citas del contrato", e);
-            throw new PersistenciaSOFException("Error al obtener las citas de los contratos");
+            throw new PersistenciaSOFException("No se encontró el cliente con el correo proporcionado");
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -291,18 +290,24 @@ public class ClientesDAO implements IClientesDAO {
             transaction = em.getTransaction();
             transaction.begin();
 
-            String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
-            Cliente clienteObtenido = null;
+            String jpqlCorreo = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
             try {
-                clienteObtenido = em.createQuery(jpql, Cliente.class)
-                        .setParameter("correoCliente", cliente.getCorreo()).getSingleResult();
-            } catch (Exception e) {
-
+                Cliente clienteConCorreo = em.createQuery(jpqlCorreo, Cliente.class)
+                        .setParameter("correoCliente", cliente.getCorreo())
+                        .getSingleResult();
+                throw new PersistenciaSOFException("Ya existe un cliente con ese correo");
+            } catch (NoResultException e) {
             }
 
-            if (clienteObtenido != null) {
-                throw new PersistenciaSOFException("Cliente ya existente");
+            String jpqlTelefono = "SELECT c FROM Cliente c WHERE c.telefono = :telefonoCliente";
+            try {
+                Cliente clienteConTelefono = em.createQuery(jpqlTelefono, Cliente.class)
+                        .setParameter("telefonoCliente", cliente.getTelefono())
+                        .getSingleResult();
+                throw new PersistenciaSOFException("Ya existe un cliente con ese número de teléfono");
+            } catch (NoResultException e) {
             }
+            
             em.persist(cliente);
 
             transaction.commit();
@@ -313,7 +318,7 @@ public class ClientesDAO implements IClientesDAO {
             throw new PersistenciaSOFException(e.getMessage());
 
         } catch (Exception e) {
-            throw new PersistenciaSOFException("Error al agregar al cliente");
+            throw new PersistenciaSOFException("Error en el servidor");
 
         } finally {
             if (em != null && em.isOpen()) {
