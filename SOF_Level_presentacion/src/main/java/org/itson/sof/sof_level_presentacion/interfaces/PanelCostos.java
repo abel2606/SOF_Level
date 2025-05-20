@@ -54,11 +54,12 @@ public class PanelCostos extends javax.swing.JPanel {
         txtaRuta.setText(ruta);
         
         DecorarTabla();
+        
+        this.txtaRuta.setEnabled(false);
     }
     
     private void DecorarTabla(){
         List<ReporteVenta> reportes = consultarReportesVenta();
-
         // Crear un panel de contenedor para los contratos
             JPanel panelContenedor = new JPanel();
             panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
@@ -151,16 +152,17 @@ public class PanelCostos extends javax.swing.JPanel {
 
     /**
      * Metodo que se llama cuando se hace click a un reporte
+     *
      * @param reporte Reporte al que se le hizo click
      */
     private void manejarClicEnReporte(ReporteVenta reporteVenta) {
         try {
             gestor.abrirReporte(reporteVenta.getRuta());
         } catch (GestorCostosException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());            
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }
-    
+
     private void SeleccionarRuta() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -168,21 +170,34 @@ public class PanelCostos extends javax.swing.JPanel {
 
         if (opcion == JFileChooser.APPROVE_OPTION) {
             File carpeta = chooser.getSelectedFile();
-            txtaRuta.setText(carpeta.getAbsolutePath());
-            escribirRuta(carpeta.getAbsolutePath());
-            DecorarTabla();
-        }
-    }
-    
-    private void GenerarReporte(){
-        dlgReporte = new DialogReporte(principal, true,ruta);
-        dlgReporte.setVisible(true);
-        dlgReporte.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent e) {
-                inicializar();
+
+            if (carpeta != null && carpeta.exists() && carpeta.isDirectory()) {
+                txtaRuta.setText(carpeta.getAbsolutePath());
+                escribirRuta(carpeta.getAbsolutePath());
+                ruta = leerRuta();
+                DecorarTabla();
+            } else {
+                JOptionPane.showMessageDialog(this, "La ruta seleccionada no es válida.");
             }
-        });
+        }
+
+    }
+
+    private void GenerarReporte() {
+        try {
+            dlgReporte = new DialogReporte(principal, true, ruta);
+            dlgReporte.setVisible(true);
+            dlgReporte.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    inicializar();
+
+                }
+            });
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "No se pudo acceder a la base de datos.");
+        }
+
     }
     
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

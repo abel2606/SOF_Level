@@ -46,7 +46,7 @@ public class ClientesDAO implements IClientesDAO {
             String jpql = "SELECT c FROM Cliente c";
             List<Cliente> clientes = em.createQuery(jpql, Cliente.class).getResultList();
             return clientes;
-        } catch (PersistenciaSOFException e) {
+        } catch (Exception e) {
             throw new PersistenciaSOFException("Error al obtener clientes de persistencia");
         } finally {
             if (em != null && em.isOpen()) {
