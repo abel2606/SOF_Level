@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import java.io.*;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -50,8 +51,10 @@ public class DialogReporte extends javax.swing.JDialog {
     private DefaultListModel<String> listModel;
     private JList<String> suggestionList;
     private List<ClienteDTO> clientes = new ArrayList<>();
+    private Date fechaInicioAnterior;
+    private Date fechaFinAnterior;
 
-    public DialogReporte(java.awt.Frame parent, boolean modal, String ruta) {
+    public DialogReporte(java.awt.Frame parent, boolean modal, String ruta) throws Exception{
         super(parent, modal);
         initComponents();
         this.parent = parent;
@@ -68,6 +71,8 @@ public class DialogReporte extends javax.swing.JDialog {
         this.cmbFechaInicio.setDate(inicio.getTime());
         
         configurarAutocompletado();
+        
+        AddListernerFechas();
     }
     
     private void SeleccionarRuta() {
@@ -77,8 +82,13 @@ public class DialogReporte extends javax.swing.JDialog {
 
         if (opcion == JFileChooser.APPROVE_OPTION) {
             File carpeta = chooser.getSelectedFile();
-            txtaUbicacion.setText(carpeta.getAbsolutePath());
-            escribirRuta(carpeta.getAbsolutePath());
+
+            if (carpeta != null && carpeta.exists() && carpeta.isDirectory()) {
+                this.txtaUbicacion.setText(carpeta.getAbsolutePath());
+                escribirRuta(carpeta.getAbsolutePath());
+            } else {
+                JOptionPane.showMessageDialog(this, "La ruta seleccionada no es válida.");
+            }
         }
     }
 
@@ -97,6 +107,10 @@ public class DialogReporte extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(parent, "El nombre no debe contener caracteres inválidos: \\ / : * ? \" < > |");
             return;
         }
+        
+        if(!ValidarFechas()){
+            return;
+        }
 
         // Validar ubicación válida
         File archivo = new File(ubicacion);
@@ -112,27 +126,6 @@ public class DialogReporte extends javax.swing.JDialog {
             return;
         }
 
-        //Validar fechas validas (Primero la de inicio luego la de despues, formato correcto, ambas fechas no vacias,
-        // ambas fechas ya hayan ocurrido)
-        Date fechaInicio = cmbFechaInicio.getDate();
-        Date fechaFin = cmbFechaFin.getDate();
-        Date hoy = new Date();
-
-        if (fechaInicio == null || fechaFin == null) {
-            JOptionPane.showMessageDialog(null, "Ambas fechas deben estar seleccionadas.");
-            return;
-        }
-
-        if (fechaInicio.after(hoy) || fechaFin.after(hoy)) {
-            JOptionPane.showMessageDialog(null, "Las fechas no pueden ser futuras.");
-            return;
-        }
-
-        if (!fechaInicio.before(fechaFin)) {
-            JOptionPane.showMessageDialog(null, "La fecha de inicio debe ser anterior a la fecha final.");
-            return;
-        }
-
         //Al menos un cliente ingresado o hecho click en seleccionar todos los clientes
         if (tblCliente.getRowCount() > 0 || this.boxCilientes.isSelected()) {
         } else {
@@ -144,6 +137,30 @@ public class DialogReporte extends javax.swing.JDialog {
 
     private void Cancelar() {
         this.dispose();
+    }
+    
+    private boolean ValidarFechas() {
+        //Validar fechas validas (Primero la de inicio luego la de despues, formato correcto, ambas fechas no vacias,
+        // ambas fechas ya hayan ocurrido)
+        Date fechaInicio = cmbFechaInicio.getDate();
+        Date fechaFin = cmbFechaFin.getDate();
+        Date hoy = new Date();
+
+        if (fechaInicio == null || fechaFin == null) {
+            JOptionPane.showMessageDialog(null, "Ambas fechas deben estar seleccionadas.");
+            return false;
+        }
+
+        if (fechaInicio.after(hoy) || fechaFin.after(hoy)) {
+            JOptionPane.showMessageDialog(null, "Las fechas no pueden ser futuras.");
+            return false;
+        }
+
+        if (!fechaInicio.before(fechaFin)) {
+            JOptionPane.showMessageDialog(null, "La fecha de inicio debe ser anterior a la fecha final.");
+            return false;
+        }
+        return true;
     }
 
     private void GenerarReporte() {
@@ -175,7 +192,7 @@ public class DialogReporte extends javax.swing.JDialog {
                 contratos = gestorCitas.obtenerContratos();
             } catch (GestorCitasException ex) {
                 JOptionPane.showMessageDialog(parent, ex);
-            return;
+                return;
             }
         } else {
             for (ClienteDTO cliente : clientesSeleccionados) {//Obtener todos los contratos de cada cliente
@@ -204,20 +221,37 @@ public class DialogReporte extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(parent, ex.getMessage());
         }
     }
-    
-    private void configurarAutocompletado() {
+
+    private void AddListernerFechas() {
+        fechaInicioAnterior = cmbFechaInicio.getDate();
+        fechaFinAnterior = cmbFechaFin.getDate();
+
+        cmbFechaInicio.getDateEditor().addPropertyChangeListener("date", evt -> {
+            if (!ValidarFechas()) {
+                cmbFechaInicio.setDate(fechaInicioAnterior);
+            } else {
+                fechaInicioAnterior = cmbFechaInicio.getDate();
+            }
+        });
+
+        cmbFechaFin.getDateEditor().addPropertyChangeListener("date", evt -> {
+            if (!ValidarFechas()) {
+                cmbFechaFin.setDate(fechaFinAnterior);
+            } else {
+                fechaFinAnterior = cmbFechaFin.getDate();
+            }
+        });
+    }
+
+    private void configurarAutocompletado() throws GestorClientesException{
         listModel = new DefaultListModel<>();
         suggestionList = new JList<>(listModel);
         JScrollPane scrollPane = new JScrollPane(suggestionList);
         scrollPane.setPreferredSize(new Dimension(180, 100));
         this.popMenu.add(scrollPane);
 
-        try {
-            clientes = gestorClientes.obtenerTodosClientes();
-        } catch (GestorClientesException ex) {
-            JOptionPane.showMessageDialog(parent, ex.getMessage());
-            return;
-        }
+        clientes = gestorClientes.obtenerTodosClientes();
+        
         
         DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre"}, 0) {
             @Override
