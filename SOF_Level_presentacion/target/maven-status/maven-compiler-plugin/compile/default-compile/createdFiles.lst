@@ -50,6 +50,7 @@ Deprecated\PantallaContratos$4.class
 Deprecated\PantallaCita.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$2.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelClientes$1.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$10.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$24.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$8.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$1.class
@@ -66,6 +67,7 @@ org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$8.class
 Deprecated\PantallaContrato.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCliente$4.class
 org\itson\sof\sof_level_presentacion\componentes\ActionButton.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$9.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$1.class
 org\itson\sof\sof_level_presentacion\componentes\BotonIcono$1.class
 org\itson\sof\sof_level_presentacion\componentes\PanelAction$1.class
@@ -84,16 +86,19 @@ org\itson\sof\sof_level_presentacion\interfaces\PanelCostos$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$11.class
 Deprecated\PantallaClientes$3.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogReporte.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$11.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$14.class
 org\itson\sof\sof_level_presentacion\componentes\ActionButton$1.class
 Deprecated\PantallaContratos$5.class
 org\itson\sof\sof_level_presentacion\componentes\PanelAction$3.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$3.class
+org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$12.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$6.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$17.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$10.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogReporte$8.class
 Deprecated\PantallaContratos$8.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$12.class
 org\itson\sof\sof_level_presentacion\componentes\ItemScrollCitas$2.class
 Deprecated\PantallaContratos$1.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita.class
@@ -113,6 +118,7 @@ org\itson\sof\sof_level_presentacion\interfaces\PanelClientes$5.class
 org\itson\sof\sof_level_presentacion\componentes\BotonIcono.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$21.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$16.class
+org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$11.class
 org\itson\sof\sof_level_presentacion\componentes\PanelAction$2.class
 pruebas\PruebaClientes.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogReporte$1.class
@@ -120,3 +126,4 @@ org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$2.class
 Deprecated\PantallaContratos$7.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogReporte$11.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$3.class
+org\itson\sof\sof_level_presentacion\interfaces\PanelContrato$13.class

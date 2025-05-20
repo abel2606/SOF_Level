@@ -5,8 +5,12 @@ import com.toedter.calendar.JDayChooser;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -15,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -22,18 +27,30 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.IGestorCitas;
 import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
+import org.itson.sof.objetosnegocios.gestorclientes.GestorClientes;
+import org.itson.sof.objetosnegocios.gestorclientes.IGestorClientes;
+import org.itson.sof.objetosnegocios.gestorclientes.gestorexception.GestorClientesException;
 import org.itson.sof.objetosnegocios.gestorcontratos.GestorContratos;
 import org.itson.sof.objetosnegocios.gestorcontratos.IGestorContratos;
+import org.itson.sof.objetosnegocios.gestorcontratos.gestorcontratosexception.GestorContratoException;
 import org.itson.sof.objetosnegocios.gestorcontratos.gestorpaquetesexception.GestorPaqueteException;
 import org.itson.sof.objetosnegocios.gestorpaquetes.gestorpaquetes.GestorPaquetes;
 import org.itson.sof.objetosnegocios.gestorpaquetes.gestorpaquetes.IGestorPaquetes;
 import org.itson.sof.sof_dtos.CitaDTO;
+import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_dtos.PaqueteDTO;
 import org.itson.sof.sof_level_presentacion.componentes.EvaluadorCitasFecha;
@@ -48,6 +65,7 @@ public class PanelContrato extends javax.swing.JPanel {
     IGestorCitas gestor;
     IGestorContratos gestorContrato;
     IGestorPaquetes gestorPaquete;
+    IGestorClientes gestorCliente;
     ContratoDTO contrato;
     private final PantallaPrincipal principal;
     DialogCita dlgCita;
@@ -58,8 +76,11 @@ public class PanelContrato extends javax.swing.JPanel {
     boolean primeraVez = true;
     private EvaluadorCitasFecha evaluadorActual;
     private boolean puedeAbrir = true;
-
+    private List<ClienteDTO> clientesTotales = new LinkedList<>();
     public JPanel panelContenedor;
+    private javax.swing.JPopupMenu popupMenuClientes;
+    private javax.swing.JList<String> listaCorreosClientes;
+    private DefaultListModel<String> listaCorreosModel;
 
     /**
      * Creates new form PanelContrato
@@ -72,6 +93,7 @@ public class PanelContrato extends javax.swing.JPanel {
         gestor = GestorCitas.getInstance();
         gestorPaquete = new GestorPaquetes();
         gestorContrato = new GestorContratos();
+        gestorCliente = GestorClientes.getInstance();
     }
 
     public void inicializar() {
@@ -84,6 +106,8 @@ public class PanelContrato extends javax.swing.JPanel {
             inicializarCreacionContrato();
             return;
         }
+        
+        btnCrearContrato.setVisible(false);
 
         this.fechaAnterior = Calendar.getInstance();
         fechaAnterior.setTime(jCalendarCitas.getDate());
@@ -98,23 +122,31 @@ public class PanelContrato extends javax.swing.JPanel {
         cmbPaquete.setEnabled(false);
     }
 
+    private List<ClienteDTO> obtenerClientes() {
+        try {
+            return gestorCliente.obtenerTodosClientes();
+        } catch (GestorClientesException ex) {
+            Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
+            return new LinkedList<>();
+        }
+    }
+
     private void inicializarCreacionContrato() {
         txtCliente.setText("");
         cmbPaquete.removeAllItems();
         txtTematica.setText("");
-        txtPrecio.setText("");
-
-        txtCliente.setEnabled(true); // O el JComboBox de clientes
+        txtPrecio.setText("$ 0.0");
+        txtCliente.setEnabled(true);
         txtCliente.setEditable(true);
-        cmbPaquete.setEnabled(true); // O el JComboBox de paquetes
+        cmbPaquete.setEnabled(true);
         txtTematica.setEnabled(true);
-
-        btnEditar.setText("Guardar Contrato");
-
-        btnAgregarCita.setVisible(false); // No se pueden agregar citas a un contrato que aún no existe
+        btnEditarContrato.setText("Guardar Contrato");
+        btnAgregarCita.setVisible(false);
         lblAgregarCita.setVisible(false);
         lblCitas.setText("Citas (Nuevo Contrato)");
         pnlCitas.setVisible(true);
+        btnCrearContrato.setVisible(true);
+        btnEditarContrato.setVisible(false);
 
         if (panelContenedor != null) {
             panelContenedor.removeAll();
@@ -124,7 +156,6 @@ public class PanelContrato extends javax.swing.JPanel {
             panelContenedor.revalidate();
             panelContenedor.repaint();
         } else {
-            // Si panelContenedor es null, inicializarlo para mostrar el mensaje
             panelContenedor = new JPanel();
             panelContenedor.setLayout(new BoxLayout(panelContenedor, BoxLayout.Y_AXIS));
             panelContenedor.setBackground(new Color(220, 240, 255));
@@ -133,7 +164,7 @@ public class PanelContrato extends javax.swing.JPanel {
             panelContenedor.add(mensajeModoCreacion);
         }
         scrollPaneCitas.setViewportView(panelContenedor);
-        
+
         llenarCmbPaquetes();
         cmbPaquete.addItemListener(new ItemListener() {
             @Override
@@ -144,22 +175,110 @@ public class PanelContrato extends javax.swing.JPanel {
                     paqueteSeleccionado.setNombre(nombrePaqueteSeleccionado);
                     try {
                         paqueteSeleccionado = gestorPaquete.obtenerPaquete(paqueteSeleccionado);
-                        
                         Float precio = paqueteSeleccionado.getPrecio();
-                        
-                        String precioString = new String("$ "+ precio.toString()+".00");
-                        
+                        String precioString = new String("$ " + precio.toString() + ".00");
                         txtPrecio.setText(precioString);
                     } catch (GestorPaqueteException ex) {
                         JOptionPane.showMessageDialog(principal, ex.getMessage());
                     }
-                    
                 }
             }
         });
         cmbPaquete.setSelectedIndex(-1);
         txtPrecio.setText("$ 0.0");
 
+        this.clientesTotales = obtenerClientes();
+
+        listaCorreosModel = new DefaultListModel<>();
+        listaCorreosClientes = new JList<>(listaCorreosModel);
+        JScrollPane scrollPane = new JScrollPane(listaCorreosClientes);
+        scrollPane.setPreferredSize(new Dimension(250, 100)); // Ajusta las dimensiones según necesites
+
+        popupMenuClientes = new JPopupMenu();
+        popupMenuClientes.add(scrollPane);
+
+        // Selección de correo desde la lista de autocompletar
+        listaCorreosClientes.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1 && listaCorreosClientes.getSelectedValue() != null) {
+                    txtCliente.setText(listaCorreosClientes.getSelectedValue());
+                    popupMenuClientes.setVisible(false);
+                    txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
+                } else if (e.getClickCount() == 2 && listaCorreosClientes.getSelectedValue() != null) {
+                    txtCliente.setText(listaCorreosClientes.getSelectedValue());
+                    popupMenuClientes.setVisible(false);
+                    txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
+                }
+            }
+        });
+
+        // Evento de tecla ENTER para selección
+        listaCorreosClientes.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && listaCorreosClientes.getSelectedValue() != null) {
+                    txtCliente.setText(listaCorreosClientes.getSelectedValue());
+                    popupMenuClientes.setVisible(false);
+                    txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
+                }
+            }
+        });
+
+        // Document listener para el JTextField txtCliente
+        txtCliente.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                actualizarListaClientes();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                actualizarListaClientes();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                actualizarListaClientes();
+            }
+        });
+    }
+
+    private void actualizarListaClientes() {
+        String input = txtCliente.getText().trim().toLowerCase();
+        listaCorreosModel.clear();
+
+        if (!input.isEmpty()) {
+            for (ClienteDTO cliente : clientesTotales) {
+                if (cliente.getNombre().toLowerCase().contains(input)
+                        || cliente.getCorreo().toLowerCase().contains(input)
+                        || cliente.getTelefono().toLowerCase().contains(input)) {
+                    listaCorreosModel.addElement(cliente.getCorreo());
+                }
+            }
+
+            if (!listaCorreosModel.isEmpty()) {
+                SwingUtilities.invokeLater(() -> {
+                    if (!popupMenuClientes.isVisible()) {
+                        popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
+                    }
+                    txtCliente.requestFocusInWindow(); // Intentar enfocar después de mostrar
+                });
+            } else {
+                popupMenuClientes.setVisible(false);
+            }
+        } else {
+            popupMenuClientes.setVisible(false);
+        }
+    }
+
+    private String obtenerNombreClientePorCorreo(String correo) {
+        for (ClienteDTO cliente : clientesTotales) {
+            if (cliente.getCorreo().equalsIgnoreCase(correo)) {
+                return cliente.getNombre();
+            }
+        }
+        return "";
     }
 
     private void llenarCmbPaquetes() {
@@ -408,20 +527,56 @@ public class PanelContrato extends javax.swing.JPanel {
         dlgCita.setVisible(true);
     }
 
-    
-    private void crearContrato(){
-        
-        if(txtCliente.getText().isEmpty()){
+    private void crearContrato() {
+
+        if (txtCliente.getText().isEmpty()) {
             JOptionPane.showMessageDialog(principal, "Por favor ingrese el correo de un cliente", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
-        }if (cmbPaquete.getSelectedItem()==null || cmbPaquete.getSelectedItem().toString().isEmpty()){
+        }
+        if (cmbPaquete.getSelectedItem() == null || cmbPaquete.getSelectedItem().toString().isEmpty()) {
             JOptionPane.showMessageDialog(principal, "Por favor seleccione un paquete", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
-        }if (txtPrecio.getText().isEmpty()){
+        }
+        if (txtPrecio.getText().isEmpty()) {
             JOptionPane.showMessageDialog(principal, "El precio no puede ser de $0.0", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
         }
-        
+
+        ContratoDTO contrato = new ContratoDTO();
+        contrato.setTematica(txtTematica.getText());
+
+        ClienteDTO cliente = new ClienteDTO();
+
+        String textoIngresado = txtCliente.getText();
+        boolean encontrado = false;
+
+        for (int i = 0; i < listaCorreosModel.getSize(); i++) {
+            if (textoIngresado.equals(listaCorreosModel.getElementAt(i))) {
+                encontrado = true;
+                break;
+            }
+        }
+
+        if (encontrado) {
+            cliente.setCorreo(textoIngresado);
+            
+            PaqueteDTO paquete = new PaqueteDTO();
+            paquete.setNombre(cmbPaquete.getSelectedItem().toString());
+            
+            try {
+                this.contrato = gestorContrato.crearContrato(contrato, cliente, paquete);
+                principal.setContrato(this.contrato);
+                this.btnAgregarCita.setVisible(true);
+                this.btnAgregarCita.setEnabled(true);
+            } catch (GestorContratoException ex) {
+                JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error en creación del paquete", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } else {
+            JOptionPane.showMessageDialog(principal, "Este cliente no existe", "Error al crear contrato", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
     }
-    
+
     private void llenarCamposContrato() {
         txtCliente.setText(contrato.getCliente().getNombre());
         txtTematica.setText(contrato.getTematica());
@@ -432,6 +587,7 @@ public class PanelContrato extends javax.swing.JPanel {
         txtPrecio.setEnabled(false);
     }
 
+
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -439,7 +595,7 @@ public class PanelContrato extends javax.swing.JPanel {
         txtCliente = new javax.swing.JTextField();
         lblPaquete = new javax.swing.JLabel();
         cmbPaquete = new javax.swing.JComboBox<>();
-        btnEditar = new javax.swing.JButton();
+        btnEditarContrato = new javax.swing.JButton();
         lblTematica = new javax.swing.JLabel();
         txtTematica = new javax.swing.JTextArea();
         lblPrecio = new javax.swing.JLabel();
@@ -450,6 +606,7 @@ public class PanelContrato extends javax.swing.JPanel {
         pnlCitas = new javax.swing.JPanel();
         scrollPaneCitas = new javax.swing.JScrollPane();
         jCalendarCitas = new com.toedter.calendar.JCalendar();
+        btnCrearContrato = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(220, 240, 255));
         setMaximumSize(new java.awt.Dimension(550, 750));
@@ -460,6 +617,14 @@ public class PanelContrato extends javax.swing.JPanel {
         add(lblCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 50, 20));
 
         txtCliente.setEditable(false);
+        txtCliente.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtClienteKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtClienteKeyTyped(evt);
+            }
+        });
         add(txtCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, 300, -1));
 
         lblPaquete.setText("Paquete:");
@@ -468,13 +633,13 @@ public class PanelContrato extends javax.swing.JPanel {
         cmbPaquete.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo del paquete", "mlm", " " }));
         add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 170, -1));
 
-        btnEditar.setText("Editar");
-        btnEditar.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnEditarContrato.setText("Editar Contrato");
+        btnEditarContrato.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnEditarMouseClicked(evt);
+                btnEditarContratoMouseClicked(evt);
             }
         });
-        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 90, 110, -1));
+        add(btnEditarContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 450, 110, -1));
 
         lblTematica.setText("Tematica:");
         add(lblTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, -1, -1));
@@ -532,6 +697,15 @@ public class PanelContrato extends javax.swing.JPanel {
 
         add(pnlCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 380, 350, 160));
         add(jCalendarCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 140, 460, 220));
+
+        btnCrearContrato.setText("Crear Contrato");
+        btnCrearContrato.setToolTipText("");
+        btnCrearContrato.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCrearContratoMouseClicked(evt);
+            }
+        });
+        add(btnCrearContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 450, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarCitaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarCitaMouseClicked
@@ -542,18 +716,50 @@ public class PanelContrato extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAgregarCitaActionPerformed
 
-    private void btnEditarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarMouseClicked
-        
-        if (contrato==null){
+    private void btnEditarContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarContratoMouseClicked
+
+        if (contrato == null) {
             crearContrato();
         }
-        
-    }//GEN-LAST:event_btnEditarMouseClicked
+
+    }//GEN-LAST:event_btnEditarContratoMouseClicked
+
+    private void txtClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtClienteKeyReleased
+
+    }//GEN-LAST:event_txtClienteKeyReleased
+
+    private void txtClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtClienteKeyTyped
+        String texto = txtCliente.getText().toLowerCase();
+        List<String> correosFiltrados = new LinkedList<>();
+
+        for (ClienteDTO cliente : clientesTotales) {
+            if (cliente.getNombre().toLowerCase().contains(texto)
+                    || cliente.getCorreo().toLowerCase().contains(texto)
+                    || cliente.getTelefono().toLowerCase().contains(texto)) {
+                correosFiltrados.add(cliente.getCorreo());
+            }
+        }
+
+        if (!correosFiltrados.isEmpty() && !texto.isEmpty()) {
+            listaCorreosClientes.setListData(correosFiltrados.toArray(new String[0]));
+            popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
+            SwingUtilities.invokeLater(() -> {
+                txtCliente.requestFocusInWindow();
+            });
+        } else {
+            popupMenuClientes.setVisible(false);
+        }
+    }//GEN-LAST:event_txtClienteKeyTyped
+
+    private void btnCrearContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrearContratoMouseClicked
+        crearContrato();
+    }//GEN-LAST:event_btnCrearContratoMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarCita;
-    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnCrearContrato;
+    private javax.swing.JButton btnEditarContrato;
     private javax.swing.JComboBox<String> cmbPaquete;
     private com.toedter.calendar.JCalendar jCalendarCitas;
     private javax.swing.JLabel lblAgregarCita;

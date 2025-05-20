@@ -58,6 +58,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void PanelContratos(){
         this.lblTitulo.setText("Contratos");
+        this.btnCrearContrato.setVisible(true);
         pnlContratos.inicializar();
         cardLayout.show(pnlCentral, "PanelContratos");
     }
@@ -65,6 +66,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     public void pnlContrato() {
         this.lblTitulo.setText("Crear contrato");
         this.contrato = null;
+        pnlContrato.contrato = contrato;
+        this.btnCrearContrato.setVisible(false);
         pnlContrato.inicializar();
         cardLayout.show(pnlCentral, "PanelContrato");
     }
@@ -74,6 +77,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void PanelContrato(){
         this.lblTitulo.setText("Contrato");
+        pnlContrato.contrato = this.contrato;
         pnlContrato.inicializar();
         cardLayout.show(pnlCentral, "PanelContrato");
     }
@@ -163,6 +167,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         lblNombreUsuario = new javax.swing.JLabel();
         lblLogo = new javax.swing.JLabel();
         btnMenuDesplegable = new javax.swing.JButton();
+        btnCrearContrato = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -347,6 +352,18 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnCrearContrato.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
+        btnCrearContrato.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCrearContratoMouseClicked(evt);
+            }
+        });
+        btnCrearContrato.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearContratoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlEncabezadoLayout = new javax.swing.GroupLayout(pnlEncabezado);
         pnlEncabezado.setLayout(pnlEncabezadoLayout);
         pnlEncabezadoLayout.setHorizontalGroup(
@@ -363,6 +380,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                         .addGap(120, 120, 120)
                         .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCrearContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(48, 48, 48)
                         .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(17, 17, 17))))
         );
@@ -374,11 +393,16 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEncabezadoLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
-                .addComponent(lblNombreUsuario)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pnlEncabezadoLayout.createSequentialGroup()
+                        .addComponent(lblNombreUsuario)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(pnlEncabezadoLayout.createSequentialGroup()
+                        .addComponent(btnCrearContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)))
                 .addGap(12, 12, 12))
         );
 
@@ -389,7 +413,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lblContratosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblContratosMouseClicked
-        pnlContrato();
+        PanelContratos();
     }//GEN-LAST:event_lblContratosMouseClicked
 
     private void lblImgContratosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImgContratosMouseClicked
@@ -428,8 +452,17 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         PanelClientes();
     }//GEN-LAST:event_lblImgClientesMouseClicked
 
+    private void btnCrearContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrearContratoMouseClicked
+        pnlContrato();
+    }//GEN-LAST:event_btnCrearContratoMouseClicked
+
+    private void btnCrearContratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearContratoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCrearContratoActionPerformed
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCrearContrato;
     private javax.swing.JButton btnMenuDesplegable;
     private javax.swing.JLabel lblCerrar;
     private javax.swing.JLabel lblClientes;
