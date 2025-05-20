@@ -108,11 +108,24 @@ public class PanelContrato extends javax.swing.JPanel {
             return;
         }
 
-        btnCrearContrato.setVisible(false);
-        btnEditarContrato.setVisible(true);
-        btnAgregarCita.setVisible(true);
-        btnTerminarContrato.setVisible(true);
-        btnCancelarContrato.setVisible(true);
+        if (contrato.getEstado().equalsIgnoreCase("CANCELADO")
+                || contrato.getEstado().equalsIgnoreCase("TERMINADO")) {
+
+            btnCrearContrato.setVisible(false);
+            btnEditarContrato.setVisible(false);
+            btnAgregarCita.setVisible(false);
+            btnTerminarContrato.setVisible(false);
+            btnCancelarContrato.setVisible(false);
+            lblAgregarCita.setVisible(false);
+
+        } else {
+
+            btnCrearContrato.setVisible(false);
+            btnEditarContrato.setVisible(true);
+            btnAgregarCita.setVisible(true);
+            btnTerminarContrato.setVisible(true);
+            btnCancelarContrato.setVisible(true);
+        }
 
         this.fechaAnterior = Calendar.getInstance();
         fechaAnterior.setTime(jCalendarCitas.getDate());
@@ -540,9 +553,15 @@ public class PanelContrato extends javax.swing.JPanel {
         }
         if (cmbPaquete.getSelectedItem() == null || cmbPaquete.getSelectedItem().toString().isEmpty()) {
             JOptionPane.showMessageDialog(principal, "Por favor seleccione un paquete", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (txtTematica.getText().isEmpty()){
+            JOptionPane.showMessageDialog(principal, "Ingrese la tematica", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+            return;
         }
         if (txtPrecio.getText().isEmpty()) {
             JOptionPane.showMessageDialog(principal, "El precio no puede ser de $0.0", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
         ContratoDTO contrato = new ContratoDTO();
@@ -601,6 +620,11 @@ public class PanelContrato extends javax.swing.JPanel {
 
         ContratoDTO contratoDTO = contrato;
 
+        if (txtTematica.getText().isEmpty()){
+            JOptionPane.showMessageDialog(principal, "Ingrese la tematica", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
         contratoDTO.setTematica(txtTematica.getText());
 
         try {
@@ -627,8 +651,14 @@ public class PanelContrato extends javax.swing.JPanel {
         if (opcion == JOptionPane.YES_OPTION) {
             try {
                 gestorContrato.terminarContrato(contrato);
+                btnCancelarContrato.setVisible(false);
+                btnTerminarContrato.setVisible(false);
+                btnEditarContrato.setVisible(false);
+                btnCrearContrato.setVisible(false);
+                btnAgregarCita.setVisible(false);
+                lblAgregarCita.setVisible(false);
                 JOptionPane.showMessageDialog(
-                        principal, 
+                        principal,
                         "El contrato ha sido terminado.",
                         "Contrato terminado",
                         JOptionPane.INFORMATION_MESSAGE
@@ -637,18 +667,18 @@ public class PanelContrato extends javax.swing.JPanel {
             } catch (GestorContratoException ex) {
                 JOptionPane.showMessageDialog(
                         principal,
-                        "Error al terminar el contrato: " + ex.getMessage(), 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE 
+                        "Error al terminar el contrato: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
                 );
             }
         } else {
-            
+
             JOptionPane.showMessageDialog(
                     principal,
-                    "La terminación del contrato ha sido cancelada.", 
-                    "Terminación cancelada", 
-                    JOptionPane.INFORMATION_MESSAGE 
+                    "La terminación del contrato ha sido cancelada.",
+                    "Terminación cancelada",
+                    JOptionPane.INFORMATION_MESSAGE
             );
         }
     }
@@ -656,36 +686,42 @@ public class PanelContrato extends javax.swing.JPanel {
     private void cancelarContrato() {
         int opcion = JOptionPane.showConfirmDialog(
                 principal,
-                "¿Está seguro que desea cancelar el contrato?", 
-                "Confirmar cancelación", 
-                JOptionPane.YES_NO_OPTION 
+                "¿Está seguro que desea cancelar el contrato?",
+                "Confirmar cancelación",
+                JOptionPane.YES_NO_OPTION
         );
 
         if (opcion == JOptionPane.YES_OPTION) {
             try {
                 gestorContrato.cancelarContrato(contrato);
+                btnCancelarContrato.setVisible(false);
+                btnTerminarContrato.setVisible(false);
+                btnEditarContrato.setVisible(false);
+                btnCrearContrato.setVisible(false);
+                btnAgregarCita.setVisible(false);
+                lblAgregarCita.setVisible(false);
                 JOptionPane.showMessageDialog(
-                        principal, 
+                        principal,
                         "El contrato ha sido cancelado.",
                         "Contrato cancelado",
-                        JOptionPane.INFORMATION_MESSAGE 
+                        JOptionPane.INFORMATION_MESSAGE
                 );
 
             } catch (GestorContratoException ex) {
                 JOptionPane.showMessageDialog(
                         this,
-                        "Error al cancelar el contrato: " + ex.getMessage(), 
+                        "Error al cancelar el contrato: " + ex.getMessage(),
                         "Error",
-                        JOptionPane.ERROR_MESSAGE 
+                        JOptionPane.ERROR_MESSAGE
                 );
             }
         } else {
 
             JOptionPane.showMessageDialog(
-                    principal, 
-                    "La cancelación del contrato ha sido anulada.", 
-                    "Cancelación anulada", 
-                    JOptionPane.INFORMATION_MESSAGE 
+                    principal,
+                    "La cancelación del contrato ha sido anulada.",
+                    "Cancelación anulada",
+                    JOptionPane.INFORMATION_MESSAGE
             );
         }
     }

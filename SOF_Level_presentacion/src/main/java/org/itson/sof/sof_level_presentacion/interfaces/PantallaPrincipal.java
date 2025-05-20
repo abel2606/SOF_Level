@@ -77,6 +77,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void PanelContrato(){
         this.lblTitulo.setText("Contrato");
+        this.btnCrearContrato.setVisible(true);
         pnlContrato.contrato = this.contrato;
         pnlContrato.inicializar();
         cardLayout.show(pnlCentral, "PanelContrato");
@@ -87,6 +88,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void PanelClientes(){
         this.lblTitulo.setText("Clientes");
+        this.btnCrearContrato.setVisible(false);
         pnlClientes.inicializar();
         cardLayout.show(pnlCentral, "PanelClientes");
     }
@@ -96,6 +98,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void PanelCostos(){
         this.lblTitulo.setText("Reportes de venta");
+        this.btnCrearContrato.setVisible(false);
         pnlCostos.inicializar();
         cardLayout.show(pnlCentral, "PanelCostos");
     }
