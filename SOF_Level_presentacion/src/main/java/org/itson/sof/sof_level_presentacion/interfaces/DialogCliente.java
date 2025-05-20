@@ -274,21 +274,22 @@ public class DialogCliente extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private boolean validarCampos(String nombre, String correo, String celular) {
-        // Validar nombre: solo letras y espacios
+        StringBuilder errores = new StringBuilder();
+
         if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
-            javax.swing.JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras y espacios.");
-            return false;
+            errores.append("- El nombre solo debe contener letras y espacios.\n");
         }
 
-        // Validar correo con expresión regular simple
         if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            javax.swing.JOptionPane.showMessageDialog(this, "El correo no es válido.");
-            return false;
+            errores.append("- El correo no tiene un formato válido.\n");
         }
 
-        // Validar celular: exactamente 10 dígitos
         if (!celular.matches("\\d{10}")) {
-            javax.swing.JOptionPane.showMessageDialog(this, "El número de celular debe contener exactamente 10 dígitos.");
+            errores.append("- El celular debe tener exactamente 10 dígitos numéricos.\n");
+        }
+
+        if (errores.length() > 0) {
+            JOptionPane.showMessageDialog(this, errores.toString(), "Errores de validación", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
@@ -319,24 +320,24 @@ public class DialogCliente extends javax.swing.JDialog {
             return;
         }
         ClienteDTO cliente = new ClienteDTO(nombre, celular, correo);
-        if (editando == true) {
-            try {
+        try {
+            if (editando) {
                 cliente = gestionarClientes.editarCliente(clienteDTO.getCorreo(), cliente);
-                setEdicionRealizada(true);
-
-                dispose();
-            } catch (GestorClientesException ex) {
-                JOptionPane.showMessageDialog(null, "Número de teléfonon o correo existente");
-            }
-        } else {
-            try {
+            } else {
                 cliente = gestionarClientes.agregarCliente(cliente);
-                setEdicionRealizada(true);
-                dispose();
-            } catch (GestorClientesException ex) {
-                JOptionPane.showMessageDialog(null, "Número de teléfonon o correo existente");
             }
 
+            setEdicionRealizada(true);
+            dispose();
+
+        } catch (GestorClientesException ex) {
+            // Errores de lógica de negocio (correo/telefono duplicado, etc.)
+            System.out.println(ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de cliente", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            // Errores no controlados
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(DialogCliente.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_btnGuardarActionPerformed

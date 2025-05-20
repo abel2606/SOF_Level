@@ -12,13 +12,13 @@ import org.itson.sof.objetosnegocios.sof_level_objetosnegocios.exception.Objetos
  */
 public class GestorClientesException extends Exception{
 
-    public GestorClientesException(String par, ObjetosNegocioException ex) {
+    public GestorClientesException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     public GestorClientesException(String message) {
         super(message);
     }
-    
     
     
     

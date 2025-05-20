@@ -38,7 +38,7 @@ public class ClienteBO implements IClienteBO {
             }
             return clienteDTO;
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException("Error en la capa de persistencia: " + ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 
@@ -50,7 +50,7 @@ public class ClienteBO implements IClienteBO {
                     .map(ConverterUtil::clienteEntidadADTO)
                     .collect(Collectors.toList());
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException("Error al obtener todos los clientes: " + ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ public class ClienteBO implements IClienteBO {
                     .map(ConverterUtil::clienteEntidadADTO)
                     .collect(Collectors.toList());
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException("Error al obtener clientes similares: " + ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 
@@ -73,7 +73,7 @@ public class ClienteBO implements IClienteBO {
             Cliente actualizado = clientesDAO.editarCliente(correo, cliente);
             return ConverterUtil.clienteEntidadADTO(actualizado);
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException("Error al editar cliente: " + ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ public class ClienteBO implements IClienteBO {
             clientesDAO.eliminarCliente(correo);
             return true;
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException("Error al eliminar cliente: " + ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class ClienteBO implements IClienteBO {
             Cliente cliente = clientesDAO.obtenerCliente(correo);
             return ConverterUtil.clienteEntidadADTO(cliente);
         } catch (PersistenciaSOFException ex) {
-            throw new ObjetosNegocioException("Error al obtener cliente: " + ex.getMessage());
+            throw new ObjetosNegocioException(ex.getMessage());
         }
     }
 

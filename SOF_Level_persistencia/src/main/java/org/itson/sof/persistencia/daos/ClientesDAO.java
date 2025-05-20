@@ -301,8 +301,7 @@ public class ClientesDAO implements IClientesDAO {
             }
 
             if (clienteObtenido != null) {
-                logger.log(Level.INFO, "El cliente ya existe", cliente.getCorreo());
-                return null;
+                throw new PersistenciaSOFException("Cliente ya existente");
             }
             em.persist(cliente);
 
@@ -311,7 +310,7 @@ public class ClientesDAO implements IClientesDAO {
             return cliente;
 
         } catch (PersistenciaSOFException e) {
-            throw new PersistenciaSOFException("No se pudo conectar a la base de datos");
+            throw new PersistenciaSOFException(e.getMessage());
 
         } catch (Exception e) {
             throw new PersistenciaSOFException("Error al agregar al cliente");
