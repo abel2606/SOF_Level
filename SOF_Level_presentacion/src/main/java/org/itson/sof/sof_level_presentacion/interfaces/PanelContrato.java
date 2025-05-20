@@ -111,6 +111,8 @@ public class PanelContrato extends javax.swing.JPanel {
         btnCrearContrato.setVisible(false);
         btnEditarContrato.setVisible(true);
         btnAgregarCita.setVisible(true);
+        btnTerminarContrato.setVisible(true);
+        btnCancelarContrato.setVisible(true);
 
         this.fechaAnterior = Calendar.getInstance();
         fechaAnterior.setTime(jCalendarCitas.getDate());
@@ -148,6 +150,8 @@ public class PanelContrato extends javax.swing.JPanel {
         lblCitas.setText("Citas (Nuevo Contrato)");
         pnlCitas.setVisible(true);
         btnCrearContrato.setVisible(true);
+        btnTerminarContrato.setVisible(false);
+        btnCancelarContrato.setVisible(false);
 
         if (panelContenedor != null) {
             panelContenedor.removeAll();
@@ -569,6 +573,8 @@ public class PanelContrato extends javax.swing.JPanel {
                 this.btnAgregarCita.setEnabled(true);
                 this.btnCrearContrato.setVisible(false);
                 this.btnEditarContrato.setVisible(true);
+                btnTerminarContrato.setVisible(true);
+                btnCancelarContrato.setVisible(true);
                 JOptionPane.showMessageDialog(principal, "Contrato creado");
             } catch (GestorContratoException ex) {
                 JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error en creación del paquete", JOptionPane.ERROR_MESSAGE);
@@ -592,12 +598,11 @@ public class PanelContrato extends javax.swing.JPanel {
     }
 
     private void actualizarContrato() {
-        
-        
+
         ContratoDTO contratoDTO = contrato;
-        
+
         contratoDTO.setTematica(txtTematica.getText());
-        
+
         try {
             gestorContrato.actualizarContrato(contratoDTO);
             txtTematica.setEnabled(false);
@@ -607,7 +612,82 @@ public class PanelContrato extends javax.swing.JPanel {
         } catch (GestorContratoException ex) {
             JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error al actualizar", JOptionPane.ERROR_MESSAGE);
         }
-        
+
+    }
+
+    private void terminarContrato() {
+        int opcion = JOptionPane.showConfirmDialog(
+                principal,
+                "¿Está seguro que desea terminar el contrato?",
+                "Confirmar terminación",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        // Verificar la opción seleccionada por el usuario
+        if (opcion == JOptionPane.YES_OPTION) {
+            try {
+                gestorContrato.terminarContrato(contrato);
+                JOptionPane.showMessageDialog(
+                        principal, 
+                        "El contrato ha sido terminado.",
+                        "Contrato terminado",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+            } catch (GestorContratoException ex) {
+                JOptionPane.showMessageDialog(
+                        principal,
+                        "Error al terminar el contrato: " + ex.getMessage(), 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE 
+                );
+            }
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                    principal,
+                    "La terminación del contrato ha sido cancelada.", 
+                    "Terminación cancelada", 
+                    JOptionPane.INFORMATION_MESSAGE 
+            );
+        }
+    }
+
+    private void cancelarContrato() {
+        int opcion = JOptionPane.showConfirmDialog(
+                principal,
+                "¿Está seguro que desea cancelar el contrato?", 
+                "Confirmar cancelación", 
+                JOptionPane.YES_NO_OPTION 
+        );
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            try {
+                gestorContrato.cancelarContrato(contrato);
+                JOptionPane.showMessageDialog(
+                        principal, 
+                        "El contrato ha sido cancelado.",
+                        "Contrato cancelado",
+                        JOptionPane.INFORMATION_MESSAGE 
+                );
+
+            } catch (GestorContratoException ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Error al cancelar el contrato: " + ex.getMessage(), 
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE 
+                );
+            }
+        } else {
+
+            JOptionPane.showMessageDialog(
+                    principal, 
+                    "La cancelación del contrato ha sido anulada.", 
+                    "Cancelación anulada", 
+                    JOptionPane.INFORMATION_MESSAGE 
+            );
+        }
     }
 
 
@@ -630,6 +710,8 @@ public class PanelContrato extends javax.swing.JPanel {
         scrollPaneCitas = new javax.swing.JScrollPane();
         jCalendarCitas = new com.toedter.calendar.JCalendar();
         btnCrearContrato = new javax.swing.JButton();
+        btnTerminarContrato = new javax.swing.JButton();
+        btnCancelarContrato = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(220, 240, 255));
         setMaximumSize(new java.awt.Dimension(550, 750));
@@ -689,10 +771,10 @@ public class PanelContrato extends javax.swing.JPanel {
                 btnAgregarCitaActionPerformed(evt);
             }
         });
-        add(btnAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 430, 50, 50));
+        add(btnAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 430, 80, 70));
 
         lblAgregarCita.setText("Agregar cita");
-        add(lblAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 480, -1, -1));
+        add(lblAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 500, -1, -1));
 
         pnlCitas.setBackground(new java.awt.Color(220, 240, 255));
         pnlCitas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -729,6 +811,22 @@ public class PanelContrato extends javax.swing.JPanel {
             }
         });
         add(btnCrearContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 430, 140, -1));
+
+        btnTerminarContrato.setText("Terminar Contrato");
+        btnTerminarContrato.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnTerminarContratoMouseClicked(evt);
+            }
+        });
+        add(btnTerminarContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 490, 140, -1));
+
+        btnCancelarContrato.setText("Cancelar Contrato");
+        btnCancelarContrato.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCancelarContratoMouseClicked(evt);
+            }
+        });
+        add(btnCancelarContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 520, 140, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarCitaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarCitaMouseClicked
@@ -787,11 +885,21 @@ public class PanelContrato extends javax.swing.JPanel {
 
     }//GEN-LAST:event_btnCrearContratoMouseClicked
 
+    private void btnTerminarContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnTerminarContratoMouseClicked
+        terminarContrato();
+    }//GEN-LAST:event_btnTerminarContratoMouseClicked
+
+    private void btnCancelarContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarContratoMouseClicked
+        cancelarContrato();
+    }//GEN-LAST:event_btnCancelarContratoMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarCita;
+    private javax.swing.JButton btnCancelarContrato;
     private javax.swing.JButton btnCrearContrato;
     private javax.swing.JButton btnEditarContrato;
+    private javax.swing.JButton btnTerminarContrato;
     private javax.swing.JComboBox<String> cmbPaquete;
     private com.toedter.calendar.JCalendar jCalendarCitas;
     private javax.swing.JLabel lblAgregarCita;
