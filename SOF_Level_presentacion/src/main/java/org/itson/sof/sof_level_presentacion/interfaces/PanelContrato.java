@@ -103,11 +103,14 @@ public class PanelContrato extends javax.swing.JPanel {
         }
 
         if (contrato == null) {
+            btnEditarContrato.setVisible(false);
             inicializarCreacionContrato();
             return;
         }
-        
+
         btnCrearContrato.setVisible(false);
+        btnEditarContrato.setVisible(true);
+        btnAgregarCita.setVisible(true);
 
         this.fechaAnterior = Calendar.getInstance();
         fechaAnterior.setTime(jCalendarCitas.getDate());
@@ -140,13 +143,11 @@ public class PanelContrato extends javax.swing.JPanel {
         txtCliente.setEditable(true);
         cmbPaquete.setEnabled(true);
         txtTematica.setEnabled(true);
-        btnEditarContrato.setText("Guardar Contrato");
         btnAgregarCita.setVisible(false);
         lblAgregarCita.setVisible(false);
         lblCitas.setText("Citas (Nuevo Contrato)");
         pnlCitas.setVisible(true);
         btnCrearContrato.setVisible(true);
-        btnEditarContrato.setVisible(false);
 
         if (panelContenedor != null) {
             panelContenedor.removeAll();
@@ -557,19 +558,22 @@ public class PanelContrato extends javax.swing.JPanel {
 
         if (encontrado) {
             cliente.setCorreo(textoIngresado);
-            
+
             PaqueteDTO paquete = new PaqueteDTO();
             paquete.setNombre(cmbPaquete.getSelectedItem().toString());
-            
+
             try {
                 this.contrato = gestorContrato.crearContrato(contrato, cliente, paquete);
                 principal.setContrato(this.contrato);
                 this.btnAgregarCita.setVisible(true);
                 this.btnAgregarCita.setEnabled(true);
+                this.btnCrearContrato.setVisible(false);
+                this.btnEditarContrato.setVisible(true);
+                JOptionPane.showMessageDialog(principal, "Contrato creado");
             } catch (GestorContratoException ex) {
                 JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error en creación del paquete", JOptionPane.ERROR_MESSAGE);
             }
-            
+
         } else {
             JOptionPane.showMessageDialog(principal, "Este cliente no existe", "Error al crear contrato", JOptionPane.ERROR_MESSAGE);
             return;
@@ -585,6 +589,25 @@ public class PanelContrato extends javax.swing.JPanel {
         txtCliente.setEnabled(false);
         txtTematica.setEnabled(false);
         txtPrecio.setEnabled(false);
+    }
+
+    private void actualizarContrato() {
+        
+        
+        ContratoDTO contratoDTO = contrato;
+        
+        contratoDTO.setTematica(txtTematica.getText());
+        
+        try {
+            gestorContrato.actualizarContrato(contratoDTO);
+            txtTematica.setEnabled(false);
+            txtTematica.setEditable(false);
+            btnCrearContrato.setVisible(false);
+            JOptionPane.showMessageDialog(principal, "Contrato Actualizado");
+        } catch (GestorContratoException ex) {
+            JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error al actualizar", JOptionPane.ERROR_MESSAGE);
+        }
+        
     }
 
 
@@ -639,7 +662,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 btnEditarContratoMouseClicked(evt);
             }
         });
-        add(btnEditarContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 450, 110, -1));
+        add(btnEditarContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 460, 140, -1));
 
         lblTematica.setText("Tematica:");
         add(lblTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, -1, -1));
@@ -666,10 +689,10 @@ public class PanelContrato extends javax.swing.JPanel {
                 btnAgregarCitaActionPerformed(evt);
             }
         });
-        add(btnAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 430, 50, 50));
+        add(btnAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 430, 50, 50));
 
         lblAgregarCita.setText("Agregar cita");
-        add(lblAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 480, -1, -1));
+        add(lblAgregarCita, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 480, -1, -1));
 
         pnlCitas.setBackground(new java.awt.Color(220, 240, 255));
         pnlCitas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -698,14 +721,14 @@ public class PanelContrato extends javax.swing.JPanel {
         add(pnlCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 380, 350, 160));
         add(jCalendarCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 140, 460, 220));
 
-        btnCrearContrato.setText("Crear Contrato");
+        btnCrearContrato.setText("Guardar");
         btnCrearContrato.setToolTipText("");
         btnCrearContrato.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnCrearContratoMouseClicked(evt);
             }
         });
-        add(btnCrearContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 450, -1, -1));
+        add(btnCrearContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 430, 140, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarCitaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarCitaMouseClicked
@@ -718,9 +741,10 @@ public class PanelContrato extends javax.swing.JPanel {
 
     private void btnEditarContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarContratoMouseClicked
 
-        if (contrato == null) {
-            crearContrato();
-        }
+        this.btnCrearContrato.setVisible(true);
+        this.txtTematica.setEditable(true);
+        this.txtTematica.setEnabled(true);
+
 
     }//GEN-LAST:event_btnEditarContratoMouseClicked
 
@@ -752,7 +776,15 @@ public class PanelContrato extends javax.swing.JPanel {
     }//GEN-LAST:event_txtClienteKeyTyped
 
     private void btnCrearContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrearContratoMouseClicked
-        crearContrato();
+        if (this.contrato == null) {
+            crearContrato();
+            return;
+        }
+        txtTematica.setEditable(true);
+        txtTematica.setEnabled(true);
+        actualizarContrato();
+
+
     }//GEN-LAST:event_btnCrearContratoMouseClicked
 
 
