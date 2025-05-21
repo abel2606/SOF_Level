@@ -754,8 +754,9 @@ public class PanelContrato extends javax.swing.JPanel {
         setMinimumSize(new java.awt.Dimension(550, 750));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        lblCliente.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblCliente.setText("Cliente:");
-        add(lblCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 50, 20));
+        add(lblCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 80, 20));
 
         txtCliente.setEditable(false);
         txtCliente.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -766,13 +767,14 @@ public class PanelContrato extends javax.swing.JPanel {
                 txtClienteKeyTyped(evt);
             }
         });
-        add(txtCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, 300, -1));
+        add(txtCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, 260, -1));
 
+        lblPaquete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblPaquete.setText("Paquete:");
-        add(lblPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
+        add(lblPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, -1, -1));
 
         cmbPaquete.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo del paquete", "mlm", " " }));
-        add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 170, -1));
+        add(cmbPaquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 90, 170, -1));
 
         btnEditarContrato.setText("Editar Contrato");
         btnEditarContrato.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -782,19 +784,21 @@ public class PanelContrato extends javax.swing.JPanel {
         });
         add(btnEditarContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 460, 140, -1));
 
+        lblTematica.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblTematica.setText("Tematica:");
-        add(lblTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, -1, -1));
+        add(lblTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
 
         txtTematica.setColumns(20);
         txtTematica.setRows(5);
-        add(txtTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 140, 20));
+        add(txtTematica, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, 140, 20));
 
+        lblPrecio.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblPrecio.setText("Precio:");
-        add(lblPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 210, -1, -1));
-        add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 140, -1));
+        add(lblPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, -1, -1));
+        add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 190, 140, -1));
 
         lblCitas.setText("Citas (X)");
-        add(lblCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 350, -1, -1));
+        add(lblCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 290, -1, -1));
 
         btnAgregarCita.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
         btnAgregarCita.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -825,19 +829,19 @@ public class PanelContrato extends javax.swing.JPanel {
             pnlCitasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCitasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrollPaneCitas, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addComponent(scrollPaneCitas, javax.swing.GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
+                .addContainerGap())
         );
         pnlCitasLayout.setVerticalGroup(
             pnlCitasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCitasLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(scrollPaneCitas, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addComponent(scrollPaneCitas, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
-        add(pnlCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 380, 350, 160));
-        add(jCalendarCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 140, 460, 220));
+        add(pnlCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 330, 370, 210));
+        add(jCalendarCitas, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 40, 460, 220));
 
         btnCrearContrato.setText("Guardar");
         btnCrearContrato.setToolTipText("");
