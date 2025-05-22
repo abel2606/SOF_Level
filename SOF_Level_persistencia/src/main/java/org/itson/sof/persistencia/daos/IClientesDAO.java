@@ -56,14 +56,14 @@ public interface IClientesDAO {
     public Cliente obtenerCliente(String correo) throws PersistenciaSOFException;
 
     /**
-     * Elimina un cliente identificado por su correo electrónico.
+     * Cancela un cliente identificado por su correo electrónico.
      *
-     * @param correo El correo del cliente a eliminar.
+     * @param correo El correo del cliente a cancelar
      * @return El cliente eliminado.
      * @throws PersistenciaSOFException Si no se encuentra el cliente o ocurre
      * un error al eliminarlo.
      */
-    public Cliente eliminarCliente(String correo) throws PersistenciaSOFException;
+    public Cliente cancelarCliente(String correo) throws PersistenciaSOFException;
 
     /**
      * Edita los datos de un cliente identificado por su correo electrónico.

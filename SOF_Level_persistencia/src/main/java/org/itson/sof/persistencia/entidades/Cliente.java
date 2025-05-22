@@ -21,11 +21,14 @@ public class Cliente implements Serializable {
     @Column(name = "nombre")
     private String nombre;
     
-    @Column(name = "telefono")
+    @Column(name = "telefono", unique = true)
     private String telefono;
     
-    @Column(name = "correo")
+    @Column(name = "correo", unique = true)
     private String correo;
+    
+    @Column (name = "estado")
+    private String estado;
     
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contrato> contratos = new HashSet<>();
@@ -73,10 +76,31 @@ public class Cliente implements Serializable {
         this.contratos = contratos;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     @Override
     public String toString() {
-        return "Cliente{" + "id=" + id + ", nombre=" + nombre + ", telefono=" + telefono + ", correo=" + correo + '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Cliente{");
+        sb.append("id=").append(id);
+        sb.append(", nombre=").append(nombre);
+        sb.append(", telefono=").append(telefono);
+        sb.append(", correo=").append(correo);
+        sb.append(", estado=").append(estado);
+        sb.append(", contratos=").append(contratos);
+        sb.append('}');
+        return sb.toString();
     }
+    
+    
+
+    
     
     
 }

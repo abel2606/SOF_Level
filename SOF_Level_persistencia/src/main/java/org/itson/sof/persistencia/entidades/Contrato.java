@@ -2,6 +2,7 @@ package org.itson.sof.persistencia.entidades;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +31,13 @@ public class Contrato implements Serializable {
 
     @Column(name = "folio")
     private String folio;
+    
+    @Column(name = "fecha_inicio")
+    private GregorianCalendar fechaInicio;
 
+    @Column(name = "fecha_termino")
+    private GregorianCalendar fechaTermino;
+    
     @ManyToOne
     @JoinColumn(name = "paquete_id")
     private Paquete paquete;
@@ -112,18 +119,42 @@ public class Contrato implements Serializable {
         this.folio = folio;
     }
 
+    public GregorianCalendar getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(GregorianCalendar fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public GregorianCalendar getFechaTermino() {
+        return fechaTermino;
+    }
+
+    public void setFechaTermino(GregorianCalendar fechaTermino) {
+        this.fechaTermino = fechaTermino;
+    }
+
     @Override
     public String toString() {
-        return "Contrato{"
-                + "id=" + id
-                + ", tematica=" + tematica
-                + ", estado=" + estado
-                + ", folio=" + folio
-                + ", paquete=" + paquete
-                + ", cliente=" + cliente.getNombre()
-                + ", compras=" + compras
-                + ", citas=" + citas
-                + '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Contrato{");
+        sb.append("id=").append(id);
+        sb.append(", tematica=").append(tematica);
+        sb.append(", estado=").append(estado);
+        sb.append(", folio=").append(folio);
+        sb.append(", fechaInicio=").append(fechaInicio);
+        sb.append(", fechaTermino=").append(fechaTermino);
+        sb.append(", paquete=").append(paquete);
+        sb.append(", cliente=").append(cliente);
+        sb.append(", compras=").append(compras);
+        sb.append(", citas=").append(citas);
+        sb.append('}');
+        return sb.toString();
     }
+    
+    
+
+    
 
 }

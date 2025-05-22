@@ -16,7 +16,7 @@ public class GestorClientes implements IGestorClientes {
     private static GestorClientes gestor;
     private final IClienteBO clienteBO;
 
-    private GestorClientes() {
+    public GestorClientes() {
         this.clienteBO = new ClienteBO();
     }
 
@@ -68,9 +68,9 @@ public class GestorClientes implements IGestorClientes {
     }
 
     @Override
-    public boolean eliminarCliente(String correo) throws GestorClientesException {
+    public ClienteDTO cancelarCliente(String correo) throws GestorClientesException {
         try {
-            return clienteBO.eliminarCliente(correo);
+            return clienteBO.cancelarCliente(correo);
         } catch (ObjetosNegocioException ex) {
             throw new GestorClientesException("Error al eliminar cliente: " + ex.getMessage(), ex);
         }

@@ -16,6 +16,7 @@ public class ClienteDTO {
     private String telefono;
     private String correo;
     private Set<ContratoDTO> contratos = new HashSet<>();
+    private String estado;
     private Long id;
 
     /**
@@ -32,10 +33,11 @@ public class ClienteDTO {
      * @param telefono Teléfono del cliente.
      * @param correo Correo electrónico del cliente.
      */
-    public ClienteDTO(String nombre, String telefono, String correo) {
+    public ClienteDTO(String nombre, String telefono, String correo, String estado) {
         this.nombre = nombre;
         this.telefono = telefono;
         this.correo = correo;
+        this.estado = estado;
     }
 
     /**
@@ -117,8 +119,14 @@ public class ClienteDTO {
     public void setId(Long id) {
         this.id = id;
     }
-    
-    
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
     /**
      * Devuelve una representación en cadena del objeto ClienteDTO.
@@ -133,6 +141,8 @@ public class ClienteDTO {
         sb.append(", telefono=").append(telefono);
         sb.append(", correo=").append(correo);
         sb.append(", contratos=").append(contratos);
+        sb.append(", estado=").append(estado);
+        sb.append(", id=").append(id);
         sb.append('}');
         return sb.toString();
     }

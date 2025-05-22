@@ -1,5 +1,8 @@
 package org.itson.sof.persistencia.daos;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,7 +87,6 @@ public class ContratosDAO implements IContratosDAO {
         }
     }
 
-    
     @Override
     public Contrato crearContrato(Contrato contrato, Cliente clienteInput, Paquete paqueteInput) throws PersistenciaSOFException {
         EntityManager em = null;
@@ -94,7 +96,6 @@ public class ContratosDAO implements IContratosDAO {
             em = conexion.crearConexion();
             tx = em.getTransaction();
             tx.begin();
-
 
             Cliente managedCliente = null;
             if (clienteInput != null && clienteInput.getId() != null) {
@@ -131,8 +132,7 @@ public class ContratosDAO implements IContratosDAO {
             contrato.setCliente(managedCliente);
             contrato.setPaquete(managedPaquete);
 
-
-            em.persist(contrato); 
+            em.persist(contrato);
 
             tx.commit(); // Confirmar la transacción
             logger.log(Level.INFO, "Contrato creado con folio: {0}", contrato.getFolio());
@@ -225,6 +225,8 @@ public class ContratosDAO implements IContratosDAO {
 
             // Cambiar el estado
             contratoEncontrado.setEstado(nuevoEstado);
+            //Indica la fecha de cambio de estado
+            contratoEncontrado.setFechaTermino(contrato.getFechaTermino());
 
             // Guardar cambios (ya es entidad gestionada, no requiere merge)
             tx.commit();
@@ -243,6 +245,75 @@ public class ContratosDAO implements IContratosDAO {
             throw new PersistenciaSOFException("Error al actualizar estado del contrato.");
         } finally {
             if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Contrato> cancelarContratosCliente(String correo) throws PersistenciaSOFException {
+        EntityManager em = null;
+        EntityTransaction transaction = null;
+        List<Contrato> contratosModificados = new ArrayList<>();
+
+        try {
+            em = conexion.crearConexion(); // Reemplaza 'conexion' con tu forma de obtener el EntityManagerFactory/EntityManager
+            transaction = em.getTransaction();
+            transaction.begin();
+
+            // 1. Buscar al cliente por su correo electrónico
+            Cliente clienteExistente;
+            try {
+                String jpqlCliente = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
+                clienteExistente = em.createQuery(jpqlCliente, Cliente.class)
+                        .setParameter("correoCliente", correo)
+                        .getSingleResult();
+            } catch (NoResultException e) {
+                logger.log(Level.WARNING, "No se encontró cliente con correo para cancelar contratos: " + correo);
+                throw new PersistenciaSOFException("No se encontró el cliente con el correo proporcionado: " + correo);
+            }
+
+            // 2. Si el cliente existe, buscar sus contratos activos
+            String jpqlContratos = "SELECT co FROM Contrato co WHERE co.cliente = :clienteEntidad AND co.estado = :estadoActual";
+            List<Contrato> contratosActivosDelCliente = em.createQuery(jpqlContratos, Contrato.class)
+                    .setParameter("clienteEntidad", clienteExistente)
+                    .setParameter("estadoActual", "ACTIVO")
+                    .getResultList();
+
+            if (contratosActivosDelCliente.isEmpty()) {
+                return null;
+            } else {
+                for (Contrato contrato : contratosActivosDelCliente) {
+                    contrato.setEstado("CANCELADO"); // Cambiar estado
+                    
+                    GregorianCalendar fechaTerminoContrato = new GregorianCalendar();
+                    fechaTerminoContrato.set(Calendar.HOUR_OF_DAY, 0);
+                    fechaTerminoContrato.set(Calendar.MINUTE, 0);
+                    fechaTerminoContrato.set(Calendar.SECOND, 0);
+                    fechaTerminoContrato.set(Calendar.MILLISECOND, 0);
+                    
+                    contrato.setFechaTermino(fechaTerminoContrato);
+                    contratosModificados.add(contrato);
+                }
+                logger.log(Level.INFO, "{0} contratos del cliente con correo {1} han sido cambiados a CANCELADO.", new Object[]{contratosModificados.size(), correo});
+            }
+
+            transaction.commit();
+            return contratosModificados;
+
+        } catch (PersistenciaSOFException e) { // Relanzar excepciones específicas de la capa
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e; // Ya fue logueada o es específica
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            logger.log(Level.SEVERE, "Error inesperado al cancelar contratos para el cliente con correo: " + correo, e);
+            throw new PersistenciaSOFException("Error inesperado al procesar la cancelación de contratos: " + e.getMessage(), e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }

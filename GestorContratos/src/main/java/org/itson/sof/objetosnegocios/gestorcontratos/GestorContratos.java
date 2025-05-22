@@ -41,7 +41,7 @@ public class GestorContratos implements IGestorContratos{
             ClienteDTO clienteEncontrado = clienteBO.obtenerCliente(cliente.getCorreo());
             PaqueteDTO paqueteEncontrado = paqueteBO.obtenerPaquete(paquete);
             
-            contrato.setEstado("ACTIVO");
+            
             
             return contratoBO.crearContrato(contrato, clienteEncontrado, paqueteEncontrado);
             
@@ -116,6 +116,15 @@ public class GestorContratos implements IGestorContratos{
             throw new GestorContratoException("Error al terminar el contrato: " + ex.getMessage(), ex);
         }
         
+    }
+
+    @Override
+    public boolean cancelarContratosCliente(String correo) throws GestorContratoException {
+        try {
+            return contratoBO.cancelarContratoCliente(correo);
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorContratoException ("Error al momento de cancelar los contratos del cliente");
+        }
     }
     
     

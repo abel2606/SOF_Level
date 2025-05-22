@@ -67,4 +67,12 @@ public interface IContratoBO {
      * @throws ObjetosNegocioException en caso que ocurra un error en la consulta del contrato
      */
     public ContratoDTO obtenerContratoFolio (String folio) throws ObjetosNegocioException;    
+    
+    /**
+     * Método para cancelar todos los contratos de un cliente
+     * @param correo correo del cliente
+     * @return true en caso de haber cancelado contratos
+     * @throws ObjetosNegocioException en caso de algún error al momento de cancelar contratos
+     */
+    public boolean cancelarContratoCliente(String correo) throws ObjetosNegocioException;
 }

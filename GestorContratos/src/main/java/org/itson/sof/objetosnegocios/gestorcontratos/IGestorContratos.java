@@ -24,5 +24,7 @@ public interface IGestorContratos {
     
     public ContratoDTO terminarContrato (ContratoDTO contrato) throws GestorContratoException;
     
+    public boolean cancelarContratosCliente (String correo) throws GestorContratoException;
+    
     
 }

@@ -34,12 +34,12 @@ public interface IClienteBO {
      */
     public ClienteDTO editarCliente(String correo, ClienteDTO clienteDTO) throws ObjetosNegocioException;
     /**
-     * Método para eliminar un cliente del registro
-     * @param correo correo único del cliente que se desea eliminar
-     * @return true en caso de eliminar al cliente, false en caso de no poder eliminar
+     * Método para cancelar un cliente del registro
+     * @param correo correo único del cliente que se desea cancelar
+     * @return true en caso de cancelar al cliente, false en caso de no poder eliminar
      * @throws ObjetosNegocioException en caso de existir un error si se borra el cliente
      */
-    public boolean eliminarCliente(String correo) throws ObjetosNegocioException;
+    public ClienteDTO cancelarCliente(String correo) throws ObjetosNegocioException;
 
     public ClienteDTO obtenerCliente(String nombre) throws ObjetosNegocioException;
 }

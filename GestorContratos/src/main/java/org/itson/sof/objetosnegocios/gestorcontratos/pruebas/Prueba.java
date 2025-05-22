@@ -4,6 +4,8 @@
  */
 package org.itson.sof.objetosnegocios.gestorcontratos.pruebas;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.gestorcontratos.GestorContratos;
 import org.itson.sof.objetosnegocios.gestorcontratos.IGestorContratos;
 import org.itson.sof.objetosnegocios.gestorcontratos.gestorcontratosexception.GestorContratoException;
@@ -26,26 +28,12 @@ public class Prueba {
         
         
         
-        
-        ClienteDTO cliente = new ClienteDTO();
-        
-        cliente.setCorreo("hector@gmail.com");
-        
-        PaqueteDTO paquete = new PaqueteDTO();
-        
-        paquete.setNombre("boda");
-        
-        ContratoDTO contrato = new ContratoDTO();
-        
-        contrato.setEstado("ACTIVO");
-        contrato.setFolio("PRUEBA");
-        contrato.setTematica("MODIFICACIÓN NUEVA");
-        
         try {
-            gestor.cancelarContrato(contrato);
+            gestor.cancelarContratosCliente("abel35@gmail.com");
         } catch (GestorContratoException ex) {
-            System.err.println(ex.getMessage());
+            Logger.getLogger(Prueba.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         
         
     }
