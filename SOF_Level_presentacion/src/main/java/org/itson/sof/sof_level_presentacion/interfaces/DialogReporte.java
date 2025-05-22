@@ -66,9 +66,16 @@ public class DialogReporte extends javax.swing.JDialog {
         this.txtaUbicacion.setText(ruta);
         this.txtaNombre.setText("Reporte de ventas");
         Date hoy = new Date();
-        this.cmbFechaFin.setDate(hoy);
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(hoy);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        Date mañana = calendar.getTime();
+        
+        this.cmbFechaFin.setDate(mañana);
         Calendar inicio = Calendar.getInstance();
-        inicio.set(Calendar.MONTH, Calendar.JANUARY);
+        inicio.set(Calendar.MONTH, hoy.getMonth());
         inicio.set(Calendar.DAY_OF_MONTH, 1);
         this.cmbFechaInicio.setDate(inicio.getTime());
         
@@ -146,14 +153,21 @@ public class DialogReporte extends javax.swing.JDialog {
         // ambas fechas ya hayan ocurrido)
         Date fechaInicio = cmbFechaInicio.getDate();
         Date fechaFin = cmbFechaFin.getDate();
+        
         Date hoy = new Date();
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(hoy);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        
+        Date mañana = calendar.getTime();
 
         if (fechaInicio == null || fechaFin == null) {
             JOptionPane.showMessageDialog(null, "Ambas fechas deben estar seleccionadas.");
             return false;
         }
 
-        if (fechaInicio.after(hoy) || fechaFin.after(hoy)) {
+        if (fechaInicio.after(mañana) || fechaFin.after(mañana)) {
             JOptionPane.showMessageDialog(null, "Las fechas no pueden ser futuras.");
             return false;
         }
@@ -253,7 +267,6 @@ public class DialogReporte extends javax.swing.JDialog {
         this.popMenu.add(scrollPane);
 
         clientes = gestorClientes.obtenerTodosClientes();
-        
         
         DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre"}, 0) {
             @Override
@@ -370,6 +383,7 @@ public class DialogReporte extends javax.swing.JDialog {
             if (!yaExiste) {
                 ClienteDTO copia = new ClienteDTO();
                 copia.setNombre(seleccionado.getNombre());
+                copia.setId(seleccionado.getId());
                 
                 clientesSeleccionados.add(copia);
                 ((DefaultTableModel) this.tblCliente.getModel()).addRow(new Object[]{nombre});

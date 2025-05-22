@@ -115,6 +115,7 @@ public class PanelContrato extends javax.swing.JPanel {
         } else {
             lblEdit.setVisible(true);
             btnAgregarCita.setVisible(true);
+            lblAgregarCita.setVisible(true);
         }
 
         this.fechaAnterior = Calendar.getInstance();
@@ -139,12 +140,15 @@ public class PanelContrato extends javax.swing.JPanel {
         this.lbldescTerminarContrato.setVisible(false);
         
         if (contrato == null) {
+            txtTematica.setEnabled(true);
+            txtTematica.setText("");
             this.lblAgregarCita.setVisible(false);
             btnAgregarCita.setVisible(false);
-            
             lblEdit.setVisible(true);
             btnCrearContrato.setVisible(true);
         } else {
+            txtTematica.setEnabled(false);
+            txtTematica.setText(contrato.getTematica());
             lblEdit.setVisible(false);
             btnCrearContrato.setVisible(false);
             
@@ -165,12 +169,10 @@ public class PanelContrato extends javax.swing.JPanel {
     private void inicializarCreacionContrato() {
         txtCliente.setText("");
         cmbPaquete.removeAllItems();
-        txtTematica.setText("");
         txtPrecio.setText("$ 0.0");
         txtCliente.setEnabled(true);
         txtCliente.setEditable(true);
         cmbPaquete.setEnabled(true);
-        txtTematica.setEnabled(true);
         lblCitas.setText("Citas (Nuevo Contrato)");
         pnlCitas.setVisible(true);
 
@@ -597,6 +599,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 principal.setContrato(this.contrato);
                 this.btnAgregarCita.setVisible(true);
                 this.btnAgregarCita.setEnabled(true);
+                lblAgregarCita.setVisible(true);
                 this.btnConfirmarEdicion.setVisible(false);
                 this.lblEdit.setVisible(true);
                 JOptionPane.showMessageDialog(principal, "Contrato creado");
@@ -612,11 +615,11 @@ public class PanelContrato extends javax.swing.JPanel {
 
     private void llenarCamposContrato() {
         txtCliente.setText(contrato.getCliente().getNombre());
-        txtTematica.setText(contrato.getTematica());
+        
         txtPrecio.setText("$ " + contrato.getPaquete().getPrecio());
 
         txtCliente.setEnabled(false);
-        txtTematica.setEnabled(false);
+        //txtTematica.setEnabled(false);
         txtPrecio.setEnabled(false);
     }
 

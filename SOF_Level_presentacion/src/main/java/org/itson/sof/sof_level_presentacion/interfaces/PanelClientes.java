@@ -15,6 +15,9 @@ import javax.swing.text.DocumentFilter;
 import org.itson.sof.objetosnegocios.gestorclientes.GestorClientes;
 import org.itson.sof.objetosnegocios.gestorclientes.IGestorClientes;
 import org.itson.sof.objetosnegocios.gestorclientes.gestorexception.GestorClientesException;
+import org.itson.sof.objetosnegocios.gestorcontratos.GestorContratos;
+import org.itson.sof.objetosnegocios.gestorcontratos.IGestorContratos;
+import org.itson.sof.objetosnegocios.gestorcontratos.gestorcontratosexception.GestorContratoException;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionCellEditor;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionCellRender;
@@ -31,14 +34,16 @@ public class PanelClientes extends javax.swing.JPanel {
     private static final int COLUMNA_TELEFONO = 2;
     private static final int COLUMNA_ACCIONES = 3;
 
-    private IGestorClientes gestor;
+    private IGestorClientes gestorClientes;
+     private IGestorContratos gestorContratos;
     private final PantallaPrincipal principal;
     private boolean inicializado = false;
     private List<ClienteDTO> clientesTotales = new LinkedList<>();
 
     public PanelClientes(PantallaPrincipal principal) {
         this.principal = principal;
-        gestor = GestorClientes.getInstance();
+        gestorClientes = GestorClientes.getInstance();
+        gestorContratos = GestorContratos.getInstance();
     }
 
     public void inicializar() {
@@ -53,7 +58,7 @@ public class PanelClientes extends javax.swing.JPanel {
 
     private List<ClienteDTO> obtenerClientes() {
         try {
-            return gestor.obtenerTodosClientes();
+            return gestorClientes.obtenerTodosClientes();
         } catch (GestorClientesException ex) {
             Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
             return new LinkedList<>();
@@ -78,7 +83,7 @@ public class PanelClientes extends javax.swing.JPanel {
             public void onEditar(int row) {
                 String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
                 try {
-                    ClienteDTO cliente = gestor.obtenerCliente(correo);
+                    ClienteDTO cliente = gestorClientes.obtenerCliente(correo);
                     DialogCliente dc = new DialogCliente(null, true, cliente);
                     dc.setVisible(true);
 
@@ -97,20 +102,22 @@ public class PanelClientes extends javax.swing.JPanel {
                 String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
                 int opcion = JOptionPane.showConfirmDialog(
                         null,
-                        "¿Estás seguro de que deseas eliminar este cliente?",
+                        "¿Estás seguro de que deseas cancelar este cliente?",
                         "Confirmar eliminación",
                         JOptionPane.YES_NO_OPTION
                 );
 
                 if (opcion == JOptionPane.YES_OPTION) {
                     try {
-                        if (gestor.eliminarCliente(correo)) {
-                            clientesTotales.removeIf(c -> c.getCorreo().equals(correo));
-                            cargarClientesEnTabla(clientesTotales);
-                            JOptionPane.showMessageDialog(null, "Cliente eliminado con éxito.");
-                        }
+                        gestorClientes.cancelarCliente(correo);
+                        clientesTotales.removeIf(c -> c.getCorreo().equals(correo));
+                        cargarClientesEnTabla(clientesTotales);
+                        gestorContratos.cancelarContratosCliente(correo);
+                        JOptionPane.showMessageDialog(null, "Cliente cancelado con éxito.");
                     } catch (GestorClientesException ex) {
-                        JOptionPane.showMessageDialog(null, "Error al eliminar: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(null, "Error al cancelar: " + ex.getMessage());
+                    } catch (GestorContratoException ex) {
+                        JOptionPane.showMessageDialog(null, "No se pudieron cancelar los contratos: " + ex.getMessage());
                     }
                 }
             }

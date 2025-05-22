@@ -182,7 +182,7 @@ public class DialogCliente extends javax.swing.JDialog {
         if (!validarCampos(nombre, correo, celular)) {
             return;
         }
-        ClienteDTO cliente = new ClienteDTO(nombre, celular, correo);
+        ClienteDTO cliente = new ClienteDTO(nombre, celular, correo,"activo");
         try {
             if (editando) {
                 cliente = gestionarClientes.editarCliente(clienteDTO.getCorreo(), cliente);

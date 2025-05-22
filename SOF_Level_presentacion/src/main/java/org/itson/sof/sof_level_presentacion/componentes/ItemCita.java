@@ -24,7 +24,6 @@ public class ItemCita extends javax.swing.JPanel {
      */
     public ItemCita(GregorianCalendar fechaHoraInicio) {
         initComponents();
-        
         // Formatos para la fecha y hora
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");

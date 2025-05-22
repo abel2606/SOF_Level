@@ -27,11 +27,23 @@ public class GestorContratos implements IGestorContratos{
     private IClienteBO clienteBO;
     private IContratoBO contratoBO;
     private IPaqueteBO paqueteBO;
+    private static GestorContratos gestor;
 
     public GestorContratos() {
         clienteBO = new ClienteBO();
         contratoBO = new ContratoBO();
         paqueteBO = new PaqueteBO();
+    }
+    
+    public static GestorContratos getInstance() {
+        if (gestor == null) {
+            synchronized (GestorContratos.class) {
+                if (gestor == null) {
+                    gestor = new GestorContratos();
+                }
+            }
+        }
+        return gestor;
     }
 
     @Override

@@ -11,7 +11,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.itson.sof.sof_dtos.CitaDTO;
-import org.itson.sof.sof_level_presentacion.componentes.ItemCita;
 import org.itson.sof.sof_level_presentacion.interfaces.DialogCita;
 import org.itson.sof.sof_level_presentacion.interfaces.PantallaPrincipal;
 
@@ -23,6 +22,7 @@ public class ItemScrollCitas extends javax.swing.JDialog {
     DialogCita dlgCita;
     List<CitaDTO> citasDelDia;
     PantallaPrincipal pantallaPrincipal;
+    boolean unicaCita = false;
     /**
      * Creates new form ItemScrollCitas
      * @param parent
@@ -33,6 +33,7 @@ public class ItemScrollCitas extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.setResizable(false);
+        this.citasDelDia=citasDelDia;
         
         if (parent instanceof PantallaPrincipal pantallaPrincipal1) {
              pantallaPrincipal= pantallaPrincipal1;
@@ -79,20 +80,23 @@ public class ItemScrollCitas extends javax.swing.JDialog {
      * @param cita cita al que se le hizo click
      */
     private void manejarClicEnCita(CitaDTO cita) {
-        
-        boolean unicaCita=false;
         if (citasDelDia != null) {
-                if (citasDelDia.size() == 1) {
-                    unicaCita = true;
-                }
+            if (citasDelDia.size() == 1) {
+                unicaCita = true;
             }
-        
+        }
+
         dlgCita = new DialogCita(pantallaPrincipal, true, cita, unicaCita);
         dlgCita.setVisible(true);
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                System.out.println("El diálogo de cita se ha cerrado.");
+                if (citasDelDia != null) {
+                    if (citasDelDia.size() == 1) {
+                        unicaCita = true;
+                    }
+                }
+
             }
         });
     }

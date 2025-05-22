@@ -16,6 +16,9 @@ import org.itson.sof.sof_level_presentacion.componentes.TableActionCellEditor;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionCellRender;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionEvent;
 import org.itson.sof.objetosnegocios.gestorclientes.IGestorClientes;
+import org.itson.sof.objetosnegocios.gestorcontratos.GestorContratos;
+import org.itson.sof.objetosnegocios.gestorcontratos.IGestorContratos;
+import org.itson.sof.objetosnegocios.gestorcontratos.gestorcontratosexception.GestorContratoException;
 import org.itson.sof.sof_level_presentacion.interfaces.DialogCliente;
 
 /**
@@ -25,11 +28,13 @@ import org.itson.sof.sof_level_presentacion.interfaces.DialogCliente;
 public class PantallaClientes extends javax.swing.JFrame {
 
     private IGestorClientes gestionarClientes;
+    private IGestorContratos gestorContratos;
 
     public PantallaClientes() {
 
         initComponents();
         gestionarClientes = GestorClientes.getInstance();
+        gestorContratos = GestorContratos.getInstance();
 
 //        TableActionEvent event = new TableActionEvent() {
 //            @Override
@@ -110,16 +115,19 @@ public class PantallaClientes extends javax.swing.JFrame {
                         String correo = (String) model.getValueAt(row, 2); 
 
                         try {
-                            boolean eliminado = GestorClientes.getInstance().eliminarCliente(correo);
+                            boolean eliminado = GestorClientes.getInstance().cancelarCliente(correo)!=null;
+                            gestorContratos.cancelarContratosCliente(correo);
                             if (eliminado) {
                                 model.removeRow(row);
-                                JOptionPane.showMessageDialog(null, "Cliente eliminado con éxito.");
+                                JOptionPane.showMessageDialog(null, "Cliente cancelado con éxito.");
                             }
                         } catch (GestorClientesException ex) {
-                            JOptionPane.showMessageDialog(null, "Error al eliminar: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(null, "Error al cancelar: " + ex.getMessage());
+                        } catch (GestorContratoException ex) {
+                            JOptionPane.showMessageDialog(null, "No se pudieron cancelar los contratos: " + ex.getMessage());
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Eliminación cancelada.");
+                        JOptionPane.showMessageDialog(null, "Cancelación cancelada.");
                     }
 
                 }
