@@ -5,6 +5,7 @@ import com.toedter.calendar.JDayChooser;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -98,7 +99,7 @@ public class PanelContrato extends javax.swing.JPanel {
             inicializado = true;
         }
         deshabilitar();
-        
+
         if (contrato == null) {
             lblEdit.setVisible(false);
             inicializarCreacionContrato();
@@ -138,6 +139,7 @@ public class PanelContrato extends javax.swing.JPanel {
         this.lblCancelarContrato.setVisible(false);
         this.lblDescCancelarContrato.setVisible(false);
         this.lbldescTerminarContrato.setVisible(false);
+        txtPrecio.setEnabled(false);
         
         if (contrato == null) {
             txtTematica.setEnabled(true);
@@ -600,8 +602,8 @@ public class PanelContrato extends javax.swing.JPanel {
                 this.btnAgregarCita.setVisible(true);
                 this.btnAgregarCita.setEnabled(true);
                 lblAgregarCita.setVisible(true);
-                this.btnConfirmarEdicion.setVisible(false);
                 this.lblEdit.setVisible(true);
+                btnCrearContrato.setVisible(false);
                 JOptionPane.showMessageDialog(principal, "Contrato creado");
             } catch (GestorContratoException ex) {
                 JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error en creación del paquete", JOptionPane.ERROR_MESSAGE);
