@@ -208,6 +208,17 @@ public class GestorCitas implements IGestorCitas {
             throw new GestorCitasException(ex.getMessage());
         }
     }
+
+    @Override
+    public boolean eliminarCitasCotrato(String folio) throws GestorCitasException {
+        
+        try {
+            return citaBO.eliminarCitasContrato(folio);
+        } catch (ObjetosNegocioException ex) {
+            throw new GestorCitasException ("No se pudieon eliminar las citas del contrato");
+        }
+        
+    }
     
     
 

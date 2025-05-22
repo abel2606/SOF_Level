@@ -67,11 +67,19 @@ public interface ICitasDAO {
     public List<Cita> obtenerCitasFecha (Cita cita) throws PersistenciaSOFException;
     
     /**
-     * 
-     * @param fecha
-     * @return
-     * @throws PersistenciaSOFException 
+     * Obtiene todas las citas de una fecha
+     * @param fecha fecha la cuál se desan obtener las citas
+     * @return citas que se obtubieron
+     * @throws PersistenciaSOFException en caso de algún error al consultar las citas por fechas 
      */
     public List<Cita> obtenerCitasPorFecha(String fecha) throws PersistenciaSOFException;
+    
+    /**
+     * Método para eliminar todas las citas de un contrato
+     * @param folio folio del contrato
+     * @return true en caso de haber eliminado citas
+     * @throws PersistenciaSOFException en caso de algún error al eliminar citas
+     */
+    public boolean eliminarCitasContrato (String folio) throws PersistenciaSOFException;
     
 }

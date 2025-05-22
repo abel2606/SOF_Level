@@ -12,6 +12,9 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import org.itson.sof.objetosnegocios.gestorcitas.GestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.IGestorCitas;
+import org.itson.sof.objetosnegocios.gestorcitas.gestorexception.GestorCitasException;
 import org.itson.sof.objetosnegocios.gestorclientes.GestorClientes;
 import org.itson.sof.objetosnegocios.gestorclientes.IGestorClientes;
 import org.itson.sof.objetosnegocios.gestorclientes.gestorexception.GestorClientesException;
@@ -19,6 +22,7 @@ import org.itson.sof.objetosnegocios.gestorcontratos.GestorContratos;
 import org.itson.sof.objetosnegocios.gestorcontratos.IGestorContratos;
 import org.itson.sof.objetosnegocios.gestorcontratos.gestorcontratosexception.GestorContratoException;
 import org.itson.sof.sof_dtos.ClienteDTO;
+import org.itson.sof.sof_dtos.ContratoDTO;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionCellEditor;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionCellRender;
 import org.itson.sof.sof_level_presentacion.componentes.TableActionEvent;
@@ -35,7 +39,8 @@ public class PanelClientes extends javax.swing.JPanel {
     private static final int COLUMNA_ACCIONES = 3;
 
     private IGestorClientes gestorClientes;
-     private IGestorContratos gestorContratos;
+    private IGestorContratos gestorContratos;
+    private IGestorCitas gestorCitas;
     private final PantallaPrincipal principal;
     private boolean inicializado = false;
     private List<ClienteDTO> clientesTotales = new LinkedList<>();
@@ -44,6 +49,7 @@ public class PanelClientes extends javax.swing.JPanel {
         this.principal = principal;
         gestorClientes = GestorClientes.getInstance();
         gestorContratos = GestorContratos.getInstance();
+        gestorCitas = GestorCitas.getInstance();
     }
 
     public void inicializar() {
@@ -102,7 +108,7 @@ public class PanelClientes extends javax.swing.JPanel {
                 String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
                 int opcion = JOptionPane.showConfirmDialog(
                         null,
-                        "¿Estás seguro de que deseas cancelar este cliente?",
+                        "¿Estás seguro de que deseas cancelar este cliente? Esto cancelara sus contratos y eliminará sus citas",
                         "Confirmar eliminación",
                         JOptionPane.YES_NO_OPTION
                 );
@@ -112,7 +118,19 @@ public class PanelClientes extends javax.swing.JPanel {
                         gestorClientes.cancelarCliente(correo);
                         clientesTotales.removeIf(c -> c.getCorreo().equals(correo));
                         cargarClientesEnTabla(clientesTotales);
-                        gestorContratos.cancelarContratosCliente(correo);
+                        List<ContratoDTO> contratosCancelados = gestorContratos.cancelarContratosCliente(correo);
+
+                        if (contratosCancelados != null && !contratosCancelados.isEmpty()) {
+
+                            for (ContratoDTO contrato : contratosCancelados) {
+                                try {
+                                    gestorCitas.eliminarCitasCotrato(contrato.getFolio());
+                                } catch (GestorCitasException ex) {
+                                    Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+
+                        }
                         JOptionPane.showMessageDialog(null, "Cliente cancelado con éxito.");
                     } catch (GestorClientesException ex) {
                         JOptionPane.showMessageDialog(null, "Error al cancelar: " + ex.getMessage());
@@ -147,8 +165,8 @@ public class PanelClientes extends javax.swing.JPanel {
             }
         });
     }
-    
-    private void agregarCliente(){
+
+    private void agregarCliente() {
         DialogCliente dc = new DialogCliente(null, true);
         dc.setVisible(true);
 
@@ -162,8 +180,8 @@ public class PanelClientes extends javax.swing.JPanel {
             }
         }
     }
-    
-    private void buscadorKey(){
+
+    private void buscadorKey() {
         String texto = txtBuscador.getText().toLowerCase();
         List<ClienteDTO> filtrados = new LinkedList<>();
 

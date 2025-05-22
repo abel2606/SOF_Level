@@ -17,6 +17,7 @@ import javax.persistence.TypedQuery;
 import org.itson.sof.persistencia.conexion.IConexion;
 import org.itson.sof.persistencia.entidades.Cita;
 import org.itson.sof.persistencia.entidades.CitaMaterial;
+import org.itson.sof.persistencia.entidades.Contrato;
 import org.itson.sof.persistencia.entidades.Material;
 import org.itson.sof.persistencia.exception.PersistenciaSOFException;
 
@@ -50,7 +51,7 @@ public class CitasDAO implements ICitasDAO {
             logger.log(Level.INFO, "Cita obtenida: ID({0})", citaDeCodigo.getId());
             return citaDeCodigo;
         } catch (PersistenciaSOFException e) {
-            if (transaction!= null && transaction.isActive()) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             logger.log(Level.SEVERE, "Error al obtener las citas del contrato", e);
@@ -67,12 +68,12 @@ public class CitasDAO implements ICitasDAO {
     public List<Cita> obtenerCitasContratos(long contratoId) throws PersistenciaSOFException {
         EntityManager em = null;
         EntityTransaction transaction = null;
-        
+
         try {
             em = conexion.crearConexion();
             transaction = em.getTransaction();
             transaction.begin();
-            
+
             String jpql = "SELECT c FROM Cita c WHERE c.contrato.id = :contratoId";
             List<Cita> citasDeContrato = em.createQuery(jpql, Cita.class)
                     .setParameter("contratoId", contratoId)
@@ -82,7 +83,7 @@ public class CitasDAO implements ICitasDAO {
 
             return citasDeContrato;
         } catch (PersistenciaSOFException e) {
-            if (transaction!= null && transaction.isActive()) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             logger.log(Level.SEVERE, "Error al obtener las citas del contrato", e);
@@ -95,7 +96,7 @@ public class CitasDAO implements ICitasDAO {
     }
 
     @Override
-    public Cita obtenerCita(Cita cita) throws PersistenciaSOFException{
+    public Cita obtenerCita(Cita cita) throws PersistenciaSOFException {
         EntityManager em = null;
         try {
             em = conexion.crearConexion();
@@ -122,7 +123,7 @@ public class CitasDAO implements ICitasDAO {
 
     @Override
     public Cita agregarCita(Cita cita) throws PersistenciaSOFException {
-        
+
         EntityManager em = null;
         EntityTransaction transaction = null;
 
@@ -159,17 +160,17 @@ public class CitasDAO implements ICitasDAO {
     }
 
     @Override
-    public Cita actualizarCita(Cita cita)throws PersistenciaSOFException {
+    public Cita actualizarCita(Cita cita) throws PersistenciaSOFException {
         EntityManager em = null;
         EntityTransaction transaction = null;
 
         try {
-            em = conexion.crearConexion(); 
+            em = conexion.crearConexion();
             transaction = em.getTransaction();
 
             transaction.begin();
 
-            Cita citaExistente = obtenerCita(cita); 
+            Cita citaExistente = obtenerCita(cita);
             if (citaExistente == null) {
                 throw new RuntimeException("Cita no encontrada");
             }
@@ -257,7 +258,7 @@ public class CitasDAO implements ICitasDAO {
     }
 
     @Override
-    public Cita eliminarcita(Cita cita)throws PersistenciaSOFException {
+    public Cita eliminarcita(Cita cita) throws PersistenciaSOFException {
         EntityManager em = null;
         EntityTransaction transaction = null;
 
@@ -365,11 +366,102 @@ public class CitasDAO implements ICitasDAO {
         } catch (PersistenciaSOFException e) {
             throw new PersistenciaSOFException(e);
         } finally {
-           if (em != null && em.isOpen()) {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }
         return citas;
     }
 
+    @Override
+    public boolean eliminarCitasContrato(String folio) throws PersistenciaSOFException {
+        EntityManager em = null;
+        EntityTransaction transaction = null;
+
+        try {
+            em = conexion.crearConexion();
+            transaction = em.getTransaction();
+            transaction.begin();
+
+            String jpqlContrato = "SELECT c FROM Contrato c WHERE c.folio = :folio";
+            Contrato contratoExistente = em.createQuery(jpqlContrato, Contrato.class)
+                    .setParameter("folio", folio)
+                    .getSingleResult();
+
+            String jpqlCitas = "SELECT ci FROM Cita ci WHERE ci.contrato = :contrato";
+            List<Cita> citasAsociadas = em.createQuery(jpqlCitas, Cita.class)
+                    .setParameter("contrato", contratoExistente)
+                    .getResultList();
+
+            if (citasAsociadas.isEmpty()) {
+                transaction.commit();
+                logger.log(Level.INFO, "No hay citas para eliminar para el contrato con folio: {0}. Operación completada.", folio);
+                return true;
+            }
+
+
+            Calendar ahoraCal = new GregorianCalendar();
+
+            for (Cita citaIndividual : citasAsociadas) {
+                boolean reabastecerMateriales = false; // Por defecto, no reabastecer
+
+                // Verifica si la cita aún no ha pasado
+                Calendar fechaInicioCitaCal = citaIndividual.getFechaHoraInicio(); // AJUSTA el nombre del getter si es diferente
+
+                if (fechaInicioCitaCal != null) {
+                    // Si la fecha de la cita es posterior a la fecha actual, entonces no ha pasado
+                    if (fechaInicioCitaCal.after(ahoraCal)) {
+                        reabastecerMateriales = true;
+                    }
+                } else {
+                    logger.log(Level.WARNING, "Cita ID {0} (contrato folio {1}) no tiene fecha de inicio. No se reabastecerá material.", new Object[]{citaIndividual.getId(), folio});
+                }
+
+                List<CitaMaterial> materialesAsociados = em.createQuery(
+                        "SELECT cm FROM CitaMaterial cm WHERE cm.cita = :cita", CitaMaterial.class)
+                        .setParameter("cita", citaIndividual)
+                        .getResultList();
+
+                for (CitaMaterial cm : materialesAsociados) {
+                    Material material = cm.getMaterial();
+                    float cantidadUsada = cm.getCantidad();
+
+                    if (reabastecerMateriales) {
+                        material.setCantidad(material.getCantidad() + cantidadUsada);
+                        em.merge(material);
+                        logger.log(Level.INFO, "Material ID {0} REABASTECIDO para cita ID {1} (contrato folio {2}) porque la cita no ha pasado.", new Object[]{material.getId(), citaIndividual.getId(), folio});
+                    } else {
+                        logger.log(Level.INFO, "Material ID {0} NO REABASTECIDO para cita ID {1} (contrato folio {2}) porque la cita ya pasó o no tiene fecha.", new Object[]{material.getId(), citaIndividual.getId(), folio});
+                    }
+                    em.remove(cm); 
+                }
+                em.remove(citaIndividual);
+                logger.log(Level.INFO, "Cita con ID {0} (parte del contrato folio {1}) y sus materiales asociados procesados para eliminación.", new Object[]{citaIndividual.getId(), folio});
+            }
+
+            transaction.commit();
+            logger.log(Level.INFO, "Todas las citas y materiales asociados para el contrato con folio {0} han sido procesados.", folio);
+            return true;
+
+        } catch (PersistenciaSOFException e) {
+            logger.log(Level.SEVERE, "Error de conexión (PersistenciaSOFException) al intentar eliminar citas por contrato para folio " + folio + ": " + e.getMessage(), e);
+            throw new PersistenciaSOFException("No se pudo conectar a la base de datos para procesar citas del contrato.", e);
+        } catch (NoResultException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            logger.log(Level.WARNING, "No se encontró contrato con folio: " + folio + " para eliminar sus citas.", e);
+            throw new PersistenciaSOFException("No se encontró el contrato con folio: " + folio, e);
+        } catch (RuntimeException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            logger.log(Level.SEVERE, "Error en tiempo de ejecución (RuntimeException) al eliminar citas para el contrato folio " + folio, e);
+            throw new PersistenciaSOFException("Error inesperado durante la operación de base de datos al eliminar citas por contrato: " + e.getMessage(), e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
 }

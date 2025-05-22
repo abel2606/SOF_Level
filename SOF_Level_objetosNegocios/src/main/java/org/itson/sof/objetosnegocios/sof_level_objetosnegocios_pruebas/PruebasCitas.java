@@ -23,39 +23,43 @@ public class PruebasCitas {
         IMaterialBO materialBO = new MaterialBO();
         ICitaBO citasBO = new CitaBO();
         CitaDTO cita = new CitaDTO();
-        cita.setCodigo("CITA123");
-        try {
-            // Obtener la cita desde el negocio
-            CitaDTO citaObtenida = citasBO.obtenerCita(cita);
-
-            if (citaObtenida != null) {
-                System.out.println("Cita obtenida con código: " + citaObtenida.getCodigo());
-
-                // Obtener los materiales asociados a la cita
-                List<CitaMaterialDTO> materialesCita = materialBO.obtenerMaterialesCita(citaObtenida);
-
-                // Imprimir los materiales obtenidos
-                if (materialesCita.isEmpty()) {
-                    System.out.println("No se encontraron materiales para la cita con código: " + citaObtenida.getCodigo());
-                } else {
-                    System.out.println("Materiales para la Cita con código: " + citaObtenida.getCodigo());
-                    System.out.println("---------------------------------------------------");
-                    System.out.printf("%-20s%-10s\n", "Nombre del Material", "Cantidad");
-
-                    // Iterar y mostrar los materiales y sus cantidades
-                    for (CitaMaterialDTO citaMaterialDTO : materialesCita) {
-                        String nombreMaterial = citaMaterialDTO.getMaterial().getNombre();
-                        float cantidadMaterial = citaMaterialDTO.getCantidad();
-                        System.out.printf("%-20s%-10.2f\n", nombreMaterial, cantidadMaterial);
-                    }
-                }
-            } else {
-                System.out.println("Cita no encontrada con el código: " + cita.getCodigo());
-            }
-        } catch (ObjetosNegocioException e) {
-            // Manejo de excepciones en caso de fallos en la capa de negocio
-            System.out.println("Error al obtener la cita o los materiales: " + e.getMessage());
-        }
+        
+        citasBO.eliminarCitasContrato("17479361248571033");
+        
+        
+//        cita.setCodigo("CITA123");
+//        try {
+//            // Obtener la cita desde el negocio
+//            CitaDTO citaObtenida = citasBO.obtenerCita(cita);
+//
+//            if (citaObtenida != null) {
+//                System.out.println("Cita obtenida con código: " + citaObtenida.getCodigo());
+//
+//                // Obtener los materiales asociados a la cita
+//                List<CitaMaterialDTO> materialesCita = materialBO.obtenerMaterialesCita(citaObtenida);
+//
+//                // Imprimir los materiales obtenidos
+//                if (materialesCita.isEmpty()) {
+//                    System.out.println("No se encontraron materiales para la cita con código: " + citaObtenida.getCodigo());
+//                } else {
+//                    System.out.println("Materiales para la Cita con código: " + citaObtenida.getCodigo());
+//                    System.out.println("---------------------------------------------------");
+//                    System.out.printf("%-20s%-10s\n", "Nombre del Material", "Cantidad");
+//
+//                    // Iterar y mostrar los materiales y sus cantidades
+//                    for (CitaMaterialDTO citaMaterialDTO : materialesCita) {
+//                        String nombreMaterial = citaMaterialDTO.getMaterial().getNombre();
+//                        float cantidadMaterial = citaMaterialDTO.getCantidad();
+//                        System.out.printf("%-20s%-10.2f\n", nombreMaterial, cantidadMaterial);
+//                    }
+//                }
+//            } else {
+//                System.out.println("Cita no encontrada con el código: " + cita.getCodigo());
+//            }
+//        } catch (ObjetosNegocioException e) {
+//            // Manejo de excepciones en caso de fallos en la capa de negocio
+//            System.out.println("Error al obtener la cita o los materiales: " + e.getMessage());
+//        }
 
 //        ICitaBO citaBO = new CitaBO();
 //        IContratoBO contratoBO = new ContratoBO();

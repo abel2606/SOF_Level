@@ -69,4 +69,13 @@ public interface ICitaBO {
     public List<String> obtenerHorariosDisponiblesFin(List<String> horariosInicio, String horaInicioSeleccionada) throws ObjetosNegocioException;
     
     public List<String> obtenerHorariosDisponiblesFin(String fechaInicio, String horaInicioSeleccionada, CitaDTO citaDTO) throws ObjetosNegocioException;
+    
+    
+    /**
+     * Elimina todas las citas de un contrato
+     * @param folio el folio del contrato
+     * @return true en caso de eliminar citas
+     * @throws ObjetosNegocioException En caso de algún error al eliminar las citas
+     */
+    public boolean eliminarCitasContrato (String folio) throws ObjetosNegocioException;
 }
