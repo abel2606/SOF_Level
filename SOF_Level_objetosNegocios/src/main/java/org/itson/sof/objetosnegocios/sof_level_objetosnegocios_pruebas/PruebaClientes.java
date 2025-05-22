@@ -21,27 +21,20 @@ public class PruebaClientes {
     public static void main(String[] args) throws ObjetosNegocioException {
         ClienteBO clienteBO = new ClienteBO();
 
-//        List<ClienteDTO> clientes =clienteBO.obtenerTodosClientes();
-//        for (ClienteDTO cliente : clientes) {
-//            System.out.println(cliente.toString());
-//        }
-//        List<ClienteDTO> cliente = clienteBO.obtenerClientesSimilares("uan");
-//        for (ClienteDTO clienteDTO : cliente) {
-//            System.out.println(clienteDTO.toString());
-//        }
-//        ClienteDTO clienteDTO = new ClienteDTO();
-//        clienteDTO.setNombre("Abel");
-//        clienteDTO.setTelefono("44444");
-//        clienteDTO.setCorreo("abel35@gmail.com");
-        ////        clienteBO.agregarCliente(clienteDTO);
-//
-//        ClienteDTO cliente2DTO = clienteBO.editarCliente("abel2@gmail.com", clienteDTO);
+        List<ClienteDTO> clientes =clienteBO.obtenerTodosClientes();
+        for (ClienteDTO cliente : clientes) {
+            System.out.println(cliente.toString());
+        }
+        List<ClienteDTO> cliente = clienteBO.obtenerClientesSimilares("uan");
+        for (ClienteDTO clienteDTO : cliente) {
+            System.out.println(clienteDTO.toString());
+        }
+        ClienteDTO clienteDTO = new ClienteDTO();
+        clienteDTO.setNombre("Abel");
+        clienteDTO.setTelefono("44444");
+        clienteDTO.setCorreo("abel35@gmail.com");
+        clienteBO.agregarCliente(clienteDTO);
 
-//        if (clienteBO.eliminarCliente("abel35@gmail.com")) {
-//            System.out.println("se elimino");
-//        }
-//        else{
-//            System.out.println("No se elimina");
-//        }
+        
     }
 }

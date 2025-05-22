@@ -1,6 +1,8 @@
 package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +45,19 @@ public class ContratoBO implements IContratoBO {
 
         } while (existeFolio(folioGenerado));
 
+        contrato.setFolio(folioGenerado);
+        GregorianCalendar fechaInicioContrato = new GregorianCalendar();
+        fechaInicioContrato.set(Calendar.HOUR_OF_DAY, 0);
+        fechaInicioContrato.set(Calendar.MINUTE, 0);
+        fechaInicioContrato.set(Calendar.SECOND, 0);
+        fechaInicioContrato.set(Calendar.MILLISECOND, 0);
+
+        contrato.setFechaInicio(fechaInicioContrato);
+        
+        contrato.setEstado("ACTIVO");
+
         try {
-            contrato.setFolio(folioGenerado);
-            
+
             Contrato contratoCreado = contratosDAO.crearContrato(ConverterUtil.contratoDTOAEntidad(contrato),
                     ConverterUtil.clienteDTOAEntidad(cliente),
                     ConverterUtil.paqueteDTOAEntidad(paquete));
@@ -56,15 +68,14 @@ public class ContratoBO implements IContratoBO {
         }
 
     }
-    
-    
+
     private boolean existeFolio(String folio) throws ObjetosNegocioException {
         try {
             contratosDAO.obtenerContratoFolio(folio);
             return true;
         } catch (PersistenciaSOFException ex) {
             if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("no se encontro el folio")) {
-                return false; 
+                return false;
             }
             return false;
         }
@@ -87,8 +98,16 @@ public class ContratoBO implements IContratoBO {
     @Override
     public ContratoDTO cancelarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
         try {
+            GregorianCalendar fechaTerminoContrato = new GregorianCalendar();
+            fechaTerminoContrato.set(Calendar.HOUR_OF_DAY, 0);
+            fechaTerminoContrato.set(Calendar.MINUTE, 0);
+            fechaTerminoContrato.set(Calendar.SECOND, 0);
+            fechaTerminoContrato.set(Calendar.MILLISECOND, 0);
+
+            contrato.setFechaTermino(fechaTerminoContrato);
 
             Contrato contratoCancelado = contratosDAO.cancelarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
+
             return ConverterUtil.contratoEntidadADTO(contratoCancelado);
 
         } catch (PersistenciaSOFException ex) {
@@ -99,6 +118,14 @@ public class ContratoBO implements IContratoBO {
     @Override
     public ContratoDTO terminarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
         try {
+            
+            GregorianCalendar fechaTerminoContrato = new GregorianCalendar();
+            fechaTerminoContrato.set(Calendar.HOUR_OF_DAY, 0);
+            fechaTerminoContrato.set(Calendar.MINUTE, 0);
+            fechaTerminoContrato.set(Calendar.SECOND, 0);
+            fechaTerminoContrato.set(Calendar.MILLISECOND, 0);
+
+            contrato.setFechaTermino(fechaTerminoContrato);
 
             Contrato contratoCancelado = contratosDAO.terminarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
             return ConverterUtil.contratoEntidadADTO(contratoCancelado);
@@ -163,5 +190,19 @@ public class ContratoBO implements IContratoBO {
             Logger.getLogger(ContratoBO.class.getName()).log(Level.SEVERE, null, ex);
             throw new ObjetosNegocioException(ex.getMessage());
         }
+    }
+
+    @Override
+    public boolean cancelarContratoCliente(String correo) throws ObjetosNegocioException {
+        
+        try {
+            contratosDAO.cancelarContratosCliente(correo);
+            return true;
+        } catch (PersistenciaSOFException ex) {
+            Logger.getLogger(ContratoBO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ObjetosNegocioException ("Error al momento de cancelar los contratos del cliente");
+        }
+        
+        
     }
 }

@@ -1,6 +1,7 @@
 package org.itson.sof.sof_dtos;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,8 @@ public class ContratoDTO {
     private List<CitaDTO> citas = new ArrayList<>();
     private String folio;
     private Long id;
+    private GregorianCalendar fechaInicio;
+    private GregorianCalendar fechaTermino;
 
     /**
      * Constructor vacío de ContratoDTO. Se usa para crear un objeto sin
@@ -38,14 +41,18 @@ public class ContratoDTO {
      * finalizado).
      * @param paquete Paquete de servicios asociado al contrato.
      * @param cliente Cliente que firma el contrato.
+     * @param fechaInicio Fecha d la creació del contrato
+     * @param fechaTermino Fecha de la terminación del contrato
      */
-    public ContratoDTO(String tematica, String estado, PaqueteDTO paquete, ClienteDTO cliente, String folio, Long id) {
+    public ContratoDTO(String tematica, String estado, PaqueteDTO paquete, ClienteDTO cliente, String folio, Long id, GregorianCalendar fechaInicio, GregorianCalendar fechaTermino) {
         this.tematica = tematica;
         this.estado = estado;
         this.paquete = paquete;
         this.cliente = cliente;
         this.folio = folio;
         this.id = id;
+        this.fechaInicio = fechaInicio;
+        this.fechaTermino = fechaTermino;
     }
 
     /**
@@ -188,10 +195,24 @@ public class ContratoDTO {
     public void setId(Long id) {
         this.id = id;
     }
-    
-    
-    
 
+    public GregorianCalendar getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(GregorianCalendar fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public GregorianCalendar getFechaTermino() {
+        return fechaTermino;
+    }
+
+    public void setFechaTermino(GregorianCalendar fechaTermino) {
+        this.fechaTermino = fechaTermino;
+    }
+
+    
     /**
      * Devuelve una representación en cadena del objeto ContratoDTO.
      *
@@ -207,9 +228,21 @@ public class ContratoDTO {
         sb.append(", cliente=").append(cliente);
         sb.append(", compras=").append(compras);
         sb.append(", citas=").append(citas);
+        sb.append(", folio=").append(folio);
+        sb.append(", id=").append(id);
+        sb.append(", fechaInicio=").append(fechaInicio);
+        sb.append(", fechaTermino=").append(fechaTermino);
         sb.append('}');
         return sb.toString();
     }
+    
+    
+    
+    
+    
+
+    
+    
     
     
 

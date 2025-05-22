@@ -23,7 +23,7 @@ public interface IGestorClientes {
 
     ClienteDTO editarCliente(String correo, ClienteDTO clienteDTO) throws GestorClientesException;
 
-    boolean eliminarCliente(String correo) throws GestorClientesException;
+    ClienteDTO cancelarCliente(String correo) throws GestorClientesException;
 
     ClienteDTO obtenerCliente(String correo) throws GestorClientesException;
     

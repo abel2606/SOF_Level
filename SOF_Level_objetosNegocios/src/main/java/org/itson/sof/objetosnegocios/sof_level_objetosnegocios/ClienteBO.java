@@ -32,6 +32,7 @@ public class ClienteBO implements IClienteBO {
     @Override
     public ClienteDTO agregarCliente(ClienteDTO clienteDTO) throws ObjetosNegocioException {
         Cliente cliente = ConverterUtil.clienteDTOAEntidad(clienteDTO);
+        cliente.setEstado("ACTIVO");
         try {
             if (clientesDAO.agregarCliente(cliente) == null) {
                 throw new ObjetosNegocioException("No se pudo agregar el cliente");
@@ -78,10 +79,11 @@ public class ClienteBO implements IClienteBO {
     }
 
     @Override
-    public boolean eliminarCliente(String correo) throws ObjetosNegocioException {
+    public ClienteDTO cancelarCliente(String correo) throws ObjetosNegocioException {
         try {
-            clientesDAO.eliminarCliente(correo);
-            return true;
+            
+            return ConverterUtil.clienteEntidadADTO(clientesDAO.cancelarCliente(correo));
+            
         } catch (PersistenciaSOFException ex) {
             throw new ObjetosNegocioException(ex.getMessage());
         }

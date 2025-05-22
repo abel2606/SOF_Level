@@ -31,4 +31,6 @@ public interface IContratosDAO {
     public Contrato terminarContrato (Contrato contrato) throws PersistenciaSOFException;
     
     public Contrato actualizarEstadoContrato (Contrato contrato, String nuevoEstado) throws PersistenciaSOFException;
+    
+    public List<Contrato> cancelarContratosCliente (String correo) throws PersistenciaSOFException;
 }

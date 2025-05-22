@@ -194,6 +194,12 @@ public class ConverterUtil {
         if (contratoDTO.getId() != null) {
             contrato.setId(contratoDTO.getId());
         }
+        if (contratoDTO.getFechaInicio()!=null){
+            contrato.setFechaInicio(contratoDTO.getFechaInicio());
+        }
+        if (contratoDTO.getFechaTermino()!=null){
+            contrato.setFechaInicio(contratoDTO.getFechaTermino());
+        }
 
         return contrato;
     }
@@ -220,6 +226,12 @@ public class ConverterUtil {
         if (contrato.getEstado() != null) {
             contratoDTO.setEstado(contrato.getEstado());
         }
+        if (contrato.getFechaInicio()!=null){
+            contratoDTO.setFechaInicio(contrato.getFechaInicio());
+        }
+        if (contrato.getFechaTermino()!=null){
+            contratoDTO.setFechaTermino(contrato.getFechaTermino());
+        }
 
         if (contrato.getCliente() != null) {
             Cliente cliente = contrato.getCliente();
@@ -227,6 +239,7 @@ public class ConverterUtil {
             clienteDTO.setNombre(cliente.getNombre());
             clienteDTO.setCorreo(cliente.getCorreo());
             clienteDTO.setTelefono(cliente.getTelefono());
+            clienteDTO.setEstado(cliente.getEstado());
             contratoDTO.setCliente(clienteDTO);
         }
 
@@ -348,6 +361,7 @@ public class ConverterUtil {
         clienteDTO.setNombre(cliente.getNombre());
         clienteDTO.setCorreo(cliente.getCorreo());
         clienteDTO.setTelefono(cliente.getTelefono());
+        clienteDTO.setEstado(cliente.getEstado());
 
         Set<ContratoDTO> contratosDTO = new HashSet<>();
         if (cliente.getContratos() != null) {
@@ -374,6 +388,7 @@ public class ConverterUtil {
         cliente.setNombre(clienteDTO.getNombre());
         cliente.setCorreo(clienteDTO.getCorreo());
         cliente.setTelefono(clienteDTO.getTelefono());
+        cliente.setEstado(clienteDTO.getEstado());
 
         Set<Contrato> contratos = new HashSet<>();
         if (clienteDTO.getContratos() != null) {

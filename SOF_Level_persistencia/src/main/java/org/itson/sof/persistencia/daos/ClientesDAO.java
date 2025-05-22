@@ -135,15 +135,15 @@ public class ClientesDAO implements IClientesDAO {
     }
 
     /**
-     * Elimina un cliente identificado por su correo electrónico.
+     * Cancela un cliente identificado por su correo electrónico.
      *
      * @param correo El correo del cliente a eliminar.
      * @return El cliente eliminado.
      * @throws PersistenciaSOFException Si no se encuentra el cliente o ocurre
-     * un error al eliminarlo.
+     * un error al cancelarlo.
      */
     @Override
-    public Cliente eliminarCliente(String correo) throws PersistenciaSOFException {
+    public Cliente cancelarCliente(String correo) throws PersistenciaSOFException {
         EntityManager em = null;
         EntityTransaction transaction = null;
 
@@ -161,12 +161,12 @@ public class ClientesDAO implements IClientesDAO {
             if (clienteExistente == null) {
                 throw new PersistenciaSOFException("No se encontró el cliente con correo: " + correo);
             }
-
-            // Eliminar el cliente
-            em.remove(clienteExistente);
+            
+            clienteExistente.setEstado("INACTIVO");
+            
             transaction.commit();
 
-            logger.log(Level.INFO, "Cliente eliminado correctamente: {0}", clienteExistente.getId());
+            logger.log(Level.INFO, "Cliente desactivado correctamente: {0}", clienteExistente.getId());
             return clienteExistente;
 
         } catch (NoResultException e) {
@@ -176,8 +176,8 @@ public class ClientesDAO implements IClientesDAO {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            logger.log(Level.SEVERE, "Error al eliminar el cliente", e);
-            throw new PersistenciaSOFException("Error al eliminar el cliente");
+            logger.log(Level.SEVERE, "Error al desactivar el cliente", e);
+            throw new PersistenciaSOFException("Error al desactivar el cliente");
 
         } finally {
             if (em != null && em.isOpen()) {
