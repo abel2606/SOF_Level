@@ -80,7 +80,7 @@ public class PanelClientes extends javax.swing.JPanel {
                 cliente.getNombre(),
                 cliente.getCorreo(),
                 cliente.getTelefono(),
-                null
+                cliente.getEstado()
             });
         }
 

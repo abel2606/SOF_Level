@@ -4,6 +4,7 @@
  */
 package org.itson.sof.persistencia.daos;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +46,22 @@ public class ClientesDAO implements IClientesDAO {
             em = conexion.crearConexion();
             String jpql = "SELECT c FROM Cliente c";
             List<Cliente> clientes = em.createQuery(jpql, Cliente.class).getResultList();
+
+            // Ordenar por estado y luego por nombre
+            clientes.sort(Comparator
+                    .comparingInt((Cliente c) -> {
+                        switch (c.getEstado()) {
+                            case "ACTIVO":
+                                return 0;
+                            case "INACTIVO":
+                                return 1;
+                            default:
+                                return 2;
+                        }
+                    })
+                    .thenComparing(c -> c.getNombre().toLowerCase()) // Orden alfabético sin importar mayúsculas
+            );
+
             return clientes;
         } catch (Exception e) {
             throw new PersistenciaSOFException("Error al obtener clientes de persistencia");
