@@ -90,12 +90,12 @@ public class CostosBO implements ICostosBO {
             documento.add(new Paragraph(" "));
 
             // Tabla
-            PdfPTable tabla = new PdfPTable(6); // 6 columnas
+            PdfPTable tabla = new PdfPTable(7); // 7 columnas
             tabla.setWidthPercentage(100);
             tabla.setSpacingBefore(10f);
             tabla.setSpacingAfter(10f);
 
-            String[] columnas = {"Cliente", "Folio", "Temática", "Estado", "Paquete", "Costo"};
+            String[] columnas = {"Cliente", "Folio", "Temática", "Estado", "Paquete","Fechas", "Costo"};
             for (String col : columnas) {
                 PdfPCell celda = new PdfPCell(new Phrase(col, FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
                 tabla.addCell(celda);
@@ -108,9 +108,16 @@ public class CostosBO implements ICostosBO {
                 tabla.addCell(contrato.getTematica());                   // Temática
                 tabla.addCell(contrato.getEstado());                     // Estado
                 tabla.addCell(contrato.getPaquete().getNombre());        // Nombre del paquete
-                tabla.addCell(contrato.getFechaInicio().toString());     // Fecha de inicio
-                tabla.addCell(contrato.getFechaTermino().toString());    // Fecha final
-                tabla.addCell("$" + contrato.getPaquete().getPrecio());   // Costo
+
+                // Fecha(s)
+                String fechaInicioS = formatoFecha.format(contrato.getFechaInicio().getTime());
+                String fechaFin = contrato.getFechaTermino() != null
+                        ? formatoFecha.format(contrato.getFechaTermino().getTime())
+                        : "";
+                String fechas = fechaFin.isEmpty() ? fechaInicioS : fechaInicioS + " - " + fechaFin;
+                tabla.addCell(fechas);                                   // Columna de fechas
+
+                tabla.addCell("$" + contrato.getPaquete().getPrecio());  // Costo
 
                 total += contrato.getPaquete().getPrecio();
             }

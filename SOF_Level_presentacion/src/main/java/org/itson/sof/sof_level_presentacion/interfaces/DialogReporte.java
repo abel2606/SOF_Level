@@ -230,7 +230,6 @@ public class DialogReporte extends javax.swing.JDialog {
                     .collect(Collectors.toList());
         }
 
-        //Verificar que los contratos esten en las fechas
         Iterator<ContratoDTO> iterator = contratos.iterator();
         while (iterator.hasNext()) {
             ContratoDTO contrato = iterator.next();
@@ -238,10 +237,14 @@ public class DialogReporte extends javax.swing.JDialog {
             GregorianCalendar fin = contrato.getFechaTermino();
 
             boolean inicioEnRango = (inicio.compareTo(fechaInicio) >= 0 && inicio.compareTo(fechaFin) <= 0);
-            boolean finEnRango = (fin.compareTo(fechaInicio) >= 0 && fin.compareTo(fechaFin) <= 0);
+            boolean finEnRango = false;
+
+            if (fin != null) {
+                finEnRango = (fin.compareTo(fechaInicio) >= 0 && fin.compareTo(fechaFin) <= 0);
+            }
 
             if (!inicioEnRango && !finEnRango) {
-                iterator.remove(); // elimina de la misma lista
+                iterator.remove(); // se elimina si ninguna de las fechas cae en el rango
             }
         }
 
