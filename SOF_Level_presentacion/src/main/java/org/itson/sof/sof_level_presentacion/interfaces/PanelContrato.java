@@ -695,7 +695,7 @@ public class PanelContrato extends javax.swing.JPanel {
     private void cancelarContrato() {
         int opcion = JOptionPane.showConfirmDialog(
                 principal,
-                "¿Está seguro que desea cancelar el contrato?",
+                "¿Está seguro que desea cancelar el contrato? esto eliminará todas sus citas",
                 "Confirmar cancelación",
                 JOptionPane.YES_NO_OPTION
         );
@@ -703,6 +703,11 @@ public class PanelContrato extends javax.swing.JPanel {
         if (opcion == JOptionPane.YES_OPTION) {
             try {
                 gestorContrato.cancelarContrato(contrato);
+                try {
+                    gestor.eliminarCitasCotrato(contrato.getFolio());
+                } catch (GestorCitasException ex) {
+                    JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error con citas del contrato", JOptionPane.ERROR_MESSAGE);
+                }
                 lblCancelarContrato.setVisible(false);
                 lblTerminarContrato.setVisible(false);
                 lblDescCancelarContrato.setVisible(false);

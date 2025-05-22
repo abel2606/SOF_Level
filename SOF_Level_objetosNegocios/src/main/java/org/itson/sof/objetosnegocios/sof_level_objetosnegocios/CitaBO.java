@@ -307,4 +307,14 @@ public class CitaBO implements ICitaBO {
         return horariosDisponiblesFin;
     }
 
+    
+    @Override
+    public boolean eliminarCitasContrato(String folio) throws ObjetosNegocioException {
+        try {
+            return citasDAO.eliminarCitasContrato(folio);
+        } catch (PersistenciaSOFException ex) {
+            throw new ObjetosNegocioException (ex.getMessage());
+        }
+    }
+
 }

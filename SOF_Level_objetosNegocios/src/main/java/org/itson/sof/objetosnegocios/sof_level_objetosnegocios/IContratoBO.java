@@ -74,5 +74,5 @@ public interface IContratoBO {
      * @return true en caso de haber cancelado contratos
      * @throws ObjetosNegocioException en caso de algún error al momento de cancelar contratos
      */
-    public boolean cancelarContratoCliente(String correo) throws ObjetosNegocioException;
+    public List<ContratoDTO> cancelarContratoCliente(String correo) throws ObjetosNegocioException;
 }

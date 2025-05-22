@@ -4,6 +4,7 @@
  */
 package org.itson.sof.objetosnegocios.gestorcontratos;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.itson.sof.objetosnegocios.gestorcontratos.gestorcontratosexception.GestorContratoException;
@@ -131,7 +132,7 @@ public class GestorContratos implements IGestorContratos{
     }
 
     @Override
-    public boolean cancelarContratosCliente(String correo) throws GestorContratoException {
+    public List<ContratoDTO> cancelarContratosCliente(String correo) throws GestorContratoException {
         try {
             return contratoBO.cancelarContratoCliente(correo);
         } catch (ObjetosNegocioException ex) {

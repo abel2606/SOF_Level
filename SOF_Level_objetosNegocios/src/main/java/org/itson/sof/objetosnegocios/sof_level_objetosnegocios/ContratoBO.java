@@ -3,6 +3,7 @@ package org.itson.sof.objetosnegocios.sof_level_objetosnegocios;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,7 +54,7 @@ public class ContratoBO implements IContratoBO {
         fechaInicioContrato.set(Calendar.MILLISECOND, 0);
 
         contrato.setFechaInicio(fechaInicioContrato);
-        
+
         contrato.setEstado("ACTIVO");
 
         try {
@@ -118,7 +119,7 @@ public class ContratoBO implements IContratoBO {
     @Override
     public ContratoDTO terminarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
         try {
-            
+
             GregorianCalendar fechaTerminoContrato = new GregorianCalendar();
             fechaTerminoContrato.set(Calendar.HOUR_OF_DAY, 0);
             fechaTerminoContrato.set(Calendar.MINUTE, 0);
@@ -193,16 +194,25 @@ public class ContratoBO implements IContratoBO {
     }
 
     @Override
-    public boolean cancelarContratoCliente(String correo) throws ObjetosNegocioException {
-        
+    public List<ContratoDTO> cancelarContratoCliente(String correo) throws ObjetosNegocioException {
+
         try {
-            contratosDAO.cancelarContratosCliente(correo);
-            return true;
+
+            List<Contrato> contratos = contratosDAO.cancelarContratosCliente(correo);
+            List<ContratoDTO> contratosDTO = new LinkedList<>();
+
+            if (contratos != null && !contratos.isEmpty()) {
+
+                for (Contrato c : contratos) {
+                    contratosDTO.add(ConverterUtil.contratoEntidadADTO(c));
+                }
+            }
+            return contratosDTO;
+
         } catch (PersistenciaSOFException ex) {
             Logger.getLogger(ContratoBO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ObjetosNegocioException ("Error al momento de cancelar los contratos del cliente");
+            throw new ObjetosNegocioException("Error al momento de cancelar los contratos del cliente");
         }
-        
-        
+
     }
 }

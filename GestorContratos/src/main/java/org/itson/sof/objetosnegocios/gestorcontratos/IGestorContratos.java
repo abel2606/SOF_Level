@@ -4,6 +4,7 @@
  */
 package org.itson.sof.objetosnegocios.gestorcontratos;
 
+import java.util.List;
 import org.itson.sof.objetosnegocios.gestorcontratos.gestorcontratosexception.GestorContratoException;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
@@ -24,7 +25,7 @@ public interface IGestorContratos {
     
     public ContratoDTO terminarContrato (ContratoDTO contrato) throws GestorContratoException;
     
-    public boolean cancelarContratosCliente (String correo) throws GestorContratoException;
+    public List<ContratoDTO> cancelarContratosCliente (String correo) throws GestorContratoException;
     
     
 }
