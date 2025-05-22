@@ -63,7 +63,13 @@ public class DialogCita extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.setResizable(false);
-
+        
+        if(cita==null){
+            this.setTitle("Agregar cita");
+        }else{
+            this.setTitle("Consultar cita");
+        }
+        
         txtNombreMat.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {

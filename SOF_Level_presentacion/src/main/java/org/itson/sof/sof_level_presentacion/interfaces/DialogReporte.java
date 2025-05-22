@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 import org.itson.sof.sof_dtos.ClienteDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
 import java.io.*;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -57,7 +56,10 @@ public class DialogReporte extends javax.swing.JDialog {
     public DialogReporte(java.awt.Frame parent, boolean modal, String ruta) throws Exception{
         super(parent, modal);
         initComponents();
+        this.setResizable(false);
         this.parent = parent;
+        this.setTitle("Generar reporte de ventas");
+        
         gestorCostos = GestorCostos.getInstance();
         gestorCitas = GestorCitas.getInstance();
         gestorClientes = GestorClientes.getInstance();
@@ -435,6 +437,7 @@ public class DialogReporte extends javax.swing.JDialog {
         lblClientes = new javax.swing.JLabel();
         cmbFechaInicio = new com.toedter.calendar.JDateChooser();
         cmbFechaFin = new com.toedter.calendar.JDateChooser();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -565,6 +568,8 @@ public class DialogReporte extends javax.swing.JDialog {
         lblClientes.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblClientes.setText("Clientes:");
 
+        jLabel1.setText("Agregar");
+
         javax.swing.GroupLayout pnlPrincipalLayout = new javax.swing.GroupLayout(pnlPrincipal);
         pnlPrincipal.setLayout(pnlPrincipalLayout);
         pnlPrincipalLayout.setHorizontalGroup(
@@ -583,7 +588,9 @@ public class DialogReporte extends javax.swing.JDialog {
                                 .addGap(32, 32, 32)
                                 .addComponent(txtNombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnAgregar))
+                                .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnAgregar)
+                                    .addComponent(jLabel1)))
                             .addGroup(pnlPrincipalLayout.createSequentialGroup()
                                 .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(lblNombre)
@@ -600,16 +607,16 @@ public class DialogReporte extends javax.swing.JDialog {
                         .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                         .addComponent(lblTodosClientes)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(boxCilientes, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(123, 123, 123))
+                        .addGap(129, 129, 129))
                     .addGroup(pnlPrincipalLayout.createSequentialGroup()
                         .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(pnlPrincipalLayout.createSequentialGroup()
                                 .addComponent(lblTerminados)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(boxTerminados, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(82, 82, 82))
+                                .addGap(94, 94, 94))
                             .addGroup(pnlPrincipalLayout.createSequentialGroup()
                                 .addComponent(cmbFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -653,13 +660,16 @@ public class DialogReporte extends javax.swing.JDialog {
                                         .addComponent(txtNombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(lblClientes))
                                     .addComponent(btnAgregar))
-                                .addGap(18, 18, 18)
+                                .addGap(1, 1, 1)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblTodosClientes)
-                            .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblTodosClientes, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addComponent(boxCilientes, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
@@ -721,6 +731,7 @@ public class DialogReporte extends javax.swing.JDialog {
     private javax.swing.JButton btnGenerar;
     private com.toedter.calendar.JDateChooser cmbFechaFin;
     private com.toedter.calendar.JDateChooser cmbFechaInicio;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

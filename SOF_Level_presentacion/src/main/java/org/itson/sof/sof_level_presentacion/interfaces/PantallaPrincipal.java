@@ -1,11 +1,13 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
 import java.awt.CardLayout;
-import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Image;
+import java.net.URL;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import org.itson.sof.sof_dtos.CitaDTO;
 import org.itson.sof.sof_dtos.ContratoDTO;
-import org.itson.sof.sof_dtos.UsuarioDTO;
 
 /**
  *
@@ -19,6 +21,15 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private final PanelClientes pnlClientes;
     private boolean menuVisible = true;
     private ContratoDTO contrato;
+    
+    private final Color colorMarcado=new Color(0,146,236);
+    private final ImageIcon imgContratoNegro;
+    private final ImageIcon imgContratoAzul;
+    private final ImageIcon imgClientesNegro;
+    private final ImageIcon imgClientesAzul;
+    private final ImageIcon imgCostosNegro;
+    private final ImageIcon imgCostosAzul;
+    
     
     private static PantallaPrincipal instancia;
     
@@ -42,34 +53,75 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         pnlCentral.add(pnlClientes, "PanelClientes");
         pnlCentral.add(pnlContrato, "PanelContrato");
 
+        ImageIcon imgPaqueteGris = loadIcon("/imagenes/Photo albumGray.png", 45, 45);
+        ImageIcon imgMaterialGris = loadIcon("/imagenes/GroupGray.png", 45, 45);
+
+        this.lblImgPaquetes.setIcon(imgPaqueteGris);
+        this.lblPaquetes.setForeground(Color.gray);
+        this.lblImgMateriales.setIcon(imgMaterialGris);
+        this.lblMateriales.setForeground(Color.gray);
+
+        imgContratoNegro = loadIcon("/imagenes/Contract.png", 45, 45);
+        imgContratoAzul = loadIcon("/imagenes/contratoAzulIcon.png", 45, 45);
+        this.lblImgContratos.setIcon(imgContratoAzul);
+
+        imgClientesNegro = loadIcon("/imagenes/clienteIcon.png", 45, 45);
+        imgClientesAzul = loadIcon("/imagenes/PersonAzul.png", 45, 45);
+        this.lblImgClientes.setIcon(imgClientesNegro);
+
+        imgCostosNegro = loadIcon("/imagenes/costosIcon.png", 25, 45);
+        imgCostosAzul = loadIcon("/imagenes/costosIconAzul.png", 25, 45);
+        this.lblImgCostos.setIcon(imgCostosNegro);
+
         // Mostrar la pantalla por defecto
         PanelContratos();
     }
-    
+
+    private ImageIcon loadIcon(String path, int width, int height) {
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            ImageIcon originalIcon = new ImageIcon(url);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            return new ImageIcon(scaledImage);
+        } else {
+            System.out.println("Imagen no encontrada: " + path);
+            return null;
+        }
+    }
+
+
     public static PantallaPrincipal getInstance() {
         if (instancia == null) {
             instancia = new PantallaPrincipal();
         }
         return instancia;
     }
+    
+    private void colorearNegroIconos(){
+        this.lblContratos.setForeground(Color.black);
+        this.lblClientes.setForeground(Color.black);
+        this.lblCostos.setForeground(Color.black);
+        
+        this.lblImgCostos.setIcon(imgCostosNegro);
+        this.lblImgContratos.setIcon(imgContratoNegro);
+        this.lblImgClientes.setIcon(imgClientesNegro);
+    }
 
     /**
      * Cambia el contenido del frame interior al menu de contratos
      */
     public void PanelContratos(){
+        colorearNegroIconos();
+        this.lblImgContratos.setIcon(imgContratoAzul);
+        this.lblContratos.setForeground(colorMarcado);
         this.lblTitulo.setText("Contratos");
-        this.btnCrearContrato.setVisible(true);
         pnlContratos.inicializar();
         cardLayout.show(pnlCentral, "PanelContratos");
     }
     
-    public void pnlContrato() {
-        this.lblTitulo.setText("Crear contrato");
-        this.contrato = null;
-        pnlContrato.contrato = contrato;
-        this.btnCrearContrato.setVisible(false);
-        pnlContrato.inicializar();
-        cardLayout.show(pnlCentral, "PanelContrato");
+    protected void crearContrato(){
+        this.contrato=null;
+        PanelContrato();
     }
     
     /**
@@ -77,7 +129,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void PanelContrato(){
         this.lblTitulo.setText("Contrato");
-        this.btnCrearContrato.setVisible(true);
         pnlContrato.contrato = this.contrato;
         pnlContrato.inicializar();
         cardLayout.show(pnlCentral, "PanelContrato");
@@ -87,8 +138,10 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      * Cambia el contenido del frame interior al menu de clientes
      */
     public void PanelClientes(){
+        colorearNegroIconos();
+        this.lblClientes.setForeground(colorMarcado);
+        this.lblImgClientes.setIcon(imgClientesAzul);
         this.lblTitulo.setText("Clientes");
-        this.btnCrearContrato.setVisible(false);
         pnlClientes.inicializar();
         cardLayout.show(pnlCentral, "PanelClientes");
     }
@@ -97,8 +150,10 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      * Cambia el contenido del frame interior al menu de costos
      */
     public void PanelCostos(){
+        colorearNegroIconos();
+        this.lblCostos.setForeground(colorMarcado);
+        this.lblImgCostos.setIcon(imgCostosAzul);
         this.lblTitulo.setText("Reportes de venta");
-        this.btnCrearContrato.setVisible(false);
         pnlCostos.inicializar();
         cardLayout.show(pnlCentral, "PanelCostos");
     }
@@ -111,32 +166,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, mensaje);
         }
         System.exit(0);  // Finaliza el programa
-    }
-
-    /**
-     * Detiene el programa
-     */
-    private void CerrarPrograma(){
-        
-    }
-
-    /**
-     * Oculta o despliega el menu de opciones dependiendo su estado
-     */
-    private void OcultarDesplegarMenuOpciones() {
-        if (menuVisible) {
-            pnlMenuOpciones.setVisible(false);
-            Dimension d=new Dimension(pnlCentral.getWidth() + pnlMenuOpciones.getWidth(), pnlCentral.getHeight());
-            pnlCentral.setPreferredSize(d);
-        } else {
-            pnlMenuOpciones.setVisible(true);
-            Dimension d=new Dimension(pnlCentral.getWidth() - pnlMenuOpciones.getWidth(), pnlCentral.getHeight());
-            pnlCentral.setPreferredSize(d);
-        }
-        menuVisible = !menuVisible;
-
-        pnlCentral.revalidate();
-        pnlCentral.repaint();
     }
 
     public ContratoDTO getContrato() {
@@ -169,8 +198,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         lblTitulo = new javax.swing.JLabel();
         lblNombreUsuario = new javax.swing.JLabel();
         lblLogo = new javax.swing.JLabel();
-        btnMenuDesplegable = new javax.swing.JButton();
-        btnCrearContrato = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -347,65 +374,30 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/locoIcon.png"))); // NOI18N
 
-        btnMenuDesplegable.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/3lineasBoton.png"))); // NOI18N
-        btnMenuDesplegable.setBorder(null);
-        btnMenuDesplegable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnMenuDesplegableMouseClicked(evt);
-            }
-        });
-
-        btnCrearContrato.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
-        btnCrearContrato.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnCrearContratoMouseClicked(evt);
-            }
-        });
-        btnCrearContrato.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCrearContratoActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout pnlEncabezadoLayout = new javax.swing.GroupLayout(pnlEncabezado);
         pnlEncabezado.setLayout(pnlEncabezadoLayout);
         pnlEncabezadoLayout.setHorizontalGroup(
             pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlEncabezadoLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(btnMenuDesplegable, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnlEncabezadoLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 817, Short.MAX_VALUE)
-                        .addComponent(lblNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(25, 25, 25))
-                    .addGroup(pnlEncabezadoLayout.createSequentialGroup()
-                        .addGap(120, 120, 120)
-                        .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCrearContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(48, 48, 48)
-                        .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(17, 17, 17))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEncabezadoLayout.createSequentialGroup()
+                .addContainerGap(891, Short.MAX_VALUE)
+                .addComponent(lblNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEncabezadoLayout.createSequentialGroup()
+                .addGap(194, 194, 194)
+                .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17))
         );
         pnlEncabezadoLayout.setVerticalGroup(
             pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEncabezadoLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(btnMenuDesplegable, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEncabezadoLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnlEncabezadoLayout.createSequentialGroup()
-                        .addComponent(lblNombreUsuario)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(pnlEncabezadoLayout.createSequentialGroup()
-                        .addComponent(btnCrearContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(15, 15, 15)))
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(lblNombreUsuario)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnlEncabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12))
         );
 
@@ -435,10 +427,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         CerrarSesion(false,"");
     }//GEN-LAST:event_lblSesionMouseClicked
 
-    private void btnMenuDesplegableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMenuDesplegableMouseClicked
-        
-    }//GEN-LAST:event_btnMenuDesplegableMouseClicked
-
     private void lblCostosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCostosMouseClicked
         PanelCostos();
     }//GEN-LAST:event_lblCostosMouseClicked
@@ -455,18 +443,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         PanelClientes();
     }//GEN-LAST:event_lblImgClientesMouseClicked
 
-    private void btnCrearContratoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrearContratoMouseClicked
-        pnlContrato();
-    }//GEN-LAST:event_btnCrearContratoMouseClicked
-
-    private void btnCrearContratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearContratoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCrearContratoActionPerformed
-
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCrearContrato;
-    private javax.swing.JButton btnMenuDesplegable;
     private javax.swing.JLabel lblCerrar;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblContratos;

@@ -1,6 +1,5 @@
 package org.itson.sof.sof_level_presentacion.interfaces;
 
-import Deprecated.PantallaClientes;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -141,6 +140,41 @@ public class PanelClientes extends javax.swing.JPanel {
             }
         });
     }
+    
+    private void agregarCliente(){
+        DialogCliente dc = new DialogCliente(null, true);
+        dc.setVisible(true);
+
+        if (dc.isEdicionRealizada()) {
+            try {
+                clientesTotales = GestorClientes.getInstance().obtenerTodosClientes();
+                cargarClientesEnTabla(clientesTotales);
+                JOptionPane.showMessageDialog(null, "Cliente agregado con éxito.");
+            } catch (GestorClientesException ex) {
+                Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    private void buscadorKey(){
+        String texto = txtBuscador.getText().toLowerCase();
+        List<ClienteDTO> filtrados = new LinkedList<>();
+
+        for (ClienteDTO cliente : clientesTotales) {
+            if (cliente.getNombre().toLowerCase().contains(texto)
+                    || cliente.getCorreo().toLowerCase().contains(texto)
+                    || cliente.getTelefono().toLowerCase().contains(texto)) {
+                filtrados.add(cliente);
+            }
+        }
+
+        cargarClientesEnTabla(filtrados);
+    }
+
+    private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {
+        // tu lógica aquí
+    }
+
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -150,7 +184,8 @@ public class PanelClientes extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtBuscador = new javax.swing.JTextField();
-        btnAgregarCliente = new org.itson.sof.sof_level_presentacion.componentes.BotonIcono();
+        btnGenerar = new javax.swing.JButton();
+        lblGenerar = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(220, 240, 255));
 
@@ -182,22 +217,25 @@ public class PanelClientes extends javax.swing.JPanel {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setText("Buscar");
 
+        txtBuscador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBuscadorActionPerformed(evt);
+            }
+        });
         txtBuscador.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtBuscadorKeyReleased(evt);
             }
         });
 
-        btnAgregarCliente.setBackground(new java.awt.Color(220, 240, 255));
-        btnAgregarCliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/addClienteIcon.png"))); // NOI18N
-        btnAgregarCliente.setColor(new java.awt.Color(220, 240, 255));
-        btnAgregarCliente.setColorClick(new java.awt.Color(220, 240, 255));
-        btnAgregarCliente.setColorOver(new java.awt.Color(220, 240, 255));
-        btnAgregarCliente.addActionListener(new java.awt.event.ActionListener() {
+        btnGenerar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
+        btnGenerar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarClienteActionPerformed(evt);
+                btnGenerarActionPerformed(evt);
             }
         });
+
+        lblGenerar.setText("Agregar Cliente");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -205,20 +243,25 @@ public class PanelClientes extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addGap(16, 16, 16))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(54, 54, 54)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblGenerar)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addGap(16, 16, 16))
+                        .addGap(15, 15, 15)
+                        .addComponent(btnGenerar)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(168, 168, 168))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel1))
-                            .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 333, Short.MAX_VALUE)
-                        .addComponent(btnAgregarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(47, 47, 47))))
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel1)
+                        .addGap(240, 240, 240))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -232,49 +275,29 @@ public class PanelClientes extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtBuscador))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnAgregarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(btnGenerar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblGenerar)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
-        DialogCliente dc = new DialogCliente(null, true);
-        dc.setVisible(true);
-
-        if (dc.isEdicionRealizada()) {
-            try {
-                clientesTotales = GestorClientes.getInstance().obtenerTodosClientes(); 
-                cargarClientesEnTabla(clientesTotales);
-                JOptionPane.showMessageDialog(null, "Cliente agregado con éxito.");
-            } catch (GestorClientesException ex) {
-                Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//GEN-LAST:event_btnAgregarClienteActionPerformed
-
     private void txtBuscadorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscadorKeyReleased
-        String texto = txtBuscador.getText().toLowerCase();
-        List<ClienteDTO> filtrados = new LinkedList<>();
-
-        for (ClienteDTO cliente : clientesTotales) {
-            if (cliente.getNombre().toLowerCase().contains(texto)
-                    || cliente.getCorreo().toLowerCase().contains(texto)
-                    || cliente.getTelefono().toLowerCase().contains(texto)) {
-                filtrados.add(cliente);
-            }
-        }
-
-        cargarClientesEnTabla(filtrados);
+        buscadorKey();
     }//GEN-LAST:event_txtBuscadorKeyReleased
+
+    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        agregarCliente();
+    }//GEN-LAST:event_btnGenerarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.itson.sof.sof_level_presentacion.componentes.BotonIcono btnAgregarCliente;
+    private javax.swing.JButton btnGenerar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblGenerar;
     private javax.swing.JTable tblClientes;
     private javax.swing.JTextField txtBuscador;
     // End of variables declaration//GEN-END:variables

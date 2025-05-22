@@ -68,7 +68,10 @@
                                   <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                                   <Component id="txtNombreCliente" min="-2" pref="190" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="btnAgregar" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="btnAgregar" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="1" attributes="0">
@@ -92,17 +95,17 @@
                           <Component id="btnGenerar" min="-2" pref="120" max="-2" attributes="0"/>
                           <EmptySpace pref="54" max="32767" attributes="0"/>
                           <Component id="lblTodosClientes" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="boxCilientes" min="-2" pref="20" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="123" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="129" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="lblTerminados" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="boxTerminados" min="-2" pref="20" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="cmbFechaInicio" min="-2" pref="133" max="-2" attributes="0"/>
@@ -156,21 +159,25 @@
                               </Group>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                                      <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="txtNombreCliente" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
                                           <Component id="lblClientes" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="btnAgregar" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="btnAgregar" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jScrollPane3" min="-2" pref="139" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="lblTodosClientes" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="btnCancelar" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                              <Component id="btnGenerar" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="btnCancelar" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="btnGenerar" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="lblTodosClientes" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="boxCilientes" min="-2" pref="20" max="-2" attributes="0"/>
@@ -429,6 +436,11 @@
         <Component class="com.toedter.calendar.JDateChooser" name="cmbFechaInicio">
         </Component>
         <Component class="com.toedter.calendar.JDateChooser" name="cmbFechaFin">
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Agregar"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

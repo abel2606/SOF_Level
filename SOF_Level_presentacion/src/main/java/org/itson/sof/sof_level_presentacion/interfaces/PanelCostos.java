@@ -51,11 +51,9 @@ public class PanelCostos extends javax.swing.JPanel {
             inicializado = true;
         }
         ruta = leerRuta();
-        txtaRuta.setText(ruta);
+        txtUbicacion.setText(ruta);
         
         DecorarTabla();
-        
-        this.txtaRuta.setEnabled(false);
     }
     
     private void DecorarTabla(){
@@ -172,7 +170,7 @@ public class PanelCostos extends javax.swing.JPanel {
             File carpeta = chooser.getSelectedFile();
 
             if (carpeta != null && carpeta.exists() && carpeta.isDirectory()) {
-                txtaRuta.setText(carpeta.getAbsolutePath());
+                txtUbicacion.setText(carpeta.getAbsolutePath());
                 escribirRuta(carpeta.getAbsolutePath());
                 ruta = leerRuta();
                 DecorarTabla();
@@ -206,10 +204,9 @@ public class PanelCostos extends javax.swing.JPanel {
         pnlSuperior = new javax.swing.JPanel();
         scrollPaneReportesVenta = new javax.swing.JScrollPane();
         lblRuta = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtaRuta = new javax.swing.JTextArea();
         lblGenerar = new javax.swing.JLabel();
         btnGenerar = new javax.swing.JButton();
+        txtUbicacion = new javax.swing.JTextField();
 
         pnlSuperior.setBackground(new java.awt.Color(220, 240, 255));
         pnlSuperior.setPreferredSize(new java.awt.Dimension(850, 550));
@@ -221,22 +218,18 @@ public class PanelCostos extends javax.swing.JPanel {
         lblRuta.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         lblRuta.setText("Ruta:");
 
-        txtaRuta.setColumns(20);
-        txtaRuta.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        txtaRuta.setRows(5);
-        txtaRuta.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                txtaRutaMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(txtaRuta);
-
         lblGenerar.setText("Generar Reporte");
 
-        btnGenerar.setText("Generar reporte");
+        btnGenerar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
         btnGenerar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGenerarActionPerformed(evt);
+            }
+        });
+
+        txtUbicacion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtUbicacionMouseClicked(evt);
             }
         });
 
@@ -246,35 +239,36 @@ public class PanelCostos extends javax.swing.JPanel {
             pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(scrollPaneReportesVenta, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
             .addGroup(pnlSuperiorLayout.createSequentialGroup()
-                .addGap(44, 44, 44)
                 .addGroup(pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnGenerar)
                     .addGroup(pnlSuperiorLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(lblGenerar)))
+                        .addGap(50, 50, 50)
+                        .addComponent(lblGenerar))
+                    .addGroup(pnlSuperiorLayout.createSequentialGroup()
+                        .addGap(68, 68, 68)
+                        .addComponent(btnGenerar)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblRuta)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtUbicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(87, 87, 87))
         );
         pnlSuperiorLayout.setVerticalGroup(
             pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSuperiorLayout.createSequentialGroup()
+            .addGroup(pnlSuperiorLayout.createSequentialGroup()
                 .addGroup(pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlSuperiorLayout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addGroup(pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(lblRuta, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSuperiorLayout.createSequentialGroup()
-                        .addContainerGap(20, Short.MAX_VALUE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnGenerar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblGenerar)
-                        .addGap(18, 18, 18)))
-                .addComponent(scrollPaneReportesVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(16, 16, 16))
+                    .addGroup(pnlSuperiorLayout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtUbicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblRuta))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(scrollPaneReportesVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 463, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -295,22 +289,21 @@ public class PanelCostos extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtaRutaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtaRutaMouseClicked
-        SeleccionarRuta();
-    }//GEN-LAST:event_txtaRutaMouseClicked
-
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         GenerarReporte();
     }//GEN-LAST:event_btnGenerarActionPerformed
 
+    private void txtUbicacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtUbicacionMouseClicked
+       this.SeleccionarRuta();
+    }//GEN-LAST:event_txtUbicacionMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGenerar;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblGenerar;
     private javax.swing.JLabel lblRuta;
     private javax.swing.JPanel pnlSuperior;
     private javax.swing.JScrollPane scrollPaneReportesVenta;
-    private javax.swing.JTextArea txtaRuta;
+    private javax.swing.JTextField txtUbicacion;
     // End of variables declaration//GEN-END:variables
 }
