@@ -108,6 +108,8 @@ public class CostosBO implements ICostosBO {
                 tabla.addCell(contrato.getTematica());                   // Temática
                 tabla.addCell(contrato.getEstado());                     // Estado
                 tabla.addCell(contrato.getPaquete().getNombre());        // Nombre del paquete
+                tabla.addCell(contrato.getFechaInicio().toString());     // Fecha de inicio
+                tabla.addCell(contrato.getFechaTermino().toString());    // Fecha final
                 tabla.addCell("$" + contrato.getPaquete().getPrecio());   // Costo
 
                 total += contrato.getPaquete().getPrecio();

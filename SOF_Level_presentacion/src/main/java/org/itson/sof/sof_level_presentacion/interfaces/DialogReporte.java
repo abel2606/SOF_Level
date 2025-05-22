@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -227,6 +228,21 @@ public class DialogReporte extends javax.swing.JDialog {
             contratos = contratos.stream()
                     .filter(c -> c.getEstado() != null && c.getEstado().equalsIgnoreCase("Terminado"))
                     .collect(Collectors.toList());
+        }
+
+        //Verificar que los contratos esten en las fechas
+        Iterator<ContratoDTO> iterator = contratos.iterator();
+        while (iterator.hasNext()) {
+            ContratoDTO contrato = iterator.next();
+            GregorianCalendar inicio = contrato.getFechaInicio();
+            GregorianCalendar fin = contrato.getFechaTermino();
+
+            boolean inicioEnRango = (inicio.compareTo(fechaInicio) >= 0 && inicio.compareTo(fechaFin) <= 0);
+            boolean finEnRango = (fin.compareTo(fechaInicio) >= 0 && fin.compareTo(fechaFin) <= 0);
+
+            if (!inicioEnRango && !finEnRango) {
+                iterator.remove(); // elimina de la misma lista
+            }
         }
 
         try {
@@ -491,7 +507,7 @@ public class DialogReporte extends javax.swing.JDialog {
         lblUbicacion.setText("Ruta:");
 
         txtNombreCliente.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtNombreCliente.setText("Ingrese Cliente");
+        txtNombreCliente.setText("Ingrese el Cliente");
         txtNombreCliente.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         txtNombreCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
