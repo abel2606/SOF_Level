@@ -1,0 +1,62 @@
+Ruta critica
+
+La base de datos cuenta con paquetes preestablecidos
+La base de datos cuenta con fotógrafos preestablecidos
+La base de datos cuenta con materiales preestablecidos
+
+Crear tres clientes
+Nombre:	Martha Elena	Correo:	mas27masa@hotmail.com	Teléfono: 6641183331	
+Nombre:	Lorenzo Albeto	Correo:	lor22@gmail.com		Teléfono: 6644082351
+Nombre:	Vicente Mejia	Correo:	anakinMejia@outlook.com	Teléfono: 6622790333
+Editar el cliente (Lorenzo)
+Nombre:	Lorenzo Alberto	Correo:	lor23@gmail.com		Teléfono: 6644082451
+Cancelar el cliente (Vicente)
+
+Crear Tres contratos
+Cliente: Martha		Paquete: Boda		Temática: Luis miguel
+Cliente: Martha		Paquete: Infantil	Temática: Toy story / Spiderman
+Cliente: Lorenzo	Paquete: En estudio	Temática: Western 
+Editar un contrato (Luis Miguel)
+Cliente: Martha		Paquete: Boda		Temática: Pedro Infante
+Cancelar un contrato (Western)
+
+Crear Tres citas
+Contrato: Activo	
+Fecha: 29/05/2025 21:00-23:00	
+Extras:	No utilizar luces frías
+Fotógrafo: Carlos López	
+Lugar: MARIA TERESA DE CALCUTA 2721, Los Misioneros, 85134 Cdad. Obregón, Son. 
+Materiales: Metros de tela (19), coronas de plástico (8)
+
+Contrato: Activo	
+Fecha: 04/06/2025 10:00-14:30	
+Extras:	Se necesitan juguetes para captar la atención de los niños
+Fotógrafo: Raúl ortega	
+Lugar: Estudio	
+Materiales: Globos de colores (20), Letras de fomi (16)
+
+Contrato: Activo	
+Fecha: 04/06/2025 15:00-17:30	
+Extras:	Se necesitan juguetes para captar la atención de los niños	
+Fotógrafo: Antonio Banderas	
+Lugar: Estudio	
+Materiales: Globos de colores (20)->(10), Spray para globos (2)
+
+Consultar las citas en el calendario de citas.
+
+Editar la cita (04/06/2025 15:00-17:30)
+Contrato: Activo	
+Fecha: 04/06/2025 15:00-19:30	
+Extras:	Se necesitan juguetes para captar la atención de los niños	
+Fotógrafo: Maria Gally	
+Lugar: Estudio	
+Materiales: Globos de colores (10), Spray para globos (6)
+
+Consultar el calendario en la lista de citas.
+Borrar una cita (04/06/2025 10:00-14:30)
+
+Terminar un contrato (Luis miguel)
+
+Generar un reporte de ventas con todos los clientes.
+
+Generar un reporte de ventas con el cliente Martha y solo sus contratos terminados.
