@@ -100,9 +100,6 @@ public class PanelContrato extends javax.swing.JPanel {
         popupMenuClientes.setFocusable(false);
         popupMenuClientes.setLightWeightPopupEnabled(false);
         listaCorreosClientes.setFocusable(false);
-        JScrollPane scrollPane = new JScrollPane(listaCorreosClientes);
-        scrollPane.setPreferredSize(new Dimension(250, 100));
-        popupMenuClientes.add(scrollPane);
     }
 
     public void inicializar() {
@@ -266,6 +263,12 @@ public class PanelContrato extends javax.swing.JPanel {
         txtPrecio.setText("$ 0.0");
 
         this.clientesTotales = obtenerClientes();
+
+        JScrollPane scrollPane = new JScrollPane(listaCorreosClientes);
+        scrollPane.setPreferredSize(new Dimension(250, 100));
+
+        
+        popupMenuClientes.add(scrollPane);
 
         // Selección de correo desde la lista de autocompletar
         listaCorreosClientes.addMouseListener(new MouseAdapter() {
