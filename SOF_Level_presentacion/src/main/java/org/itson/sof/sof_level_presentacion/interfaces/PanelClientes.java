@@ -87,6 +87,10 @@ public class PanelClientes extends javax.swing.JPanel {
         TableActionEvent event = new TableActionEvent() {
             @Override
             public void onEditar(int row) {
+                if (row < 0 || row >= tblClientes.getRowCount()) {
+                    JOptionPane.showMessageDialog(null, "No se pudo editar: índice fuera de rango.");
+                    return;
+                }
                 String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
                 try {
                     ClienteDTO cliente = gestorClientes.obtenerCliente(correo);
@@ -105,6 +109,11 @@ public class PanelClientes extends javax.swing.JPanel {
 
             @Override
             public void onEliminar(int row) {
+                if (row < 0 || row >= tblClientes.getRowCount()) {
+                    JOptionPane.showMessageDialog(null, "No se pudo eliminar: índice fuera de rango.");
+                    return;
+                }
+
                 String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
                 int opcion = JOptionPane.showConfirmDialog(
                         null,

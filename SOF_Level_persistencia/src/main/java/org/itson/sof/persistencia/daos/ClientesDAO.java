@@ -44,7 +44,8 @@ public class ClientesDAO implements IClientesDAO {
         EntityManager em = null;
         try {
             em = conexion.crearConexion();
-            String jpql = "SELECT c FROM Cliente c";
+            String jpql = "SELECT c FROM Cliente c WHERE c.estado = 'ACTIVO'";
+
             List<Cliente> clientes = em.createQuery(jpql, Cliente.class).getResultList();
 
             // Ordenar por estado y luego por nombre
@@ -70,7 +71,6 @@ public class ClientesDAO implements IClientesDAO {
                 em.close();
             }
         }
-
     }
 
     /**
@@ -90,7 +90,8 @@ public class ClientesDAO implements IClientesDAO {
             transaction = em.getTransaction();
             transaction.begin();
 
-            String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
+            String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente AND c.estado = 'ACTIVO'";
+
             Cliente clienteObtenido = em.createQuery(jpql, Cliente.class)
                     .setParameter("correoCliente", correo).getSingleResult();
 
@@ -131,7 +132,8 @@ public class ClientesDAO implements IClientesDAO {
             String jpql = """
                                SELECT c FROM Cliente c 
                                WHERE c.nombre LIKE :nombre 
-                               """;
+                               AND c.estado = 'ACTIVO'
+                          """;
             List<Cliente> clienteObtenido = em.createQuery(jpql, Cliente.class)
                     .setParameter("nombre", nombre).getResultList();
 
@@ -169,7 +171,7 @@ public class ClientesDAO implements IClientesDAO {
             transaction = em.getTransaction();
             transaction.begin();
 
-            String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
+            String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente AND c.estado = 'ACTIVO'";
             Cliente clienteExistente = em.createQuery(jpql, Cliente.class)
                     .setParameter("correoCliente", correo)
                     .getSingleResult();
@@ -223,7 +225,7 @@ public class ClientesDAO implements IClientesDAO {
             transaction.begin();
 
             // Buscar cliente existente por el correo original
-            String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente";
+            String jpql = "SELECT c FROM Cliente c WHERE c.correo = :correoCliente AND c.estado = 'ACTIVO'";
             Cliente clienteExistente = em.createQuery(jpql, Cliente.class)
                     .setParameter("correoCliente", correo)
                     .getSingleResult();
