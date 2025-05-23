@@ -44,28 +44,13 @@ public class ClientesDAO implements IClientesDAO {
         EntityManager em = null;
         try {
             em = conexion.crearConexion();
-            String jpql = "SELECT c FROM Cliente c WHERE c.estado = 'ACTIVO'";
-
+            String jpql = "SELECT c FROM Cliente c WHERE c.estado = 'ACTIVO' ORDER BY LOWER(c.nombre)";
             List<Cliente> clientes = em.createQuery(jpql, Cliente.class).getResultList();
-
-            // Ordenar por estado y luego por nombre
-            clientes.sort(Comparator
-                    .comparingInt((Cliente c) -> {
-                        switch (c.getEstado()) {
-                            case "ACTIVO":
-                                return 0;
-                            case "INACTIVO":
-                                return 1;
-                            default:
-                                return 2;
-                        }
-                    })
-                    .thenComparing(c -> c.getNombre().toLowerCase()) // Orden alfabético sin importar mayúsculas
-            );
-
+            logger.info("Clientes obtenidos: " + clientes.size());
             return clientes;
         } catch (Exception e) {
-            throw new PersistenciaSOFException("Error al obtener clientes de persistencia");
+            logger.severe("Error al obtener clientes: " + e.getMessage());
+            throw new PersistenciaSOFException("Error al obtener clientes");
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -180,9 +165,9 @@ public class ClientesDAO implements IClientesDAO {
             if (clienteExistente == null) {
                 throw new PersistenciaSOFException("No se encontró el cliente con correo: " + correo);
             }
-            
+
             clienteExistente.setEstado("INACTIVO");
-            
+
             transaction.commit();
 
             logger.log(Level.INFO, "Cliente desactivado correctamente: {0}", clienteExistente.getId());
@@ -326,7 +311,7 @@ public class ClientesDAO implements IClientesDAO {
                 throw new PersistenciaSOFException("Ya existe un cliente con ese número de teléfono");
             } catch (NoResultException e) {
             }
-            
+
             em.persist(cliente);
 
             transaction.commit();
