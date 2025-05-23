@@ -103,36 +103,35 @@ public class PanelContrato extends javax.swing.JPanel {
         if (contrato == null) {
             lblEdit.setVisible(false);
             inicializarCreacionContrato();
-            return;
-        }
-
-        if (contrato.getEstado().equalsIgnoreCase("CANCELADO")
-                || contrato.getEstado().equalsIgnoreCase("TERMINADO")) {
-
-            lblEdit.setVisible(false);
-            btnAgregarCita.setVisible(false);
-            lblAgregarCita.setVisible(false);
-
         } else {
-            lblEdit.setVisible(true);
-            btnAgregarCita.setVisible(true);
-            lblAgregarCita.setVisible(true);
-        }
+            if (contrato.getEstado().equalsIgnoreCase("CANCELADO")
+                    || contrato.getEstado().equalsIgnoreCase("TERMINADO")) {
 
-        this.fechaAnterior = Calendar.getInstance();
-        fechaAnterior.setTime(jCalendarCitas.getDate());
-        contrato = principal.getContrato();
-        agregarCitas();
-        llenarCamposContrato();
+                lblEdit.setVisible(false);
+                btnAgregarCita.setVisible(false);
+                lblAgregarCita.setVisible(false);
 
-        cmbPaquete.removeAllItems(); // Limpiar cualquier dato previo
-        if (contrato != null && contrato.getPaquete() != null) {
-            cmbPaquete.addItem(contrato.getPaquete().getNombre());
-        }
-        cmbPaquete.setEnabled(false);
-        
+            } else {
+                lblEdit.setVisible(true);
+                btnAgregarCita.setVisible(true);
+                lblAgregarCita.setVisible(true);
             }
-    
+
+            this.fechaAnterior = Calendar.getInstance();
+            fechaAnterior.setTime(jCalendarCitas.getDate());
+            contrato = principal.getContrato();
+            
+            llenarCamposContrato();
+
+            cmbPaquete.removeAllItems(); // Limpiar cualquier dato previo
+            if (contrato != null && contrato.getPaquete() != null) {
+                cmbPaquete.addItem(contrato.getPaquete().getNombre());
+            }
+            cmbPaquete.setEnabled(false);
+        }
+        agregarCitas();
+    }
+
     private void deshabilitar() {
         this.btnConfirmarEdicion.setVisible(false);
         this.lblTerminarContrato.setVisible(false);
@@ -330,13 +329,14 @@ public class PanelContrato extends javax.swing.JPanel {
         // Contar cuántas citas hay por día
         Map<String, Integer> citasPorDia = new HashMap<>();
 
-        for (CitaDTO cita : citas) {
-            GregorianCalendar cal = cita.getFechaHoraInicio();
-            String key = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
+        if(citas != null) {
+            for (CitaDTO cita : citas) {
+                GregorianCalendar cal = cita.getFechaHoraInicio();
+                String key = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
 
-            citasPorDia.put(key, citasPorDia.getOrDefault(key, 0) + 1);
+                citasPorDia.put(key, citasPorDia.getOrDefault(key, 0) + 1);
+            }
         }
-
         // Obtener el DayChooser del JCalendar
         JDayChooser dayChooser = jCalendarCitas.getDayChooser();
 
@@ -372,7 +372,7 @@ public class PanelContrato extends javax.swing.JPanel {
 
         }
 
-    }
+    }   
 
     private void añadirListernerCalendario() {
         jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
@@ -479,6 +479,7 @@ public class PanelContrato extends javax.swing.JPanel {
             mensaje.setSize(100, 100);
             mensaje.setFont(new Font("Sego Ui", Font.PLAIN, 15));
             panelContenedor.add(mensaje);
+            decorarCalendario(null);
         } else {
             decorarCalendario(citas);
             for (CitaDTO cita : citas) {
@@ -500,6 +501,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 panelContenedor.add(Box.createVerticalStrut(10));
             }
         }
+        
         scrollPaneCitas.setViewportView(panelContenedor);
         scrollPaneCitas.getVerticalScrollBar().setUnitIncrement(20);
     }
