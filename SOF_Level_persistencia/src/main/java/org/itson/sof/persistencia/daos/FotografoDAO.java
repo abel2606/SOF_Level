@@ -27,7 +27,7 @@ public class FotografoDAO implements IFotografoDAO {
     public FotografoDAO(IConexion conexion) {
         this.conexion = conexion;
     }
-    
+
     @Override
     public List<Fotografo> obtenerTodosFotografos() throws PersistenciaSOFException {
         EntityManager em = null;
@@ -35,10 +35,10 @@ public class FotografoDAO implements IFotografoDAO {
         try {
             em = conexion.crearConexion();
             transaction = em.getTransaction();
-            
+
             transaction.begin();
 
-            String jpql = "SELECT f FROM Fotografo f";
+            String jpql = "SELECT f FROM Fotografo f ORDER BY f.nombrePersona ASC";
             List<Fotografo> fotografos = em.createQuery(jpql, Fotografo.class)
                     .getResultList();
 
@@ -52,7 +52,6 @@ public class FotografoDAO implements IFotografoDAO {
                 em.close();
             }
         }
-        
     }
 
     @Override
@@ -76,7 +75,4 @@ public class FotografoDAO implements IFotografoDAO {
             }
         }
     }
-    
-    
-    
 }
