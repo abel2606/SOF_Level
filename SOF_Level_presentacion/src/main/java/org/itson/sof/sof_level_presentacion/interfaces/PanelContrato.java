@@ -290,7 +290,7 @@ public class PanelContrato extends javax.swing.JPanel {
             if (!listaCorreosModel.isEmpty()) {
                 SwingUtilities.invokeLater(() -> {
                     if (!popupMenuClientes.isVisible()) {
-                        popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
+                        //popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
                     }
                     txtCliente.requestFocusInWindow(); // Intentar enfocar después de mostrar
                 });
