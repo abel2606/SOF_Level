@@ -106,12 +106,14 @@ public class PanelContrato extends javax.swing.JPanel {
         contrato = principal.getContrato();
 
         if (contrato == null) {
+            lblCancelado.setVisible(false);
             lblEdit.setVisible(false);
             inicializarCreacionContrato();
         } else {
             if (contrato.getEstado().equalsIgnoreCase("CANCELADO")
                     || contrato.getEstado().equalsIgnoreCase("TERMINADO")) {
 
+                
                 lblEdit.setVisible(false);
                 btnAgregarCita.setVisible(false);
                 lblAgregarCita.setVisible(false);
@@ -150,7 +152,9 @@ public class PanelContrato extends javax.swing.JPanel {
             btnCrearContrato.setVisible(true);
         } else {
 
-            if (contrato.getEstado().equalsIgnoreCase("cancelado") || contrato.getEstado().equalsIgnoreCase("finalizadp")) {
+            if (contrato.getEstado().equalsIgnoreCase("cancelado") || contrato.getEstado().equalsIgnoreCase("terminado")) {
+                lblCitas.setVisible(false);
+                lblCancelado.setVisible(true);
                 this.jCalendarCitas.setVisible(false);
                 this.pnlCitas.setVisible(false);
 
@@ -158,23 +162,20 @@ public class PanelContrato extends javax.swing.JPanel {
                 String fechaFormateada = "No se pudo obtener la fecha";
 
                 if (fecha != null) {
-                    // 1. Convertir GregorianCalendar a java.util.Date
+                    
                     java.util.Date fechaDate = fecha.getTime();
-
-                    // 2. Formatear la fecha usando SimpleDateFormat
-                    // Puedes elegir el formato que prefieras. Ejemplos:
-                    // "dd/MM/yyyy" -> 22/05/2025
-                    // "EEEE, dd 'de' MMMM 'de' yyyy" -> jueves, 22 de mayo de 2025 (dependerá del Locale)
                     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
                     fechaFormateada = sdf.format(fechaDate);
+                    
                 }
 
-                // 3. Establecer el texto en el JLabel
-                this.lblCitas.setText("Este contrato fue " + contrato.getEstado() + " el " + fechaFormateada);
-                Font fuenteActual = this.lblCitas.getFont();
-                int nuevoTamano = fuenteActual.getSize();
-                Font nuevaFuente = new Font(fuenteActual.getName(), Font.BOLD, nuevoTamano);
-                this.lblCitas.setFont(nuevaFuente);
+                this.lblCancelado.setText("Este contrato fue " + contrato.getEstado() + " el " + fechaFormateada);
+                lblCancelado.setVisible(true);
+            }else{
+                lblCitas.setVisible(true);
+                lblCancelado.setVisible(false);
+                this.jCalendarCitas.setVisible(true);
+                this.pnlCitas.setVisible(true);
             }
 
             txtTematica.setEnabled(false);
@@ -638,6 +639,9 @@ public class PanelContrato extends javax.swing.JPanel {
                 lblAgregarCita.setVisible(true);
                 this.lblEdit.setVisible(true);
                 btnCrearContrato.setVisible(false);
+                txtTematica.setEnabled(false);
+                txtCliente.setEnabled(false);
+                this.cmbPaquete.setEnabled(false);
                 JOptionPane.showMessageDialog(principal, "Contrato creado");
             } catch (GestorContratoException ex) {
                 JOptionPane.showMessageDialog(principal, ex.getMessage(), "Error en creación del paquete", JOptionPane.ERROR_MESSAGE);
@@ -826,6 +830,7 @@ public class PanelContrato extends javax.swing.JPanel {
         lblDescCancelarContrato = new javax.swing.JLabel();
         lbldescTerminarContrato = new javax.swing.JLabel();
         btnCrearContrato = new javax.swing.JButton();
+        lblCancelado = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(220, 240, 255));
         setMaximumSize(new java.awt.Dimension(550, 750));
@@ -966,6 +971,10 @@ public class PanelContrato extends javax.swing.JPanel {
             }
         });
         add(btnCrearContrato, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 330, 130, -1));
+
+        lblCancelado.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblCancelado.setText("jLabel1");
+        add(lblCancelado, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 280, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarCitaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarCitaMouseClicked
@@ -1031,6 +1040,7 @@ public class PanelContrato extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> cmbPaquete;
     private com.toedter.calendar.JCalendar jCalendarCitas;
     private javax.swing.JLabel lblAgregarCita;
+    private javax.swing.JLabel lblCancelado;
     private javax.swing.JLabel lblCancelarContrato;
     private javax.swing.JLabel lblCitas;
     private javax.swing.JLabel lblCliente;

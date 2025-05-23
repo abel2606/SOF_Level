@@ -262,7 +262,12 @@ public class ContratosDAO implements IContratosDAO {
             // Cambiar el estado
             contratoEncontrado.setEstado(nuevoEstado);
             //Indica la fecha de cambio de estado
-            contratoEncontrado.setFechaTermino(contrato.getFechaTermino());
+            GregorianCalendar fechaTerminoContrato = new GregorianCalendar();
+            fechaTerminoContrato.set(Calendar.HOUR_OF_DAY, 0);
+            fechaTerminoContrato.set(Calendar.MINUTE, 0);
+            fechaTerminoContrato.set(Calendar.SECOND, 0);
+            fechaTerminoContrato.set(Calendar.MILLISECOND, 0);
+            contratoEncontrado.setFechaTermino(fechaTerminoContrato);
 
             // Guardar cambios (ya es entidad gestionada, no requiere merge)
             tx.commit();

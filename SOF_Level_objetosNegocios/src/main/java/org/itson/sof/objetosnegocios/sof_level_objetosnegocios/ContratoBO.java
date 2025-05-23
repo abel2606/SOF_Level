@@ -99,14 +99,7 @@ public class ContratoBO implements IContratoBO {
     @Override
     public ContratoDTO cancelarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
         try {
-            GregorianCalendar fechaTerminoContrato = new GregorianCalendar();
-            fechaTerminoContrato.set(Calendar.HOUR_OF_DAY, 0);
-            fechaTerminoContrato.set(Calendar.MINUTE, 0);
-            fechaTerminoContrato.set(Calendar.SECOND, 0);
-            fechaTerminoContrato.set(Calendar.MILLISECOND, 0);
-
-            contrato.setFechaTermino(fechaTerminoContrato);
-
+            
             Contrato contratoCancelado = contratosDAO.cancelarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
 
             return ConverterUtil.contratoEntidadADTO(contratoCancelado);
@@ -120,13 +113,6 @@ public class ContratoBO implements IContratoBO {
     public ContratoDTO terminarContrato(ContratoDTO contrato) throws ObjetosNegocioException {
         try {
 
-            GregorianCalendar fechaTerminoContrato = new GregorianCalendar();
-            fechaTerminoContrato.set(Calendar.HOUR_OF_DAY, 0);
-            fechaTerminoContrato.set(Calendar.MINUTE, 0);
-            fechaTerminoContrato.set(Calendar.SECOND, 0);
-            fechaTerminoContrato.set(Calendar.MILLISECOND, 0);
-
-            contrato.setFechaTermino(fechaTerminoContrato);
 
             Contrato contratoCancelado = contratosDAO.terminarContrato(ConverterUtil.contratoDTOAEntidad(contrato));
             return ConverterUtil.contratoEntidadADTO(contratoCancelado);
