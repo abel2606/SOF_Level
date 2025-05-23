@@ -74,6 +74,23 @@ public class ContratosDAO implements IContratosDAO {
             List<Contrato> contratos = em.createQuery(jpql, Contrato.class)
                     .setParameter("cliente", cliente)
                     .getResultList();
+            
+            contratos.sort(Comparator
+                    .comparingInt((Contrato c) -> {
+                        switch (c.getEstado()) {
+                            case "ACTIVO":
+                                return 0;
+                            case "TERMINADO":
+                                return 1;
+                            case "CANCELADO":
+                                return 2;
+                            default:
+                                return 3;
+                        }
+                    })
+                    .thenComparing(c -> c.getCliente().getId()) // cliente_id
+                    .thenComparing(c -> c.getTematica().toLowerCase()) // temática alfabética
+            );
             return contratos;
         } catch (PersistenciaSOFException e) {
             throw new PersistenciaSOFException("Error al obtener contratos de persistencia");

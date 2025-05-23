@@ -74,7 +74,7 @@ public class CitasDAO implements ICitasDAO {
             transaction = em.getTransaction();
             transaction.begin();
 
-            String jpql = "SELECT c FROM Cita c WHERE c.contrato.id = :contratoId";
+            String jpql = "SELECT c FROM Cita c WHERE c.contrato.id = :contratoId ORDER BY c.fechaHoraInicio ASC";
             List<Cita> citasDeContrato = em.createQuery(jpql, Cita.class)
                     .setParameter("contratoId", contratoId)
                     .getResultList();
