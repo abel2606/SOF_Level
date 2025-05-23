@@ -21,15 +21,20 @@ public class ItemCita extends javax.swing.JPanel {
     /**
      * Creates new form ItemCit
      * @param fechaHoraInicio
+     * @param fechaHoraFinal
      */
-    public ItemCita(GregorianCalendar fechaHoraInicio) {
+    public ItemCita(GregorianCalendar fechaHoraInicio, GregorianCalendar fechaHoraFinal) {
         initComponents();
         // Formatos para la fecha y hora
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat formatoHora = new SimpleDateFormat("h:mm");
 
         lblFecha.setText(formatoFecha.format(fechaHoraInicio.getTime()));
-        lblHora.setText(formatoHora.format(fechaHoraInicio.getTime()));
+
+        String horaInicio = formatoHora.format(fechaHoraInicio.getTime());
+        String horaFinal = formatoHora.format(fechaHoraFinal.getTime());
+
+        lblHora.setText(horaInicio + "-" + horaFinal);
 
         int radius = 50;
         setBorder(BorderFactory.createCompoundBorder(
@@ -83,8 +88,8 @@ public class ItemCita extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(lblFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(30, 30, 30)
-                .addComponent(lblHora, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21))
+                .addComponent(lblHora, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         pnlPrincipalLayout.setVerticalGroup(
             pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

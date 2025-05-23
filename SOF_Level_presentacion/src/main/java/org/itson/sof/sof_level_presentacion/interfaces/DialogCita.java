@@ -76,13 +76,25 @@ public class DialogCita extends javax.swing.JDialog {
                 if (txtNombreMat.getText().equals("Ingrese Material")) {
                     txtNombreMat.setText("");
                 }
+                listModel.clear();
+                for (MaterialDTO item : materiales) {
+                        listModel.addElement(item.getNombre());
+
+                    if (!listModel.isEmpty()) {
+                        SwingUtilities.invokeLater(() -> {
+                            if (!jpopmMateriales.isVisible()) {
+                                jpopmMateriales.show(txtNombreMat, 0, txtNombreMat.getHeight());
+                            }
+                        });
+                    } else {
+                        jpopmMateriales.setVisible(false);
+                    }
+                }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (txtNombreMat.getText().isEmpty()) {
-                    txtNombreMat.setText("Ingrese Material");
-                }
+                
             }
         });
 

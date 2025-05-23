@@ -295,20 +295,32 @@ public class DialogReporte extends javax.swing.JDialog {
         };
         this.tblCliente.setModel(tableModel);
         cargarClientesEnTabla(tableModel);
-        
+
         txtNombreCliente.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 if (txtNombreCliente.getText().equals("Ingrese el Cliente")) {
                     txtNombreCliente.setText("");
                 }
+                listModel.clear();
+                for (ClienteDTO item : clientes) {
+                        listModel.addElement(item.getNombre());
+
+                    if (!listModel.isEmpty()) {
+                        SwingUtilities.invokeLater(() -> {
+                            if (!popMenu.isVisible()) {
+                                popMenu.show(txtNombreCliente, 0, txtNombreCliente.getHeight());
+                            }
+                        });
+                    } else {
+                        popMenu.setVisible(false);
+                    }
+                }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (txtNombreCliente.getText().isEmpty()) {
-                    txtNombreCliente.setText("Ingrese el Cliente");
-                }
+               
             }
         });
         this.txtNombreCliente.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
@@ -512,11 +524,6 @@ public class DialogReporte extends javax.swing.JDialog {
         txtNombreCliente.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         txtNombreCliente.setText("Ingrese el Cliente");
         txtNombreCliente.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        txtNombreCliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombreClienteActionPerformed(evt);
-            }
-        });
 
         btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
         btnAgregar.setBorder(null);
@@ -723,10 +730,6 @@ public class DialogReporte extends javax.swing.JDialog {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void txtNombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreClienteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombreClienteActionPerformed
 
     private void btnAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarMouseClicked
 

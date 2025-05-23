@@ -60,8 +60,8 @@
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="lblFecha" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                  <Component id="lblHora" min="-2" pref="124" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                  <Component id="lblHora" min="-2" pref="137" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

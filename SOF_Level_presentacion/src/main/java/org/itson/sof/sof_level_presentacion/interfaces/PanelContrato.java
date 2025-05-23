@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -79,6 +81,9 @@ public class PanelContrato extends javax.swing.JPanel {
     private javax.swing.JPopupMenu popupMenuClientes;
     private javax.swing.JList<String> listaCorreosClientes;
     private DefaultListModel<String> listaCorreosModel;
+    private DefaultListModel<String> listModel;
+    private boolean seleccionandoCliente = false;
+
 
     /**
      * Creates new form PanelContrato
@@ -92,6 +97,7 @@ public class PanelContrato extends javax.swing.JPanel {
         gestorPaquete = new GestorPaquetes();
         gestorContrato = new GestorContratos();
         gestorCliente = GestorClientes.getInstance();
+        listModel = new DefaultListModel<>();
     }
 
     public void inicializar() {
@@ -284,6 +290,7 @@ public class PanelContrato extends javax.swing.JPanel {
             }
         });
 
+        
         // Document listener para el JTextField txtCliente
         txtCliente.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -299,6 +306,39 @@ public class PanelContrato extends javax.swing.JPanel {
             @Override
             public void changedUpdate(DocumentEvent e) {
                 actualizarListaClientes();
+            }
+        });
+        
+        txtCliente.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (seleccionandoCliente) {
+                    return;
+                }
+                
+                if(contrato!=null){
+                    return;
+                }
+                
+                listaCorreosModel.clear();
+                for (ClienteDTO item : clientesTotales) {
+                    listaCorreosModel.addElement(item.getCorreo());
+                }
+
+                if (!listaCorreosModel.isEmpty()) {
+                    SwingUtilities.invokeLater(() -> {
+                        if (!popupMenuClientes.isVisible()) {
+                            popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (!seleccionandoCliente) {
+                    popupMenuClientes.setVisible(false);
+                }
             }
         });
     }
@@ -514,7 +554,8 @@ public class PanelContrato extends javax.swing.JPanel {
             decorarCalendario(citas);
             for (CitaDTO cita : citas) {
                 ItemCita panel = new ItemCita(
-                        cita.getFechaHoraInicio());
+                        cita.getFechaHoraInicio(),
+                cita.getFechaHoraFin());
                 panel.setPreferredSize(new Dimension(300, 50));
                 panel.setMaximumSize(new Dimension(300, 50));
                 panel.setMinimumSize(new Dimension(300, 50));
@@ -701,11 +742,20 @@ public class PanelContrato extends javax.swing.JPanel {
                 lblCancelarContrato.setVisible(false);
                 lblTerminarContrato.setVisible(false);
                 lblDescCancelarContrato.setVisible(false);
-                this.lbldescTerminarContrato.setVisible(false);
+                lbldescTerminarContrato.setVisible(false);
                 lblEdit.setVisible(false);
                 btnConfirmarEdicion.setVisible(false);
                 btnAgregarCita.setVisible(false);
                 lblAgregarCita.setVisible(false);
+                
+                lblCitas.setVisible(false);
+                this.jCalendarCitas.setVisible(false);
+                this.pnlCitas.setVisible(false);
+                this.txtTematica.setEditable(false);
+
+                this.lblCancelado.setText("Este contrato fue TERMINADO");
+                lblCancelado.setVisible(true);
+                
                 JOptionPane.showMessageDialog(
                         principal,
                         "El contrato ha sido terminado.",
@@ -751,11 +801,20 @@ public class PanelContrato extends javax.swing.JPanel {
                 lblCancelarContrato.setVisible(false);
                 lblTerminarContrato.setVisible(false);
                 lblDescCancelarContrato.setVisible(false);
-                this.lbldescTerminarContrato.setVisible(false);
+                lbldescTerminarContrato.setVisible(false);
                 lblEdit.setVisible(false);
                 btnConfirmarEdicion.setVisible(false);
                 btnAgregarCita.setVisible(false);
                 lblAgregarCita.setVisible(false);
+                
+                lblCitas.setVisible(false);
+                this.jCalendarCitas.setVisible(false);
+                this.pnlCitas.setVisible(false);
+                this.txtTematica.setEditable(false);
+
+                this.lblCancelado.setText("Este contrato fue CANCELADO");
+                lblCancelado.setVisible(true);
+                
                 JOptionPane.showMessageDialog(
                         principal,
                         "El contrato ha sido cancelado.",
@@ -805,10 +864,35 @@ public class PanelContrato extends javax.swing.JPanel {
         lblEdit.setVisible(true);
         actualizarContrato();
     }
+    
+    private void txtClienteKeyTyped() {
+        /*
+        String texto = txtCliente.getText().toLowerCase();
+        List<String> correosFiltrados = new LinkedList<>();
+
+        for (ClienteDTO cliente : clientesTotales) {
+            if (cliente.getNombre().toLowerCase().contains(texto)
+                    || cliente.getCorreo().toLowerCase().contains(texto)
+                    || cliente.getTelefono().toLowerCase().contains(texto)) {
+                correosFiltrados.add(cliente.getCorreo());
+            }
+        }
+
+        if (!correosFiltrados.isEmpty() && !texto.isEmpty()) {
+            listaCorreosClientes.setListData(correosFiltrados.toArray(new String[0]));
+            popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
+            SwingUtilities.invokeLater(() -> {
+                txtCliente.requestFocusInWindow();
+            });
+        } else {
+            popupMenuClientes.setVisible(false);
+        }*/
+    }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popMenu = new javax.swing.JPopupMenu();
         lblCliente = new javax.swing.JLabel();
         txtCliente = new javax.swing.JTextField();
         lblPaquete = new javax.swing.JLabel();
@@ -990,26 +1074,7 @@ public class PanelContrato extends javax.swing.JPanel {
     }//GEN-LAST:event_txtClienteKeyReleased
 
     private void txtClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtClienteKeyTyped
-        String texto = txtCliente.getText().toLowerCase();
-        List<String> correosFiltrados = new LinkedList<>();
-
-        for (ClienteDTO cliente : clientesTotales) {
-            if (cliente.getNombre().toLowerCase().contains(texto)
-                    || cliente.getCorreo().toLowerCase().contains(texto)
-                    || cliente.getTelefono().toLowerCase().contains(texto)) {
-                correosFiltrados.add(cliente.getCorreo());
-            }
-        }
-
-        if (!correosFiltrados.isEmpty() && !texto.isEmpty()) {
-            listaCorreosClientes.setListData(correosFiltrados.toArray(new String[0]));
-            popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
-            SwingUtilities.invokeLater(() -> {
-                txtCliente.requestFocusInWindow();
-            });
-        } else {
-            popupMenuClientes.setVisible(false);
-        }
+        txtClienteKeyTyped();
     }//GEN-LAST:event_txtClienteKeyTyped
 
     private void lblEditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblEditMouseClicked
@@ -1052,6 +1117,7 @@ public class PanelContrato extends javax.swing.JPanel {
     private javax.swing.JLabel lblTerminarContrato;
     private javax.swing.JLabel lbldescTerminarContrato;
     private javax.swing.JPanel pnlCitas;
+    private javax.swing.JPopupMenu popMenu;
     private javax.swing.JScrollPane scrollPaneCitas;
     private javax.swing.JTextField txtCliente;
     private javax.swing.JTextField txtPrecio;

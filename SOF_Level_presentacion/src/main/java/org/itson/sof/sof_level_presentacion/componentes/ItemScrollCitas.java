@@ -53,7 +53,8 @@ public class ItemScrollCitas extends javax.swing.JDialog {
         } else {
             for (CitaDTO cita : citasDelDia) {
                 ItemCita panel = new ItemCita(
-                        cita.getFechaHoraInicio());
+                        cita.getFechaHoraInicio(),
+                        cita.getFechaHoraFin());
                 panel.setPreferredSize(new Dimension(300, 50));
                 panel.setMaximumSize(new Dimension(300, 50));
                 panel.setMinimumSize(new Dimension(300, 50));
@@ -91,11 +92,7 @@ public class ItemScrollCitas extends javax.swing.JDialog {
         dlgCita.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                if (citasDelDia != null) {
-                    if (citasDelDia.size() == 1) {
-                        unicaCita = true;
-                    }
-                }
+                dispose();
 
             }
         });
