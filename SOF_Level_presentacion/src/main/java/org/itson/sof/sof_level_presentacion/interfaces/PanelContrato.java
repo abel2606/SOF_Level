@@ -151,6 +151,7 @@ public class PanelContrato extends javax.swing.JPanel {
 
         if (contrato == null) {
             txtTematica.setEnabled(true);
+            txtTematica.setEditable(true);
             txtTematica.setText("");
             this.lblAgregarCita.setVisible(false);
             btnAgregarCita.setVisible(false);
