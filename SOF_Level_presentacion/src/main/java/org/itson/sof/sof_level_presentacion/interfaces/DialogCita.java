@@ -123,7 +123,7 @@ public class DialogCita extends javax.swing.JDialog {
     }
 
     private void configurarAutocompletado() {
-
+       
         //Validacion txtCantidad
         this.txtCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
@@ -155,6 +155,10 @@ public class DialogCita extends javax.swing.JDialog {
         scrollPane.setPreferredSize(new Dimension(180, 100));
 
         jpopmMateriales.add(scrollPane);
+        
+        jpopmMateriales.setFocusable(false);
+        jpopmMateriales.setLightWeightPopupEnabled(false);
+        suggestionList.setFocusable(false);
 
         try {
             materiales = gestor.obtenerMateriales();
@@ -256,7 +260,9 @@ public class DialogCita extends javax.swing.JDialog {
                             jpopmMateriales.setVisible(false);
                         }
                     } else {
-                        jpopmMateriales.setVisible(false);
+                        for (MaterialDTO item : materiales) {
+                            listModel.addElement(item.getNombre());
+                        }
                     }
                 }
             });

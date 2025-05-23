@@ -81,9 +81,6 @@ public class PanelContrato extends javax.swing.JPanel {
     private javax.swing.JPopupMenu popupMenuClientes;
     private javax.swing.JList<String> listaCorreosClientes;
     private DefaultListModel<String> listaCorreosModel;
-    private DefaultListModel<String> listModel;
-    private boolean seleccionandoCliente = false;
-
 
     /**
      * Creates new form PanelContrato
@@ -97,7 +94,12 @@ public class PanelContrato extends javax.swing.JPanel {
         gestorPaquete = new GestorPaquetes();
         gestorContrato = new GestorContratos();
         gestorCliente = GestorClientes.getInstance();
-        listModel = new DefaultListModel<>();
+        popupMenuClientes = new JPopupMenu();
+        listaCorreosModel = new DefaultListModel<>();
+        listaCorreosClientes = new JList<>(listaCorreosModel);
+        popupMenuClientes.setFocusable(false);
+        popupMenuClientes.setLightWeightPopupEnabled(false);
+        listaCorreosClientes.setFocusable(false);
     }
 
     public void inicializar() {
@@ -255,12 +257,10 @@ public class PanelContrato extends javax.swing.JPanel {
 
         this.clientesTotales = obtenerClientes();
 
-        listaCorreosModel = new DefaultListModel<>();
-        listaCorreosClientes = new JList<>(listaCorreosModel);
         JScrollPane scrollPane = new JScrollPane(listaCorreosClientes);
-        scrollPane.setPreferredSize(new Dimension(250, 100)); // Ajusta las dimensiones según necesites
+        scrollPane.setPreferredSize(new Dimension(250, 100));
 
-        popupMenuClientes = new JPopupMenu();
+        
         popupMenuClientes.add(scrollPane);
 
         // Selección de correo desde la lista de autocompletar
@@ -270,11 +270,11 @@ public class PanelContrato extends javax.swing.JPanel {
                 if (e.getClickCount() == 1 && listaCorreosClientes.getSelectedValue() != null) {
                     txtCliente.setText(listaCorreosClientes.getSelectedValue());
                     popupMenuClientes.setVisible(false);
-                    txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
+                    //txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
                 } else if (e.getClickCount() == 2 && listaCorreosClientes.getSelectedValue() != null) {
                     txtCliente.setText(listaCorreosClientes.getSelectedValue());
                     popupMenuClientes.setVisible(false);
-                    txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
+                    //txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
                 }
             }
         });
@@ -286,7 +286,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER && listaCorreosClientes.getSelectedValue() != null) {
                     txtCliente.setText(listaCorreosClientes.getSelectedValue());
                     popupMenuClientes.setVisible(false);
-                    txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
+                    //txtCliente.requestFocusInWindow(); // Devolver el foco al JTextField
                 }
             }
         });
@@ -313,9 +313,6 @@ public class PanelContrato extends javax.swing.JPanel {
         txtCliente.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (seleccionandoCliente) {
-                    return;
-                }
                 
                 if(contrato!=null){
                     return;
@@ -337,9 +334,6 @@ public class PanelContrato extends javax.swing.JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (!seleccionandoCliente) {
-                    popupMenuClientes.setVisible(false);
-                }
             }
         });
     }
@@ -347,7 +341,6 @@ public class PanelContrato extends javax.swing.JPanel {
     private void actualizarListaClientes() {
         String input = txtCliente.getText().trim().toLowerCase();
         listaCorreosModel.clear();
-
         if (!input.isEmpty()) {
             for (ClienteDTO cliente : clientesTotales) {
                 if (cliente.getNombre().toLowerCase().contains(input)
@@ -360,15 +353,17 @@ public class PanelContrato extends javax.swing.JPanel {
             if (!listaCorreosModel.isEmpty()) {
                 SwingUtilities.invokeLater(() -> {
                     if (!popupMenuClientes.isVisible()) {
-                        //popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
+                        popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
                     }
-                    txtCliente.requestFocusInWindow(); // Intentar enfocar después de mostrar
+                    //txtCliente.requestFocusInWindow(); // Intentar enfocar después de mostrar
                 });
             } else {
                 popupMenuClientes.setVisible(false);
             }
         } else {
-            popupMenuClientes.setVisible(false);
+            for (ClienteDTO item : clientesTotales) {
+                listaCorreosModel.addElement(item.getCorreo());
+            }
         }
     }
 
@@ -866,29 +861,6 @@ public class PanelContrato extends javax.swing.JPanel {
         actualizarContrato();
     }
     
-    private void txtClienteKeyTyped() {
-        /*
-        String texto = txtCliente.getText().toLowerCase();
-        List<String> correosFiltrados = new LinkedList<>();
-
-        for (ClienteDTO cliente : clientesTotales) {
-            if (cliente.getNombre().toLowerCase().contains(texto)
-                    || cliente.getCorreo().toLowerCase().contains(texto)
-                    || cliente.getTelefono().toLowerCase().contains(texto)) {
-                correosFiltrados.add(cliente.getCorreo());
-            }
-        }
-
-        if (!correosFiltrados.isEmpty() && !texto.isEmpty()) {
-            listaCorreosClientes.setListData(correosFiltrados.toArray(new String[0]));
-            popupMenuClientes.show(txtCliente, 0, txtCliente.getHeight());
-            SwingUtilities.invokeLater(() -> {
-                txtCliente.requestFocusInWindow();
-            });
-        } else {
-            popupMenuClientes.setVisible(false);
-        }*/
-    }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1075,7 +1047,7 @@ public class PanelContrato extends javax.swing.JPanel {
     }//GEN-LAST:event_txtClienteKeyReleased
 
     private void txtClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtClienteKeyTyped
-        txtClienteKeyTyped();
+       
     }//GEN-LAST:event_txtClienteKeyTyped
 
     private void lblEditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblEditMouseClicked

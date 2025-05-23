@@ -32,6 +32,7 @@ org\itson\sof\sof_level_presentacion\componentes\EvaluadorCitasFecha.class
 org\itson\sof\sof_level_presentacion\interfaces\PantallaPrincipal$6.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelClientes.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$6.class
+org\itson\sof\sof_level_presentacion\interfaces\DialogReporte$15.class
 org\itson\sof\sof_level_presentacion\interfaces\PanelCostos$4.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogReporte$5.class
 org\itson\sof\sof_level_presentacion\interfaces\DialogCita$13.class

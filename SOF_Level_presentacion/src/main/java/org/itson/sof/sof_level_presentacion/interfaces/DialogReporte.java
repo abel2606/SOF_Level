@@ -285,6 +285,10 @@ public class DialogReporte extends javax.swing.JDialog {
         scrollPane.setPreferredSize(new Dimension(180, 100));
         this.popMenu.add(scrollPane);
 
+        popMenu.setFocusable(false);
+        popMenu.setLightWeightPopupEnabled(false);
+        suggestionList.setFocusable(false);
+
         clientes = gestorClientes.obtenerTodosClientes();
         
         DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Nombre"}, 0) {
@@ -299,9 +303,6 @@ public class DialogReporte extends javax.swing.JDialog {
         txtNombreCliente.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (txtNombreCliente.getText().equals("Ingrese el Cliente")) {
-                    txtNombreCliente.setText("");
-                }
                 listModel.clear();
                 for (ClienteDTO item : clientes) {
                         listModel.addElement(item.getNombre());
@@ -342,13 +343,17 @@ public class DialogReporte extends javax.swing.JDialog {
             private void actualizarLista() {
                 String input = txtNombreCliente.getText().trim().toLowerCase();
                 listModel.clear();
+
                 if (!input.isEmpty()) {
                     for (ClienteDTO item : clientes) {
-                        if (item.getNombre().toLowerCase().contains(input)) {
+                        String nombre = item.getNombre().toLowerCase();
+                        String correo = item.getCorreo().toLowerCase(); 
+                        String telefono = item.getTelefono().toLowerCase(); 
+                        if (nombre.contains(input) || correo.contains(input) || telefono.contains(input)) {
                             listModel.addElement(item.getNombre());
                         }
                     }
-                    
+
                     if (!listModel.isEmpty()) {
                         SwingUtilities.invokeLater(() -> {
                             if (!popMenu.isVisible()) {
@@ -359,10 +364,14 @@ public class DialogReporte extends javax.swing.JDialog {
                         popMenu.setVisible(false);
                     }
                 } else {
-                    popMenu.setVisible(false);
+                    for (ClienteDTO item : clientes) {
+                        listModel.addElement(item.getNombre());
+                    }
                 }
             }
         });
+
+
         // Selección de clientes desde la lista de autocompletar
         suggestionList.addMouseListener(new MouseAdapter() {
             @Override
@@ -379,7 +388,7 @@ public class DialogReporte extends javax.swing.JDialog {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER && suggestionList.getSelectedValue() != null) {
                     txtNombreCliente.setText(suggestionList.getSelectedValue());
-                    popMenu.setVisible(false);
+                   popMenu.setVisible(false);
                 }
             }
         });
@@ -455,6 +464,7 @@ public class DialogReporte extends javax.swing.JDialog {
             return "Error al escribir la ruta";
         }
     }
+    
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -522,8 +532,12 @@ public class DialogReporte extends javax.swing.JDialog {
         lblUbicacion.setText("Ruta:");
 
         txtNombreCliente.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtNombreCliente.setText("Ingrese el Cliente");
         txtNombreCliente.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        txtNombreCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtNombreClienteMouseClicked(evt);
+            }
+        });
 
         btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/añadirIcon.png"))); // NOI18N
         btnAgregar.setBorder(null);
@@ -758,6 +772,10 @@ public class DialogReporte extends javax.swing.JDialog {
     private void txtaUbicacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtaUbicacionMouseClicked
        SeleccionarRuta();
     }//GEN-LAST:event_txtaUbicacionMouseClicked
+
+    private void txtNombreClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtNombreClienteMouseClicked
+        
+    }//GEN-LAST:event_txtNombreClienteMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox boxCilientes;
