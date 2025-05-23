@@ -109,11 +109,25 @@ public class PanelClientes extends javax.swing.JPanel {
 
             @Override
             public void onEliminar(int row) {
+                // Intentar detener cualquier edición de celda activa
+                if (tblClientes.isEditing()) {
+                    if (!tblClientes.getCellEditor().stopCellEditing()) {
+                        JOptionPane.showMessageDialog(tblClientes.getTopLevelAncestor(), // Usar un componente padre adecuado
+                                "La celda actual está siendo editada y el cambio no se pudo guardar o validar.\n"
+                                + "Por favor, complete o cancele la edición antes de eliminar.",
+                                "Edición en curso",
+                                JOptionPane.WARNING_MESSAGE);
+                        return; // No continuar con la eliminación
+                    }
+                }
+
+                // Tu validación original sigue siendo importante
                 if (row < 0 || row >= tblClientes.getRowCount()) {
-                    JOptionPane.showMessageDialog(null, "No se pudo eliminar: índice fuera de rango.");
+                    JOptionPane.showMessageDialog(null, "No se pudo eliminar: índice fuera de rango (parámetro 'row' incorrecto).");
                     return;
                 }
 
+                // El resto de tu código...
                 String correo = (String) tblClientes.getValueAt(row, COLUMNA_CORREO);
                 int opcion = JOptionPane.showConfirmDialog(
                         null,
@@ -126,11 +140,10 @@ public class PanelClientes extends javax.swing.JPanel {
                     try {
                         gestorClientes.cancelarCliente(correo);
                         clientesTotales.removeIf(c -> c.getCorreo().equals(correo));
-                        cargarClientesEnTabla(clientesTotales);
+                        cargarClientesEnTabla(clientesTotales); // Ahora esto es más seguro
                         List<ContratoDTO> contratosCancelados = gestorContratos.cancelarContratosCliente(correo);
 
                         if (contratosCancelados != null && !contratosCancelados.isEmpty()) {
-
                             for (ContratoDTO contrato : contratosCancelados) {
                                 try {
                                     gestorCitas.eliminarCitasCotrato(contrato.getFolio());
@@ -138,7 +151,6 @@ public class PanelClientes extends javax.swing.JPanel {
                                     Logger.getLogger(PanelClientes.class.getName()).log(Level.SEVERE, null, ex);
                                 }
                             }
-
                         }
                         JOptionPane.showMessageDialog(null, "Cliente cancelado con éxito.");
                     } catch (GestorClientesException ex) {
