@@ -109,6 +109,11 @@ public class PanelContrato extends javax.swing.JPanel {
         }
         deshabilitar();
         
+        popupMenuClientes=null;
+        popupMenuClientes = new JPopupMenu();
+        popupMenuClientes.setFocusable(false);
+        popupMenuClientes.setLightWeightPopupEnabled(false);
+        
         fechaAnterior = Calendar.getInstance();
         fechaAnterior.setTime(jCalendarCitas.getDate());
         contrato = principal.getContrato();
