@@ -149,7 +149,11 @@ public class PanelContrato extends javax.swing.JPanel {
         this.lblCancelarContrato.setVisible(false);
         this.lblDescCancelarContrato.setVisible(false);
         this.lbldescTerminarContrato.setVisible(false);
+        popupMenuClientes.setFocusable(false);
+        popupMenuClientes.setLightWeightPopupEnabled(false);
+        listaCorreosClientes.setFocusable(false);
         txtPrecio.setEnabled(false);
+        
 
         if (contrato == null) {
             txtTematica.setEnabled(true);
@@ -215,6 +219,9 @@ public class PanelContrato extends javax.swing.JPanel {
         cmbPaquete.setEnabled(true);
         lblCitas.setText("Citas (Nuevo Contrato)");
         pnlCitas.setVisible(true);
+        popupMenuClientes.setFocusable(false);
+        popupMenuClientes.setLightWeightPopupEnabled(false);
+        listaCorreosClientes.setFocusable(false);
 
         if (panelContenedor != null) {
             panelContenedor.removeAll();
