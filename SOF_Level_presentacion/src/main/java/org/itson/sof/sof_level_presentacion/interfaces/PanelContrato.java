@@ -140,7 +140,7 @@ public class PanelContrato extends javax.swing.JPanel {
         this.lblDescCancelarContrato.setVisible(false);
         this.lbldescTerminarContrato.setVisible(false);
         txtPrecio.setEnabled(false);
-        
+
         if (contrato == null) {
             txtTematica.setEnabled(true);
             txtTematica.setText("");
@@ -149,11 +149,39 @@ public class PanelContrato extends javax.swing.JPanel {
             lblEdit.setVisible(true);
             btnCrearContrato.setVisible(true);
         } else {
+
+            if (contrato.getEstado().equalsIgnoreCase("cancelado") || contrato.getEstado().equalsIgnoreCase("finalizadp")) {
+                this.jCalendarCitas.setVisible(false);
+                this.pnlCitas.setVisible(false);
+
+                GregorianCalendar fecha = contrato.getFechaTermino();
+                String fechaFormateada = "No se pudo obtener la fecha";
+
+                if (fecha != null) {
+                    // 1. Convertir GregorianCalendar a java.util.Date
+                    java.util.Date fechaDate = fecha.getTime();
+
+                    // 2. Formatear la fecha usando SimpleDateFormat
+                    // Puedes elegir el formato que prefieras. Ejemplos:
+                    // "dd/MM/yyyy" -> 22/05/2025
+                    // "EEEE, dd 'de' MMMM 'de' yyyy" -> jueves, 22 de mayo de 2025 (dependerá del Locale)
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                    fechaFormateada = sdf.format(fechaDate);
+                }
+
+                // 3. Establecer el texto en el JLabel
+                this.lblCitas.setText("Este contrato fue " + contrato.getEstado() + " el " + fechaFormateada);
+                Font fuenteActual = this.lblCitas.getFont();
+                int nuevoTamano = fuenteActual.getSize();
+                Font nuevaFuente = new Font(fuenteActual.getName(), Font.BOLD, nuevoTamano);
+                this.lblCitas.setFont(nuevaFuente);
+            }
+
             txtTematica.setEnabled(false);
             txtTematica.setText(contrato.getTematica());
             lblEdit.setVisible(false);
             btnCrearContrato.setVisible(false);
-            
+
             this.lblAgregarCita.setVisible(true);
             btnAgregarCita.setVisible(true);
         }
@@ -330,7 +358,7 @@ public class PanelContrato extends javax.swing.JPanel {
         // Contar cuántas citas hay por día
         Map<String, Integer> citasPorDia = new HashMap<>();
 
-        if(citas != null) {
+        if (citas != null) {
             for (CitaDTO cita : citas) {
                 GregorianCalendar cal = cita.getFechaHoraInicio();
                 String key = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
@@ -373,7 +401,7 @@ public class PanelContrato extends javax.swing.JPanel {
 
         }
 
-    }   
+    }
 
     private void añadirListernerCalendario() {
         jCalendarCitas.addPropertyChangeListener("calendar", (PropertyChangeEvent evt) -> {
@@ -502,7 +530,7 @@ public class PanelContrato extends javax.swing.JPanel {
                 panelContenedor.add(Box.createVerticalStrut(10));
             }
         }
-        
+
         scrollPaneCitas.setViewportView(panelContenedor);
         scrollPaneCitas.getVerticalScrollBar().setUnitIncrement(20);
     }
@@ -572,7 +600,7 @@ public class PanelContrato extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(principal, "Por favor seleccione un paquete", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (txtTematica.getText().isEmpty()){
+        if (txtTematica.getText().isEmpty()) {
             JOptionPane.showMessageDialog(principal, "Ingrese la tematica", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -623,7 +651,7 @@ public class PanelContrato extends javax.swing.JPanel {
 
     private void llenarCamposContrato() {
         txtCliente.setText(contrato.getCliente().getNombre());
-        
+
         txtPrecio.setText("$ " + contrato.getPaquete().getPrecio());
 
         txtCliente.setEnabled(false);
@@ -635,11 +663,11 @@ public class PanelContrato extends javax.swing.JPanel {
 
         ContratoDTO contratoDTO = contrato;
 
-        if (txtTematica.getText().isEmpty()){
+        if (txtTematica.getText().isEmpty()) {
             JOptionPane.showMessageDialog(principal, "Ingrese la tematica", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         contratoDTO.setTematica(txtTematica.getText());
 
         try {
@@ -750,19 +778,19 @@ public class PanelContrato extends javax.swing.JPanel {
         }
     }
 
-    private void editarContrato(){
+    private void editarContrato() {
         this.btnConfirmarEdicion.setVisible(true);
         this.txtTematica.setEditable(true);
         this.txtTematica.setEnabled(true);
-        
+
         lblCancelarContrato.setVisible(true);
         lblDescCancelarContrato.setVisible(true);
         lblTerminarContrato.setVisible(true);
         lbldescTerminarContrato.setVisible(true);
         lblEdit.setVisible(false);
     }
-    
-    private void guardarEdicion(){
+
+    private void guardarEdicion() {
         txtTematica.setEditable(true);
         txtTematica.setEnabled(true);
         this.btnConfirmarEdicion.setVisible(false);
@@ -771,7 +799,7 @@ public class PanelContrato extends javax.swing.JPanel {
         lblTerminarContrato.setVisible(false);
         lbldescTerminarContrato.setVisible(false);
         lblEdit.setVisible(true);
-        actualizarContrato();  
+        actualizarContrato();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -992,7 +1020,7 @@ public class PanelContrato extends javax.swing.JPanel {
     }//GEN-LAST:event_lblCancelarContratoMouseClicked
 
     private void btnCrearContratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearContratoActionPerformed
-       crearContrato();
+        crearContrato();
     }//GEN-LAST:event_btnCrearContratoActionPerformed
 
 
