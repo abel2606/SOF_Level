@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -99,6 +100,10 @@ public class PanelContrato extends javax.swing.JPanel {
             inicializado = true;
         }
         deshabilitar();
+        
+        fechaAnterior = Calendar.getInstance();
+        fechaAnterior.setTime(jCalendarCitas.getDate());
+        contrato = principal.getContrato();
 
         if (contrato == null) {
             lblEdit.setVisible(false);
@@ -117,10 +122,6 @@ public class PanelContrato extends javax.swing.JPanel {
                 lblAgregarCita.setVisible(true);
             }
 
-            this.fechaAnterior = Calendar.getInstance();
-            fechaAnterior.setTime(jCalendarCitas.getDate());
-            contrato = principal.getContrato();
-            
             llenarCamposContrato();
 
             cmbPaquete.removeAllItems(); // Limpiar cualquier dato previo
@@ -512,6 +513,9 @@ public class PanelContrato extends javax.swing.JPanel {
      * @return Lista de CitaDTO
      */
     private List<CitaDTO> ConsultarCitas() {
+        if(contrato==null){
+            return new ArrayList<>();
+        }
         try {
             List<CitaDTO> citas = gestor.obtenerCitasContrato(contrato);
             if (citas != null) {
